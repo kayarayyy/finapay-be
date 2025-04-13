@@ -251,7 +251,7 @@ public class LoanRequestService {
                 if (approval) {
                     CustomerDetails customerDetails = customerDetailsService
                             .getByEmail(loanRequest.getCustomer().getEmail());
-                    double availablePlafond = customerDetails.getAvailablePlafond() - loanRequest.getAmount();
+                    double availablePlafond = customerDetails.getAvailablePlafond() - loanRequest.getAmount() - loanRequest.getInterest();
                     customerDetails.setAvailablePlafond(availablePlafond);
                     customerDetailsService.update(customerDetails.getId(), customerDetails);
                 }
