@@ -38,7 +38,7 @@ public class PlafondService {
     public Plafond updatePlafond(UUID id, Plafond updatedPlafond) {
         Plafond existing = getPlafondById(id);
         existing.setAmount(updatedPlafond.getAmount());
-        existing.setInterestRate(updatedPlafond.getInterestRate());
+        existing.setAnnualRate(updatedPlafond.getAnnualRate());
         existing.setPlan(updatedPlafond.getPlan());
         return plafondRepository.save(existing);
     }

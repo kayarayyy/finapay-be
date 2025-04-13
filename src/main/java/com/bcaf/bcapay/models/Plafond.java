@@ -35,6 +35,6 @@ public class Plafond {
     private Plan plan;
 
     @Column(nullable = false)
-    private Double interestRate;
+    private Double annualRate;
 
 }

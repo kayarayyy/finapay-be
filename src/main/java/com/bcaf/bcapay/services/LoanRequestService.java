@@ -18,6 +18,7 @@ import com.bcaf.bcapay.models.User;
 import com.bcaf.bcapay.repositories.LoanRequestRepository;
 import com.bcaf.bcapay.utils.CurrencyUtil;
 import com.bcaf.bcapay.utils.JwtUtil;
+import com.bcaf.bcapay.utils.LoanUtil;
 import com.bcaf.bcapay.utils.LocationCheck;
 
 import java.time.LocalDateTime;
@@ -49,6 +50,9 @@ public class LoanRequestService {
     @Autowired
     private CurrencyUtil currencyUtil;
 
+    @Autowired
+    private LoanUtil loanUtil;
+
     public LoanRequestDto createLoanRequest(Map<String, Object> payload, String token) {
         String email = jwtUtil.extractEmail(token);
         long activeRequestCount = loanRequestRepository.countActiveLoanRequestsByCustomerEmail(email);
@@ -59,6 +63,7 @@ public class LoanRequestService {
         LoanRequest loanRequest = new LoanRequest();
 
         double amount = Double.parseDouble(payload.get("amount").toString());
+        int tenor = Integer.parseInt(payload.get("tenor").toString());
 
         double userLat = Double.parseDouble(payload.get("latitude").toString());
         double userLon = Double.parseDouble(payload.get("longitude").toString());
@@ -74,8 +79,14 @@ public class LoanRequestService {
             throw new IllegalArgumentException("Your remaining plafond is " + currencyUtil.toRupiah(availablePlafond) +
                     ". You cannot request an amount greater than your available plafond.");
         }
+        if (tenor < 1 || tenor > 12) {
+            throw new IllegalArgumentException("Tenor exceeds the maximum limit of 12 and the minimum is 1 monthTenor exceeds the limit ma");
+        }
+        double annualRate = customerDetails.getPlafondPlan().getAnnualRate();
+        double interest = loanUtil.calculateTotalInterest(amount, annualRate, tenor);
 
         loanRequest.setAmount(amount);
+        loanRequest.setInterest(interest);
         loanRequest.setCustomer(customer);
         loanRequest.setLatitude(userLat);
         loanRequest.setLongitude(userLon);
@@ -97,8 +108,9 @@ public class LoanRequestService {
             loanRequest.setBranchManager(nearestBranch.getBranchManager());
         }
 
-        LoanRequest savedLoanRequest = loanRequestRepository.save(loanRequest);
-        return LoanRequestDto.fromEntity(savedLoanRequest);
+        // LoanRequest savedLoanRequest = loanRequestRepository.save(loanRequest);
+        // return LoanRequestDto.fromEntity(savedLoanRequest);
+        return LoanRequestDto.fromEntity(loanRequest);
     }
 
     public List<LoanRequestDto> getAllLoanRequests() {

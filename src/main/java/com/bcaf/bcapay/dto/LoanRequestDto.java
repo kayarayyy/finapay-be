@@ -8,6 +8,7 @@ import com.bcaf.bcapay.models.LoanRequest;
 public class LoanRequestDto {
     private UUID id;
     private double amount;
+    private Double interest;
     private String refferal;
     private UserDto customer;
     private UserDto marketing;
@@ -20,12 +21,13 @@ public class LoanRequestDto {
     private Double longitude;
     private String branch;
 
-    public LoanRequestDto(UUID id, double amount, String refferal, UserDto customer, UserDto marketing,
+    public LoanRequestDto(UUID id, double amount, Double interest, String refferal, UserDto customer, UserDto marketing,
                           Boolean marketingApprove, UserDto branchManager, Boolean branchManagerApprove,
                           UserDto backOffice, Boolean backOfficeApprove,
                           Double latitude, Double longitude, Branch branch) {
         this.id = id;
         this.amount = amount;
+        this.interest = interest;
         this.refferal = refferal;
         this.customer = customer;
         this.marketing = marketing;
@@ -46,6 +48,9 @@ public class LoanRequestDto {
 
     public double getAmount() {
         return amount;
+    }
+    public Double getInterest() {
+        return interest;
     }
     public String getRefferal() {
         return refferal;
@@ -96,6 +101,7 @@ public class LoanRequestDto {
         return new LoanRequestDto(
             loanRequest.getId(),
             loanRequest.getAmount(),
+            loanRequest.getInterest(),
             loanRequest.getRefferal(),
             loanRequest.getCustomer() != null ? UserDto.fromEntity(loanRequest.getCustomer()) : null,
             loanRequest.getMarketing() != null ? UserDto.fromEntity(loanRequest.getMarketing()) : null,

@@ -34,6 +34,9 @@ public class LoanRequest {
     private Double amount;
 
     @Column(nullable = true)
+    private Double interest;
+
+    @Column(nullable = true)
     private String refferal;
 
     @Column(nullable = false)

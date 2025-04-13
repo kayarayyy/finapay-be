@@ -286,10 +286,10 @@ public class Seeder implements CommandLineRunner {
 
     private void seedPlafond() {
         if (plafondRepository.count() == 0) {
-            plafondRepository.save(new Plafond(null, 1000000.00, Plan.BRONZE, 5.0));
-            plafondRepository.save(new Plafond(null, 5000000.00, Plan.SILVER, 4.7));
-            plafondRepository.save(new Plafond(null, 10000000.00, Plan.GOLD, 4.0));
-            plafondRepository.save(new Plafond(null, 25000000.00, Plan.PLATINUM, 3.5));
+            plafondRepository.save(new Plafond(null, 1000000.00, Plan.BRONZE, 0.05));
+            plafondRepository.save(new Plafond(null, 5000000.00, Plan.SILVER, 0.047));
+            plafondRepository.save(new Plafond(null, 10000000.00, Plan.GOLD, 0.04));
+            plafondRepository.save(new Plafond(null, 25000000.00, Plan.PLATINUM, 0.035));
         }
     }
 
