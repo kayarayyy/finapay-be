@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
 import com.bcaf.bcapay.dto.ResponseDto;
+import com.bcaf.bcapay.security.TokenExpiredException;
 
 import jakarta.servlet.http.HttpServletRequest;
 
@@ -15,6 +16,14 @@ import org.springframework.security.core.AuthenticationException;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {
+
+        @ExceptionHandler(TokenExpiredException.class)
+        @ResponseStatus(HttpStatus.UNAUTHORIZED)
+        public ResponseEntity<ResponseDto<Object>> handleTokenExpired(TokenExpiredException ex,
+                        HttpServletRequest request) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                                .body(new ResponseDto<>(401, "failed", ex.getMessage(), null));
+        }
 
         // Handle Unauthorized Access (401)
         @ExceptionHandler(AuthenticationException.class)

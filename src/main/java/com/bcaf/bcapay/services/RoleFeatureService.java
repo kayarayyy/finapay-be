@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.bcaf.bcapay.dto.FeatureDto;
+import com.bcaf.bcapay.dto.RoleFeaturesDto;
 import com.bcaf.bcapay.exceptions.ResourceNotFoundException;
 import com.bcaf.bcapay.models.Feature;
 import com.bcaf.bcapay.models.Role;
@@ -27,9 +28,9 @@ public class RoleFeatureService {
     @Autowired
     private FeatureService featureService;
 
-    public List<RoleFeature> getAlRoleFeatures() {
-        return roleFeatureRepository.findAll();
-    }
+    // public List<RoleFeature> getAllRoleFeatures() {
+    //     return roleFeatureRepository.findAll();
+    // }
 
     public RoleFeature getRoleFeatureById(String id) {
         return roleFeatureRepository.findById(UUID.fromString(id))
@@ -63,4 +64,17 @@ public class RoleFeatureService {
                 .build())
             .collect(Collectors.toList());
     }
+
+    public List<RoleFeaturesDto> getAllRoleWithFeatures() {
+    return roleService.getAllRoles().stream().map(role -> {
+        List<FeatureDto> features = getFeaturesByRoleId(role.getId());
+
+        return RoleFeaturesDto.builder()
+            .id(role.getId())
+            .name(role.getName())
+            .listFeatures(features)
+            .build();
+    }).collect(Collectors.toList());
+}
+
 }

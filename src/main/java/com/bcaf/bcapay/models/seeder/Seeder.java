@@ -96,12 +96,14 @@ public class Seeder implements CommandLineRunner {
             featureRepository.save(new Feature(null, "MANAGE_FEATURES", null));
             featureRepository.save(new Feature(null, "MANAGE_PROFILE", null));
             featureRepository.save(new Feature(null, "MANAGE_LOAN_REQUESTS", null));
+            featureRepository.save(new Feature(null, "MANAGE_BRANCHES", null));
             featureRepository.save(new Feature(null, "APPLY_LOAN", null));
             featureRepository.save(new Feature(null, "MARKETING_LOAN_ACTION", null));
             featureRepository.save(new Feature(null, "BRANCH_MANAGER_LOAN_ACTION", null));
             featureRepository.save(new Feature(null, "BACK_OFFICE_PROCEED", null));
             featureRepository.save(new Feature(null, "BACK_OFFICE_APPROVAL_DISBURSEMENT", null));
             featureRepository.save(new Feature(null, "ASSIGN_MARKETING", null));
+            featureRepository.save(new Feature(null, "MARKETING_REVIEW", null));
         }
     }
 
@@ -115,12 +117,14 @@ public class Seeder implements CommandLineRunner {
             Feature manageRoleFeatures = featureRepository.findByName("MANAGE_ROLE_FEATURES").orElse(null);
             Feature manageLoanRequests = featureRepository.findByName("MANAGE_LOAN_REQUESTS").orElse(null);
             Feature applyLoan = featureRepository.findByName("APPLY_LOAN").orElse(null);
+            Feature manageBranches = featureRepository.findByName("MANAGE_BRANCHES").orElse(null);
 
             Role customer = roleRepository.findByName("CUSTOMER").orElse(null);
             Feature manageProfile = featureRepository.findByName("MANAGE_PROFILE").orElse(null);
 
             Role marketing = roleRepository.findByName("MARKETING").orElse(null);
             Feature marketingLoanAction = featureRepository.findByName("MARKETING_LOAN_ACTION").orElse(null);
+            Feature marketingReview = featureRepository.findByName("MARKETING_REVIEW").orElse(null);
 
             Role branchManager = roleRepository.findByName("BRANCH_MANAGER").orElse(null);
             Feature branchManagerLoanAction = featureRepository.findByName("BRANCH_MANAGER_LOAN_ACTION").orElse(null);
@@ -147,6 +151,9 @@ public class Seeder implements CommandLineRunner {
                 if (manageLoanRequests != null) {
                     roleFeatureRepository.save(new RoleFeature(null, superAdmin, manageLoanRequests));
                 }
+                if (manageBranches != null) {
+                    roleFeatureRepository.save(new RoleFeature(null, superAdmin, manageBranches));
+                }
             }
             if (customer != null) {
                 if (manageProfile != null) {
@@ -160,6 +167,9 @@ public class Seeder implements CommandLineRunner {
             if (marketing != null) {
                 if (marketingLoanAction != null) {
                     roleFeatureRepository.save(new RoleFeature(null, marketing, marketingLoanAction));
+                }
+                if (marketingReview != null) {
+                    roleFeatureRepository.save(new RoleFeature(null, marketing, marketingReview));
                 }
             }
 
@@ -185,9 +195,10 @@ public class Seeder implements CommandLineRunner {
 
     private void seedUsers() {
         if (userRepository.count() == 0) {
-            createUser("Superadmin", "superadmin@gmail.com", "superadmin123", "SUPERADMIN", null, null);
+            createUser("Superadmin", "superadmin@gmail.com", "superadmin123", "SUPERADMIN", "20242753", null);
             createUser("Marketing", "marketing@gmail.com", "marketing123", "MARKETING", "2025111", "REF2025111");
             createUser("Marketing 1", "marketing1@gmail.com", "marketing123", "MARKETING", "2025112", "REF2025112");
+            createUser("Marketing 2", "marketing2@gmail.com", "marketing123", "MARKETING", "2025113", "REF2025113");
             createUser("Customer", "customer@gmail.com", "customer123", "CUSTOMER", null, null);
             createUser("Branch Manager", "branchmanager@gmail.com", "branchmanager123", "BRANCH_MANAGER", "2025121",
                     null);
@@ -245,6 +256,7 @@ public class Seeder implements CommandLineRunner {
         Branch bandungBranch = branchRepository.findByName("Bandung 1").orElse(null);
         User managerBandung = userRepository.findByEmail("branchmanager1@gmail.com").orElse(null);
         User marketingBandung = userRepository.findByEmail("marketing1@gmail.com").orElse(null);
+        User marketingBandung1 = userRepository.findByEmail("marketing2@gmail.com").orElse(null);
 
         if (bandungBranch != null) {
             if (managerBandung != null) {
@@ -255,10 +267,17 @@ public class Seeder implements CommandLineRunner {
                 marketingBandung.setBranch(bandungBranch); // Set branch untuk user marketing
                 bandungBranch.getMarketing().add(marketingBandung);
             }
+            if (marketingBandung1 != null) {
+                marketingBandung1.setBranch(bandungBranch); // Set branch untuk user marketing
+                bandungBranch.getMarketing().add(marketingBandung1);
+            }
 
             branchRepository.save(bandungBranch); // Simpan perubahan
             if (marketingBandung != null) {
                 userRepository.save(marketingBandung); // Simpan perubahan pada user
+            }
+            if (marketingBandung1 != null) {
+                userRepository.save(marketingBandung1); // Simpan perubahan pada user
             }
         }
     }
@@ -278,6 +297,7 @@ public class Seeder implements CommandLineRunner {
                 Branch branch = branchService.findNearestBranch(loanRequest.getLatitude(), loanRequest.getLongitude());
                 loanRequest.setBranch(branch);
                 loanRequest.setBranchManager(branch.getBranchManager());
+                loanRequest.setMarketing(branch.getMarketing().getFirst());
                 // Simpan LoanRequest ke dalam database
                 loanRequestRepository.save(loanRequest);
             }

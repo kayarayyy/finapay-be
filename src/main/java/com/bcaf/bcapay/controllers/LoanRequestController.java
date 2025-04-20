@@ -39,6 +39,14 @@ public class LoanRequestController {
                 .ok(new ResponseDto(200, "success", loanRequests.size() + " loan requests found", loanRequests));
     }
 
+    @Secured("FEATURE_MARKETING_REVIEW")
+    @GetMapping("/reviews")
+    public ResponseEntity<ResponseDto> getMarketingLoanReview() {
+        List<?> loanRequests = loanRequestService.getMarketingLoanReview();
+        return ResponseEntity
+                .ok(new ResponseDto(200, "success", loanRequests.size() + " loan requests found", loanRequests));
+    }
+
     @Secured({"FEATURE_MANAGE_LOAN_REQUESTS", "FEATURE_ASSIGN_MARKETING"})
     @GetMapping("/{id}")
     public ResponseEntity<ResponseDto> getLoanRequestById(@PathVariable String id) {

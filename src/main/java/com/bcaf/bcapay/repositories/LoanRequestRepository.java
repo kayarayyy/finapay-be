@@ -12,6 +12,7 @@ import org.springframework.stereotype.Repository;
 
 import com.bcaf.bcapay.models.Branch;
 import com.bcaf.bcapay.models.LoanRequest;
+import com.bcaf.bcapay.models.User;
 
 import jakarta.persistence.LockModeType;
 
@@ -22,6 +23,7 @@ public interface LoanRequestRepository extends JpaRepository<LoanRequest, UUID> 
     Optional<LoanRequest> findWithLockById(@Param("id") UUID id);
 
     List<LoanRequest> findByBranch(Branch branch);
+    List<LoanRequest> findByMarketingEmail(String marketing);
 
     @Query("SELECT COUNT(lr) FROM LoanRequest lr " +
             "WHERE lr.customer.email = :email " +

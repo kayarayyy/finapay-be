@@ -93,6 +93,9 @@ public class JwtUtil {
                 .parseClaimsJws(token)
                 .getBody();
     }
+    public boolean isTokenExpired(String token) {
+        return extractAllClaims(token).getExpiration().before(new Date());
+    }
 
     public String getUsername(String jwt) {
         return Jwts.parserBuilder()
@@ -114,6 +117,8 @@ public class JwtUtil {
 
         return token;
     }
+
+
     public boolean isSuperadmin(String token) {
         if (token == null || token.trim().isEmpty()) {
             return false;// Jika tidak ada token, bukan superadmin

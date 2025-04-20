@@ -24,6 +24,13 @@ public class UserController {
     @Secured("FEATURE_MANAGE_USERS")
     @GetMapping
     public ResponseEntity<ResponseDto> getAllUsers() {
+        try {
+            Thread.sleep(1000); // Delay selama 3 detik (3000 milidetik)
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt(); // Best practice jika terjadi interruption
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                                 .body(new ResponseDto(500, "error", "Request interrupted", null));
+        }
         List<UserDto> users = userService.getAllUsers();
         return ResponseEntity.ok(new ResponseDto(200, "success", users.size() + " users found", users));
     }

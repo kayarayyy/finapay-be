@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.bcaf.bcapay.dto.FeatureDto;
 import com.bcaf.bcapay.dto.ResponseDto;
+import com.bcaf.bcapay.dto.RoleFeaturesDto;
 import com.bcaf.bcapay.models.RoleFeature;
 import com.bcaf.bcapay.services.RoleFeatureService;
 
@@ -27,13 +28,13 @@ public class RoleFeatureController {
     @Autowired
     private RoleFeatureService roleFeatureService;
 
-    @Secured("FEATURE_MANAGE_ROLE_FEATURES")
-    @GetMapping
-    public ResponseEntity<ResponseDto> getAllRoles() {
-        List<RoleFeature> roleFeatures = roleFeatureService.getAlRoleFeatures();
-        return ResponseEntity
-                .ok(new ResponseDto(200, "success", roleFeatures.size() + " role features found", roleFeatures));
-    }
+    // @Secured("FEATURE_MANAGE_ROLE_FEATURES")
+    // @GetMapping
+    // public ResponseEntity<ResponseDto> getAllRoleFeatures() {
+    //     List<RoleFeature> roleFeatures = roleFeatureService.getAllRoleFeatures();
+    //     return ResponseEntity
+    //             .ok(new ResponseDto(200, "success", roleFeatures.size() + " role features found", roleFeatures));
+    // }
 
     @Secured("FEATURE_MANAGE_ROLE_FEATURES")
     @GetMapping("/{id}")
@@ -65,4 +66,11 @@ public class RoleFeatureController {
         return ResponseEntity.ok(new ResponseDto(200, "success", features.size() + " features found", features));
     }
 
+    @Secured("FEATURE_MANAGE_ROLE_FEATURES")
+    @GetMapping
+    public ResponseEntity<ResponseDto> getAllRoleWithFeatures() {
+        List<RoleFeaturesDto> roleFeatures = roleFeatureService.getAllRoleWithFeatures();
+        return ResponseEntity
+                .ok(new ResponseDto(200, "success", roleFeatures.size() + " role features found", roleFeatures));
+    }
 }
