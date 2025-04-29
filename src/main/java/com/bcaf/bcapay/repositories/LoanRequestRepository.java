@@ -24,6 +24,11 @@ public interface LoanRequestRepository extends JpaRepository<LoanRequest, UUID> 
 
     List<LoanRequest> findByBranch(Branch branch);
     List<LoanRequest> findByMarketingEmail(String marketing);
+    List<LoanRequest> findByMarketingEmailAndMarketingApproveIsNull(String marketing);
+    List<LoanRequest> findByMarketingIsNotNullAndMarketingApproveTrueAndBranchManagerApproveIsNullAndBranchManagerEmail(String branchManagerEmail);
+    Optional<LoanRequest> findFirstByMarketingApproveTrueAndBranchManagerApproveTrueAndBackOfficeIsNullOrderByCreatedAtAsc();
+
+
 
     @Query("SELECT COUNT(lr) FROM LoanRequest lr " +
             "WHERE lr.customer.email = :email " +

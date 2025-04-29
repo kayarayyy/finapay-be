@@ -14,6 +14,7 @@ import com.bcaf.bcapay.exceptions.ResourceNotFoundException;
 import com.bcaf.bcapay.models.ResetPassword;
 import com.bcaf.bcapay.models.User;
 import com.bcaf.bcapay.repositories.ResetPasswordRepository;
+import com.bcaf.bcapay.utils.PasswordUtils;
 
 import jakarta.transaction.Transactional;
 
@@ -27,6 +28,9 @@ public class ResetPasswordService {
 
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private PasswordUtils passwordUtils;
 
     public List<ResetPassword> getAllResetPasswordToken() {
         List<ResetPassword> listResetPassword = resetPasswordRepository.findAll();
@@ -56,16 +60,22 @@ public class ResetPasswordService {
     }
 
     @Transactional
-    public void setNewPasswordByResetPasswordEmail(String token, String email, String newPassword) {
+    public void setNewPasswordByResetPasswordEmail(String token, String email, String newPassword, String confirmPassword) {
         UUID resetPasswordId = UUID.fromString(token);
 
         ResetPassword resetPassword = resetPasswordRepository.findByIdAndUserEmail(resetPasswordId, email)
-                .orElseThrow(() -> new ResourceNotFoundException("User not found!"));
+                .orElseThrow(() -> new ResourceNotFoundException("User tidak ditemukan"));
 
         if (resetPassword.getExpiredAt().isBefore(LocalDateTime.now())) {
             resetPasswordRepository.delete(resetPassword);
             throw new IllegalStateException("Token sudah kedaluwarsa!");
         }
+
+        if (!newPassword.equals(confirmPassword)) {
+            throw new IllegalArgumentException("Konfirmasi password tidak sesuai!");
+        }
+
+        passwordUtils.isPasswordStrong(confirmPassword);
 
         User user = resetPassword.getUser();
         user.setPassword(newPassword);

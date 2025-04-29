@@ -43,16 +43,16 @@ public class UserService {
     // return User with password for auth
     public User getUserByEmail(String email) {
         return userRepository.findByEmail(email)
-        .orElseThrow(() -> new ResourceNotFoundException("User not found!"));
+        .orElseThrow(() -> new ResourceNotFoundException("User tidak ditemukan"));
     }
     public User getUserByRefferal(String refferal) {
         return userRepository.findByRefferal(refferal)
-        .orElseThrow(() -> new ResourceNotFoundException("Refferal not found!"));
+        .orElseThrow(() -> new ResourceNotFoundException("Refferal tidak ditemukan"));
     }
     // return User with password for auth
     public User getUserByNip(String nip) {
         return userRepository.findByNip(nip)
-                .orElseThrow(() -> new ResourceNotFoundException("User not found!"));
+                .orElseThrow(() -> new ResourceNotFoundException("User tidak ditemukan"));
     }
 
     public boolean getUserByEmailExists(String email) {

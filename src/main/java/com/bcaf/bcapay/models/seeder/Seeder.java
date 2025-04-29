@@ -7,6 +7,7 @@ import org.springframework.stereotype.Component;
 
 import com.bcaf.bcapay.models.Branch;
 import com.bcaf.bcapay.models.CustomerDetails;
+import com.bcaf.bcapay.models.EmployeeDetails;
 import com.bcaf.bcapay.models.Feature;
 import com.bcaf.bcapay.models.LoanRequest;
 import com.bcaf.bcapay.models.Plafond;
@@ -17,6 +18,7 @@ import com.bcaf.bcapay.models.enums.City;
 import com.bcaf.bcapay.models.enums.Plan;
 import com.bcaf.bcapay.repositories.BranchRepository;
 import com.bcaf.bcapay.repositories.CustomerDetailsRepository;
+import com.bcaf.bcapay.repositories.EmployeeDetailsRepoitory;
 import com.bcaf.bcapay.repositories.FeatureRepository;
 import com.bcaf.bcapay.repositories.LoanRequestRepository;
 import com.bcaf.bcapay.repositories.PlafondRepository;
@@ -63,6 +65,9 @@ public class Seeder implements CommandLineRunner {
     private CustomerDetailsRepository customerDetailsRepository;
 
     @Autowired
+    private EmployeeDetailsRepoitory employeeDetailsRepoitory;
+
+    @Autowired
     private BranchService branchService;
 
     @Override
@@ -74,6 +79,7 @@ public class Seeder implements CommandLineRunner {
         seedUsers();
         seedBranches();
         seedPlafond();
+        seedEmployeeDetails();
         seedCustomerDetails();
         seedLoanRequests();
     }
@@ -97,13 +103,18 @@ public class Seeder implements CommandLineRunner {
             featureRepository.save(new Feature(null, "MANAGE_PROFILE", null));
             featureRepository.save(new Feature(null, "MANAGE_LOAN_REQUESTS", null));
             featureRepository.save(new Feature(null, "MANAGE_BRANCHES", null));
-            featureRepository.save(new Feature(null, "APPLY_LOAN", null));
-            featureRepository.save(new Feature(null, "MARKETING_LOAN_ACTION", null));
-            featureRepository.save(new Feature(null, "BRANCH_MANAGER_LOAN_ACTION", null));
-            featureRepository.save(new Feature(null, "BACK_OFFICE_PROCEED", null));
-            featureRepository.save(new Feature(null, "BACK_OFFICE_APPROVAL_DISBURSEMENT", null));
-            featureRepository.save(new Feature(null, "ASSIGN_MARKETING", null));
-            featureRepository.save(new Feature(null, "MARKETING_REVIEW", null));
+
+            // ACCESS LOAN REQUEST REVIEW
+            featureRepository.save(new Feature(null, "GET_ALL_LOAN_REQUEST_REVIEW", null));
+            featureRepository.save(new Feature(null, "GET_LOAN_REQUEST_BY_ID_REVIEW", null));
+            featureRepository.save(new Feature(null, "UPDATE_LOAN_REQUEST_REVIEW", null));
+            // ACCESS LOAN REQUEST APPROVAL
+            featureRepository.save(new Feature(null, "GET_ALL_LOAN_REQUEST_APPROVAL", null));
+            featureRepository.save(new Feature(null, "GET_LOAN_REQUEST_BY_ID_APPROVAL", null));
+            featureRepository.save(new Feature(null, "UPDATE_LOAN_REQUEST_APPROVAL", null));
+            // ACCESS LOAN REQUEST DISBURSEMENT
+            featureRepository.save(new Feature(null, "GET_LOAN_REQUEST_DISBURSEMENT", null));
+            featureRepository.save(new Feature(null, "UPDATE_LOAN_REQUEST_DISBURSEMENT", null));
         }
     }
 
@@ -116,24 +127,27 @@ public class Seeder implements CommandLineRunner {
             Feature manageFeatures = featureRepository.findByName("MANAGE_FEATURES").orElse(null);
             Feature manageRoleFeatures = featureRepository.findByName("MANAGE_ROLE_FEATURES").orElse(null);
             Feature manageLoanRequests = featureRepository.findByName("MANAGE_LOAN_REQUESTS").orElse(null);
-            Feature applyLoan = featureRepository.findByName("APPLY_LOAN").orElse(null);
             Feature manageBranches = featureRepository.findByName("MANAGE_BRANCHES").orElse(null);
 
             Role customer = roleRepository.findByName("CUSTOMER").orElse(null);
-            Feature manageProfile = featureRepository.findByName("MANAGE_PROFILE").orElse(null);
 
             Role marketing = roleRepository.findByName("MARKETING").orElse(null);
-            Feature marketingLoanAction = featureRepository.findByName("MARKETING_LOAN_ACTION").orElse(null);
-            Feature marketingReview = featureRepository.findByName("MARKETING_REVIEW").orElse(null);
+            Feature getAllLoanRequestReview = featureRepository.findByName("GET_ALL_LOAN_REQUEST_REVIEW")
+                    .orElse(null);
+            Feature getByIdLoanRequestReview = featureRepository.findByName("LOAN_REQUEST_BY_ID_REVIEW")
+                    .orElse(null);
+            Feature updateLoanRequestReview = featureRepository.findByName("UPDATE_LOAN_REQUEST_REVIEW")
+                    .orElse(null);
 
             Role branchManager = roleRepository.findByName("BRANCH_MANAGER").orElse(null);
-            Feature branchManagerLoanAction = featureRepository.findByName("BRANCH_MANAGER_LOAN_ACTION").orElse(null);
-            Feature branchManagerAssignMarketing = featureRepository.findByName("ASSIGN_MARKETING").orElse(null);
+            Feature getAllLoanRequestApproval = featureRepository.findByName("GET_ALL_LOAN_REQUEST_APPROVAL")
+                    .orElse(null);
+            Feature getByIdLoanRequestApproval = featureRepository.findByName("LOAN_REQUEST_BY_ID_APPROVAL")
+                    .orElse(null);
+            Feature updateLoanRequestApproval = featureRepository.findByName("UPDATE_LOAN_REQUEST_APPROVAL")
+                    .orElse(null);
 
             Role backOffice = roleRepository.findByName("BACK_OFFICE").orElse(null);
-            Feature backOfficeProceed = featureRepository.findByName("BACK_OFFICE_PROCEED").orElse(null);
-            Feature backOfficeApprovalDisbursement = featureRepository.findByName("BACK_OFFICE_APPROVAL_DISBURSEMENT")
-                    .orElse(null);
 
             if (superAdmin != null) {
                 if (manageRoles != null) {
@@ -156,39 +170,35 @@ public class Seeder implements CommandLineRunner {
                 }
             }
             if (customer != null) {
-                if (manageProfile != null) {
-                    roleFeatureRepository.save(new RoleFeature(null, customer, manageProfile));
-                }
-                if (applyLoan != null) {
-                    roleFeatureRepository.save(new RoleFeature(null, customer, applyLoan));
-                }
+
             }
 
             if (marketing != null) {
-                if (marketingLoanAction != null) {
-                    roleFeatureRepository.save(new RoleFeature(null, marketing, marketingLoanAction));
+                if (getAllLoanRequestReview != null) {
+                    roleFeatureRepository.save(new RoleFeature(null, marketing, getAllLoanRequestReview));
                 }
-                if (marketingReview != null) {
-                    roleFeatureRepository.save(new RoleFeature(null, marketing, marketingReview));
+                if (getByIdLoanRequestReview != null) {
+                    roleFeatureRepository.save(new RoleFeature(null, marketing, getByIdLoanRequestReview));
+                }
+                if (updateLoanRequestReview != null) {
+                    roleFeatureRepository.save(new RoleFeature(null, marketing, updateLoanRequestReview));
                 }
             }
 
             if (branchManager != null) {
-                if (branchManagerLoanAction != null) {
-                    roleFeatureRepository.save(new RoleFeature(null, branchManager, branchManagerLoanAction));
+                if (getAllLoanRequestApproval != null) {
+                    roleFeatureRepository.save(new RoleFeature(null, branchManager, getAllLoanRequestApproval));
                 }
-                if (branchManagerAssignMarketing != null) {
-                    roleFeatureRepository.save(new RoleFeature(null, branchManager, branchManagerAssignMarketing));
+                if (getByIdLoanRequestApproval != null) {
+                    roleFeatureRepository.save(new RoleFeature(null, branchManager, getByIdLoanRequestApproval));
+                }
+                if (updateLoanRequestApproval != null) {
+                    roleFeatureRepository.save(new RoleFeature(null, branchManager, updateLoanRequestApproval));
                 }
             }
 
             if (backOffice != null) {
-                if (backOfficeProceed != null) {
-                    roleFeatureRepository.save(new RoleFeature(null, backOffice, backOfficeProceed));
-                }
-                if (backOfficeApprovalDisbursement != null) {
-                    roleFeatureRepository.save(new RoleFeature(null, backOffice, backOfficeApprovalDisbursement));
-                }
+
             }
         }
     }
@@ -196,10 +206,11 @@ public class Seeder implements CommandLineRunner {
     private void seedUsers() {
         if (userRepository.count() == 0) {
             createUser("Superadmin", "superadmin@gmail.com", "superadmin123", "SUPERADMIN", "20242753", null);
-            createUser("Marketing", "marketing@gmail.com", "marketing123", "MARKETING", "2025111", "REF2025111");
+            createUser("Marketing", "rayrizkyfawzy@gmail.com", "marketing123", "MARKETING", "2025111", "REF2025111");
             createUser("Marketing 1", "marketing1@gmail.com", "marketing123", "MARKETING", "2025112", "REF2025112");
             createUser("Marketing 2", "marketing2@gmail.com", "marketing123", "MARKETING", "2025113", "REF2025113");
             createUser("Customer", "customer@gmail.com", "customer123", "CUSTOMER", null, null);
+            createUser("Customer 1", "customer1@gmail.com", "customer123", "CUSTOMER", null, null);
             createUser("Branch Manager", "branchmanager@gmail.com", "branchmanager123", "BRANCH_MANAGER", "2025121",
                     null);
             createUser("Branch Manager 1", "branchmanager1@gmail.com", "branchmanager123", "BRANCH_MANAGER", "2025122",
@@ -235,7 +246,7 @@ public class Seeder implements CommandLineRunner {
         // Tambahkan Branch Manager & Marketing untuk Jakarta
         Branch jakartaBranch = branchRepository.findByName("Jakarta 1").orElse(null);
         User managerJakarta = userRepository.findByEmail("branchmanager@gmail.com").orElse(null);
-        User marketingJakarta = userRepository.findByEmail("marketing@gmail.com").orElse(null);
+        User marketingJakarta = userRepository.findByEmail("rayrizkyfawzy@gmail.com").orElse(null);
 
         if (jakartaBranch != null) {
             if (managerJakarta != null) {
@@ -328,8 +339,52 @@ public class Seeder implements CommandLineRunner {
                     details.setUser(customer);
                     details.setPlafondPlan(bronzePlafond);
                     details.setAvailablePlafond(bronzePlafond.getAmount());
+                    details.setStreet("Jl. Raya Sukamahi");
+                    details.setDistrict("Bekasi");
+                    details.setProvince("Jawa Barat");
+                    details.setPostalCode("17530");
+                    customerDetailsRepository.save(details);
+                }
+            }
+        }
+        if (userRepository.existsByEmail("customer1@gmail.com") &&
+                plafondRepository.existsByPlan(Plan.BRONZE)) {
+
+            User customer = userRepository.findByEmail("customer1@gmail.com").orElse(null);
+            Plafond bronzePlafond = plafondRepository.findByPlan(Plan.BRONZE).orElse(null);
+
+            if (customer != null && bronzePlafond != null) {
+                // Cek apakah data customer detail sudah pernah dibuat
+                boolean exists = customerDetailsRepository.findByUserEmail(customer.getEmail()).isPresent();
+                if (!exists) {
+                    CustomerDetails details = new CustomerDetails();
+                    details.setUser(customer);
+                    details.setPlafondPlan(bronzePlafond);
+                    details.setAvailablePlafond(bronzePlafond.getAmount());
 
                     customerDetailsRepository.save(details);
+                }
+            }
+        }
+    }
+
+    private void seedEmployeeDetails() {
+        if (userRepository.existsByEmail("rayrizkyfawzy@gmail.com")) {
+
+            User marketing = userRepository.findByEmail("rayrizkyfawzy@gmail.com").orElse(null);
+
+            if (marketing != null) {
+                // Cek apakah data marketing detail sudah pernah dibuat
+                boolean exists = employeeDetailsRepoitory.findByUserEmail(marketing.getEmail()).isPresent();
+                if (!exists) {
+                    EmployeeDetails details = new EmployeeDetails();
+                    details.setStreet("Jl. Kebon Jeruk Raya");
+                    details.setDistrict("Kebon Jeruk");
+                    details.setProvince("DKI Jakarta");
+                    details.setPostalCode("11530");
+                    details.setUser(marketing);
+
+                    employeeDetailsRepoitory.save(details);
                 }
             }
         }

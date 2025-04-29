@@ -21,7 +21,7 @@ public class LoanRequestController {
     @Autowired
     private LoanRequestService loanRequestService;
 
-    @Secured({ "FEATURE_MANAGE_LOAN_REQUESTS", "FEATURE_APPLY_LOAN" })
+    @Secured({"FEATURE_CREATE_LOAN_REQUEST", "FEATURE_MANAGE_LOAN_REQUESTS"})
     @PostMapping
     public ResponseEntity<ResponseDto> createLoanRequest(
             @RequestHeader(value = "Authorization", required = false) String token,
@@ -31,7 +31,7 @@ public class LoanRequestController {
                 .body(new ResponseDto(201, "success", "Loan request created", loanRequest));
     }
 
-    @Secured("FEATURE_MANAGE_LOAN_REQUESTS")
+    @Secured({"FEATURE_GET_ALL_LOAN_REQUEST", "FEATURE_MANAGE_LOAN_REQUESTS"})
     @GetMapping
     public ResponseEntity<ResponseDto> getAllLoanRequests() {
         List<?> loanRequests = loanRequestService.getAllLoanRequests();
@@ -39,66 +39,118 @@ public class LoanRequestController {
                 .ok(new ResponseDto(200, "success", loanRequests.size() + " loan requests found", loanRequests));
     }
 
-    @Secured("FEATURE_MARKETING_REVIEW")
-    @GetMapping("/reviews")
-    public ResponseEntity<ResponseDto> getMarketingLoanReview() {
-        List<?> loanRequests = loanRequestService.getMarketingLoanReview();
-        return ResponseEntity
-                .ok(new ResponseDto(200, "success", loanRequests.size() + " loan requests found", loanRequests));
-    }
-
-    @Secured({"FEATURE_MANAGE_LOAN_REQUESTS", "FEATURE_ASSIGN_MARKETING"})
+    @Secured({"FEATURE_GET_LOAN_REQUEST_BY_ID", "FEATURE_MANAGE_LOAN_REQUESTS"})
     @GetMapping("/{id}")
     public ResponseEntity<ResponseDto> getLoanRequestById(@PathVariable String id) {
         LoanRequest loanRequest = loanRequestService.getLoanRequestById(id);
         return ResponseEntity.ok(new ResponseDto(200, "success", "Loan request found", loanRequest));
     }
 
-    @Secured("FEATURE_MANAGE_LOAN_REQUESTS")
+    @Secured({"FEATURE_UPDATE_LOAN_REQUEST", "FEATURE_MANAGE_LOAN_REQUESTS"})
     @PutMapping("/{id}")
-    public ResponseEntity<ResponseDto> updateLoanRequest(@PathVariable String id, @RequestBody Map<String, Object> payload, @RequestHeader(value = "Authorization", required = false) String token) {
+    public ResponseEntity<ResponseDto> updateLoanRequest(@PathVariable String id,
+            @RequestBody Map<String, Object> payload,
+            @RequestHeader(value = "Authorization", required = false) String token) {
         LoanRequest updatedLoanRequest = loanRequestService.updateLoanRequest(id, payload, token);
         return ResponseEntity.ok(new ResponseDto(200, "success", "Loan request updated", updatedLoanRequest));
+    }
+    
+    @Secured("FEATURE_GET_ALL_LOAN_REQUEST_REVIEW")
+    @GetMapping("/reviews")
+    public ResponseEntity<ResponseDto> getAllLoanRequestReview() {
+        List<?> loanRequests = loanRequestService.getAllLoanRequestReview();
+        return ResponseEntity
+                .ok(new ResponseDto(200, "success", loanRequests.size() + " loan requests found", loanRequests));
+    }
+
+    @Secured("FEATURE_GET_LOAN_REQUEST_BY_ID_REVIEW")
+    @GetMapping("/reviews/{id}")
+    public ResponseEntity<ResponseDto> getLoanRequestByIdReview(@PathVariable String id) {
+        // Mengambil data dari service
+        Map<String, Object> data = loanRequestService.getLoanRequestByIdReview(id);
+
+        // Mengembalikan response dengan status 200 OK
+        return ResponseEntity.ok(new ResponseDto(200, "success", "Loan requests found", data));
+    }
+
+    @Secured("FEATURE_UPDATE_LOAN_REQUEST_REVIEW")
+    @PutMapping("/reviews/{id}")
+    public ResponseEntity<ResponseDto> updateLoanRequestReview(@PathVariable String id,
+            @RequestBody Map<String, Object> payload,
+            @RequestHeader(value = "Authorization", required = false) String token) {
+        LoanRequestDto updatedLoanRequest = loanRequestService.updateLoanRequestReview(id, payload, token);
+        boolean review = Boolean.parseBoolean(payload.get("review").toString());
+        return ResponseEntity.ok(new ResponseDto(200, "success",
+                "Berhasil " + (review ? "merekomendasikan" : "menolak") + " pengajuan", updatedLoanRequest));
+    }
+
+    @Secured("FEATURE_GET_ALL_LOAN_REQUEST_APPROVAL")
+    @GetMapping("/approvals")
+    public ResponseEntity<ResponseDto> getAllLoanRequestApproval() {
+        List<?> loanRequests = loanRequestService.getAllLoanRequestApproval();
+        return ResponseEntity
+                .ok(new ResponseDto(200, "success", loanRequests.size() + " loan requests found", loanRequests));
+    }
+
+    @Secured("FEATURE_GET_LOAN_REQUEST_BY_ID_APPROVAL")
+    @GetMapping("/approvals/{id}")
+    public ResponseEntity<ResponseDto> getLoanRequestByIdApproval(@PathVariable String id) {
+        // Mengambil data dari service
+        Map<String, Object> data = loanRequestService.getLoanRequestByIdReview(id);
+
+        // Mengembalikan response dengan status 200 OK
+        return ResponseEntity.ok(new ResponseDto(200, "success", "Loan requests found", data));
+    }
+
+    @Secured("FEATURE_UPDATE_LOAN_REQUEST_APPROVAL")
+    @PutMapping("/approvals/{id}")
+    public ResponseEntity<ResponseDto> updateLoanRequestApproval(@PathVariable String id,
+            @RequestBody Map<String, Object> payload,
+            @RequestHeader(value = "Authorization", required = false) String token) {
+        LoanRequestDto updatedLoanRequest = loanRequestService.updateLoanRequestApproval(id, payload, token);
+        boolean approval = Boolean.parseBoolean(payload.get("approval").toString());
+        return ResponseEntity.ok(new ResponseDto(200, "success",
+                "Berhasil " + (approval ? "menyetujui" : "menolak") + " pengajuan", updatedLoanRequest));
+    }
+
+    @Secured("FEATURE_GET_LOAN_REQUEST_DISBURSEMENT")
+    @GetMapping("/disbursement")
+    public ResponseEntity<ResponseDto> backOfficeTakeOldestRequest(
+            @RequestHeader(value = "Authorization", required = false) String token) {
+        LoanRequestDto loanRequest = loanRequestService.backOfficeTakeOldestRequest(token);
+        return ResponseEntity.ok(new ResponseDto(200, "success", "Loan request found", loanRequest));
+    }
+
+    @Secured("FEATURE_UPDATE_LOAN_REQUEST_DISBURSEMENT")
+    @PutMapping("/disbursement/{id}")
+    public ResponseEntity<ResponseDto> backOfficeDisbursement(@PathVariable String id,
+            @RequestBody Map<String, Object> payload,
+            @RequestHeader(value = "Authorization", required = false) String token) {
+        LoanRequestDto updatedLoanRequest = loanRequestService.backOfficeDisbursement(id, payload, token);
+        boolean disbursement = Boolean.parseBoolean(payload.get("disbursement").toString());
+        return ResponseEntity.ok(new ResponseDto(200, "success",
+                "Berhasil " + (disbursement ? "mencairkan" : "menolak") + " pengajuan",
+                updatedLoanRequest));
     }
 
     @Secured("FEATURE_ASSIGN_MARKETING")
     @PostMapping("/assign-marketing")
     public ResponseEntity<ResponseDto> assignMarketing(@RequestBody Map<String, Object> payload) {
-        // LoanRequest updatedLoanRequest = 
+        // LoanRequest updatedLoanRequest =
         String marketingEmail = payload.get("marketing_email").toString();
         LoanRequest data = loanRequestService.assignNonRefferalRequestToMarketing(payload);
         return ResponseEntity.ok(new ResponseDto(200, "success", "Loan request assigned to " + marketingEmail, data));
     }
 
-    @Secured("FEATURE_MARKETING_LOAN_ACTION")
-    @PutMapping("/marketing-action/{id}")
-    public ResponseEntity<ResponseDto> marketingAction(@PathVariable String id, @RequestBody Map<String, Object> payload, @RequestHeader(value = "Authorization", required = false) String token) {
-        LoanRequestDto updatedLoanRequest = loanRequestService.marketingAction(id, payload, token);
-        boolean approval = Boolean.parseBoolean(payload.get("marketing_approval").toString());
-        return ResponseEntity.ok(new ResponseDto(200, "success", "Loan request " + (approval ? "Approved" : "Rejected") + " by Marketing", updatedLoanRequest));
-    }
-
     @Secured("FEATURE_BRANCH_MANAGER_LOAN_ACTION")
     @PutMapping("/branch-manager-action/{id}")
-    public ResponseEntity<ResponseDto> branchManagerAction(@PathVariable String id, @RequestBody Map<String, Object> payload, @RequestHeader(value = "Authorization", required = false) String token) {
+    public ResponseEntity<ResponseDto> branchManagerAction(@PathVariable String id,
+            @RequestBody Map<String, Object> payload,
+            @RequestHeader(value = "Authorization", required = false) String token) {
         LoanRequestDto updatedLoanRequest = loanRequestService.branchManagerAction(id, payload, token);
         boolean approval = Boolean.parseBoolean(payload.get("branch_manager_approval").toString());
-        return ResponseEntity.ok(new ResponseDto(200, "success", "Loan request " + (approval ? "Approved" : "Rejected") + " by Branch Manager", updatedLoanRequest));
-    }
-
-    @Secured("FEATURE_BACK_OFFICE_PROCEED")
-    @GetMapping("/back-office-proceed/{id}")
-    public ResponseEntity<ResponseDto> backOfficeProceed(@PathVariable String id, @RequestHeader(value = "Authorization", required = false) String token) {
-        LoanRequestDto loanRequest = loanRequestService.backOfficeProceed(id, token);
-        return ResponseEntity.ok(new ResponseDto(200, "success", "Loan request found", loanRequest));
-    }
-
-    @Secured("FEATURE_BACK_OFFICE_APPROVAL_DISBURSEMENT")
-    @PutMapping("/back-office-approval-disbursement/{id}")
-    public ResponseEntity<ResponseDto> backOfficeDisbursement(@PathVariable String id, @RequestBody Map<String, Object> payload, @RequestHeader(value = "Authorization", required = false) String token) {
-        LoanRequestDto updatedLoanRequest = loanRequestService.backOfficeDisbursement(id, payload, token);
-        boolean approval = Boolean.parseBoolean(payload.get("back_office_approval_disbursement").toString());
-        return ResponseEntity.ok(new ResponseDto(200, "success", "Loan request " + (approval ? "Approved" : "Rejected") + " Disbursement by Back Office", updatedLoanRequest));
+        return ResponseEntity.ok(new ResponseDto(200, "success",
+                "Loan request " + (approval ? "Approved" : "Rejected") + " by Branch Manager", updatedLoanRequest));
     }
 
     @Secured("FEATURE_MANAGE_LOAN_REQUESTS")

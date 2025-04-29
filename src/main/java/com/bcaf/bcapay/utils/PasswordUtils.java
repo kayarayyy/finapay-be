@@ -11,13 +11,13 @@ public class PasswordUtils {
 
     public void verifyPasswordMatch(String rawPassword, String encodedPassword) {
         if (!passwordEncoder.matches(rawPassword, encodedPassword)) {
-            throw new IllegalArgumentException("Wrong password!");
+            throw new IllegalArgumentException("Password lama tidak sesuai!");
         }
     }
 
     public void isPasswordStrong(String password) {
         if (password == null || password.length() < 8) {
-            throw new IllegalArgumentException("Password must be at least 8 characters long.");
+            throw new IllegalArgumentException("Password minimal memiliki 8 karakter");
         }
 
         boolean hasUppercase = password.matches(".*[A-Z].*");
@@ -26,7 +26,7 @@ public class PasswordUtils {
 
         if (!hasUppercase || !hasLowercase || !hasDigit) {
             throw new IllegalArgumentException(
-                    "Password must contain at least one uppercase letter, one lowercase letter, and one number.");
+                    "Password harus berisi minimal 1 huruf kapital, 1 huruf kecil dan 1 angka");
         }
     }
 }

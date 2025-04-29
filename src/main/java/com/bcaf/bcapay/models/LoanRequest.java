@@ -65,6 +65,9 @@ public class LoanRequest {
 
     @Column(nullable = true)
     private Boolean marketingApprove;
+
+    @Column(nullable = true)
+    private String marketingNotes;
     
     @ManyToOne
     @JoinColumn(name = "branch_manager_email", referencedColumnName = "email")
@@ -73,6 +76,9 @@ public class LoanRequest {
 
     @Column(nullable = true)
     private Boolean branchManagerApprove;
+
+    @Column(nullable = true)
+    private String branchManagerNotes;
     
     @ManyToOne
     @JoinColumn(name = "back_office_email", referencedColumnName = "email")
@@ -81,6 +87,9 @@ public class LoanRequest {
     
     @Column(nullable = true)
     private Boolean backOfficeApproveDisburse;
+
+    @Column(nullable = true)
+    private String backOfficeNotes;
 
     @Column(updatable = false)
     @CreationTimestamp

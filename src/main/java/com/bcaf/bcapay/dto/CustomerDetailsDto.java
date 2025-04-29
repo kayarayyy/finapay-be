@@ -18,13 +18,26 @@ public class CustomerDetailsDto {
     private double availablePlafond;
     private UUID plafondId;
     private UserDto user;
+    private String street;
+    private String district;
+    private String province;
+    private String postalCode;
+    private Double latitude;
+    private Double longitude;
+
 
     public static CustomerDetailsDto fromEntity(CustomerDetails entity) {
         return new CustomerDetailsDto(
             entity.getId(),
             entity.getAvailablePlafond(),
             entity.getPlafondPlan() != null ? entity.getPlafondPlan().getId() : null,
-            UserDto.fromEntity(entity.getUser())
+            UserDto.fromEntity(entity.getUser()),
+            entity.getStreet(),
+            entity.getDistrict(),
+            entity.getProvince(),
+            entity.getPostalCode(),
+            entity.getLatitude(),
+            entity.getLongitude()
         );
     }
 
@@ -34,6 +47,12 @@ public class CustomerDetailsDto {
         entity.setAvailablePlafond(this.availablePlafond);
         entity.setPlafondPlan(plafond);
         entity.setUser(user);
+        entity.setStreet(street);
+        entity.setDistrict(district);
+        entity.setProvince(province);
+        entity.setPostalCode(postalCode);
+        entity.setLatitude(latitude);
+        entity.setLongitude(longitude);
         return entity;
     }
 }

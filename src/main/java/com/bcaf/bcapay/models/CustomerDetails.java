@@ -32,6 +32,22 @@ public class CustomerDetails {
     @JoinColumn(name = "plafond_id", referencedColumnName = "id", nullable = false)
     private Plafond plafondPlan;
 
+    @Column(name = "street")
+    private String street;
+
+    @Column(name = "district")
+    private String district;
+
+    @Column(name = "province")
+    private String province;
+
+    @Column(name = "postal_code")
+    private String postalCode;
+
+    private Double latitude;
+
+    private Double longitude;
+
     @OneToOne
     @JoinColumn(name = "user_email", referencedColumnName = "email", nullable = false, unique = true)
     private User user;

@@ -162,7 +162,7 @@ public class AuthService {
         String confirmPassword = Objects.toString(payload.get("confirm_password")).trim();
 
         if (!newPassword.equals(confirmPassword)) {
-            throw new IllegalArgumentException("Password doesn't match!");
+            throw new IllegalArgumentException("Konfirmasi password tidak sesuai!");
         }
 
         passwordUtils.isPasswordStrong(confirmPassword);

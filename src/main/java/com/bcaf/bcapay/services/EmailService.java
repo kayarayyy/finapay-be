@@ -74,7 +74,8 @@ public class EmailService {
     }
 
     private String generateResetLink(String id) {
-        String baseUrl = "https://app.bcapay.com/reset-password/"; // Sesuaikan dengan domain frontend
+        
+        String baseUrl = "http://localhost:4200/reset-password/"; // Sesuaikan dengan domain frontend
         return baseUrl + id.toString();
     }
 

@@ -12,8 +12,9 @@ public class UserDto {
     private String nip;
     private String refferal;
     private boolean active;
+    private String branch;
 
-    public UserDto(UUID id, String name, String email, String role, String nip, String refferal,boolean active) {
+    public UserDto(UUID id, String name, String email, String role, String nip, String refferal,boolean active, String branch) {
         this.id = id;
         this.name = name;
         this.email = email;
@@ -21,6 +22,7 @@ public class UserDto {
         this.nip = nip;
         this.refferal = refferal;
         this.active = active;
+        this.branch = branch;
     }
 
     // Getter
@@ -51,17 +53,21 @@ public class UserDto {
     public String getNip(){
         return nip;
     }
+    public String getBranch(){
+        return branch;
+    }
 
     // Convert from User entity to DTO
     public static UserDto fromEntity(User user) {
         return new UserDto(
-            user.getId(),  // Ambil ID user
+            user.getId(),
             user.getName(),
             user.getEmail(),
-            user.getRole().getName(),
+            user.getRole() != null ? user.getRole().getName() : null,
             user.getNip(),
             user.getRefferal(),
-            user.isActive()
+            user.isActive(),
+            user.getBranch() != null ? user.getBranch().getName() : null
         );
     }
 }

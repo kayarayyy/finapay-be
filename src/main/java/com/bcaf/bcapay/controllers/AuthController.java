@@ -71,20 +71,24 @@ public class AuthController {
     @RequestBody Map<String, Object> payload) {
         authService.changePassword(payload, token);
         
-        return ResponseUtil.success(null, "change password success");
+        return ResponseUtil.success(null, "Ubah kata berhasil!");
     }
 
-    @GetMapping("/reset-password")
+    @PostMapping("/reset-password")
     public ResponseEntity<ResponseDto> getResetPasswordLink(@RequestBody Map<String, Object> payload) {
-        resetPasswordService.getResetPasswordLink((String) payload.get("email"));
-        return ResponseUtil.created(null, "Reset password Email sent successful");
+        String email = (String) payload.get("email");
+        resetPasswordService.getResetPasswordLink(email);
+        return ResponseUtil.created(null, "Instruksi reset password telah dikirim ke " + email);
     }
 
-    @PostMapping("/reset-password/{id}")
+    @PutMapping("/reset-password/{id}")
     public ResponseEntity<ResponseDto> setNewPasswordByResetPasswordEmail(@RequestBody Map<String, Object> payload,
             @PathVariable String id) {
-        resetPasswordService.setNewPasswordByResetPasswordEmail(id, (String) payload.get("email"),
-                (String) payload.get("new_password"));
+                String email = (String) payload.get("email");
+                String new_password = (String) payload.get("new_password");
+                String confirm_password = (String) payload.get("confirm_password");
+        resetPasswordService.setNewPasswordByResetPasswordEmail(id, email,
+                new_password, confirm_password);
         return ResponseUtil.success(null, "Reset password successful");
     }
 }
