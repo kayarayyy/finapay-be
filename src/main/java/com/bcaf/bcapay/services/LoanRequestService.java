@@ -140,12 +140,12 @@ public class LoanRequestService {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String emailMarketing = authentication.getName();
 
-        if (emailMarketing == null || emailMarketing.isEmpty()) {
-            throw new AuthenticationCredentialsNotFoundException("User not authenticated.");
-        }
-
         LoanRequest loanRequest = loanRequestRepository.findById(UUID.fromString(id))
                 .orElseThrow(() -> new ResourceNotFoundException("Loan request not found"));
+
+        if (!emailMarketing.equalsIgnoreCase(loanRequest.getMarketing().getEmail())) {
+            throw new AccessDeniedException("You are not authorized to get this loan request.");
+        }
 
         CustomerDetails customerDetails = customerDetailsService.getByEmail(loanRequest.getCustomer().getEmail());
 
@@ -228,7 +228,8 @@ public class LoanRequestService {
 
     @Transactional
     public LoanRequestDto backOfficeTakeOldestRequest(String token) {
-        LoanRequest loanRequest = loanRequestRepository.findFirstByMarketingApproveTrueAndBranchManagerApproveTrueAndBackOfficeIsNullOrderByCreatedAtAsc()
+        LoanRequest loanRequest = loanRequestRepository
+                .findFirstByMarketingApproveTrueAndBranchManagerApproveTrueAndBackOfficeIsNullOrderByCreatedAtAsc()
                 .orElseThrow(() -> new ResourceNotFoundException("No eligible loan request found"));
 
         // Set user yang sedang memproses
@@ -239,6 +240,49 @@ public class LoanRequestService {
         LoanRequest savedLoanRequest = loanRequestRepository.save(loanRequest);
 
         return LoanRequestDto.fromEntity(savedLoanRequest);
+    }
+
+    public Map<String, Object> getLoanRequestByIdDisbursement(String id) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String emailMarketing = authentication.getName();
+
+        LoanRequest loanRequest = loanRequestRepository.findById(UUID.fromString(id))
+                .orElseThrow(() -> new ResourceNotFoundException("Loan request not found"));
+
+        if (!emailMarketing.equalsIgnoreCase(loanRequest.getBackOffice().getEmail())) {
+            throw new AccessDeniedException("You are not authorized to get this loan request.");
+        }
+
+        CustomerDetails customerDetails = customerDetailsService.getByEmail(loanRequest.getCustomer().getEmail());
+
+        LoanRequestDto loanRequestDto = LoanRequestDto.fromEntity(loanRequest);
+        CustomerDetailsDto customerDetailsDto = CustomerDetailsDto.fromEntity(customerDetails);
+
+        // Pastikan kamu memasukkan objek yang sesuai dalam map
+        Map<String, Object> data = new HashMap<>();
+        data.put("loanRequest", loanRequestDto);
+        data.put("customerDetails", customerDetailsDto);
+
+        return data;
+    }
+
+    public long countWaitingDisbursementRequests() {
+        return loanRequestRepository.countByMarketingApproveTrueAndBranchManagerApproveTrueAndBackOfficeIsNull();
+    }
+
+    public List<LoanRequestDto> getAllLoanRequestDisbursementOngoing() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String emailBackOffice = authentication.getName();
+
+        if (emailBackOffice == null || emailBackOffice.isEmpty()) {
+            throw new AuthenticationCredentialsNotFoundException("User not authenticated.");
+        }
+        return loanRequestRepository
+                .findByBackOfficeEmailAndBackOfficeApproveDisburseIsNull(
+                        emailBackOffice)
+                .stream()
+                .map(LoanRequestDto::fromEntity)
+                .collect(Collectors.toList());
     }
 
     public LoanRequestDto backOfficeDisbursement(String id, Map<String, Object> payload, String token) {
@@ -373,8 +417,6 @@ public class LoanRequestService {
         }
 
     }
-
-
 
     public LoanRequest updateLoanRequest(String id, Map<String, Object> payload, String token) {
         LoanRequest loanRequest = loanRequestRepository.findById(UUID.fromString(id))

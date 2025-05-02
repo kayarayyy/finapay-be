@@ -104,6 +104,9 @@ public class Seeder implements CommandLineRunner {
             featureRepository.save(new Feature(null, "MANAGE_LOAN_REQUESTS", null));
             featureRepository.save(new Feature(null, "MANAGE_BRANCHES", null));
 
+            // ACCESS LOAN REQUEST
+            featureRepository.save(new Feature(null, "CREATE_LOAN_REQUEST", null));
+
             // ACCESS LOAN REQUEST REVIEW
             featureRepository.save(new Feature(null, "GET_ALL_LOAN_REQUEST_REVIEW", null));
             featureRepository.save(new Feature(null, "GET_LOAN_REQUEST_BY_ID_REVIEW", null));
@@ -114,6 +117,8 @@ public class Seeder implements CommandLineRunner {
             featureRepository.save(new Feature(null, "UPDATE_LOAN_REQUEST_APPROVAL", null));
             // ACCESS LOAN REQUEST DISBURSEMENT
             featureRepository.save(new Feature(null, "GET_LOAN_REQUEST_DISBURSEMENT", null));
+            featureRepository.save(new Feature(null, "GET_LOAN_REQUEST_BY_ID_DISBURSEMENT", null));
+            featureRepository.save(new Feature(null, "GET_ALL_LOAN_REQUEST_DISBURSEMENT_ONGOING", null));
             featureRepository.save(new Feature(null, "UPDATE_LOAN_REQUEST_DISBURSEMENT", null));
         }
     }
@@ -128,13 +133,14 @@ public class Seeder implements CommandLineRunner {
             Feature manageRoleFeatures = featureRepository.findByName("MANAGE_ROLE_FEATURES").orElse(null);
             Feature manageLoanRequests = featureRepository.findByName("MANAGE_LOAN_REQUESTS").orElse(null);
             Feature manageBranches = featureRepository.findByName("MANAGE_BRANCHES").orElse(null);
-
+            
             Role customer = roleRepository.findByName("CUSTOMER").orElse(null);
+            Feature createLoanRequest = featureRepository.findByName("CREATE_LOAN_REQUEST").orElse(null);
 
             Role marketing = roleRepository.findByName("MARKETING").orElse(null);
             Feature getAllLoanRequestReview = featureRepository.findByName("GET_ALL_LOAN_REQUEST_REVIEW")
                     .orElse(null);
-            Feature getByIdLoanRequestReview = featureRepository.findByName("LOAN_REQUEST_BY_ID_REVIEW")
+            Feature getByIdLoanRequestReview = featureRepository.findByName("GET_LOAN_REQUEST_BY_ID_REVIEW")
                     .orElse(null);
             Feature updateLoanRequestReview = featureRepository.findByName("UPDATE_LOAN_REQUEST_REVIEW")
                     .orElse(null);
@@ -142,12 +148,20 @@ public class Seeder implements CommandLineRunner {
             Role branchManager = roleRepository.findByName("BRANCH_MANAGER").orElse(null);
             Feature getAllLoanRequestApproval = featureRepository.findByName("GET_ALL_LOAN_REQUEST_APPROVAL")
                     .orElse(null);
-            Feature getByIdLoanRequestApproval = featureRepository.findByName("LOAN_REQUEST_BY_ID_APPROVAL")
+            Feature getByIdLoanRequestApproval = featureRepository.findByName("GET_LOAN_REQUEST_BY_ID_APPROVAL")
                     .orElse(null);
             Feature updateLoanRequestApproval = featureRepository.findByName("UPDATE_LOAN_REQUEST_APPROVAL")
                     .orElse(null);
 
             Role backOffice = roleRepository.findByName("BACK_OFFICE").orElse(null);
+            Feature getLoanRequestDisbursement = featureRepository.findByName("GET_LOAN_REQUEST_DISBURSEMENT")
+                    .orElse(null);
+            Feature getLoanRequestByIdDisbursement = featureRepository.findByName("GET_LOAN_REQUEST_BY_ID_DISBURSEMENT")
+                    .orElse(null);
+            Feature getAllLoanRequestDisbursement = featureRepository.findByName("GET_ALL_LOAN_REQUEST_DISBURSEMENT_ONGOING")
+                    .orElse(null);
+            Feature updateLoanRequestDisbursement = featureRepository.findByName("UPDATE_LOAN_REQUEST_DISBURSEMENT")
+                    .orElse(null);
 
             if (superAdmin != null) {
                 if (manageRoles != null) {
@@ -170,7 +184,9 @@ public class Seeder implements CommandLineRunner {
                 }
             }
             if (customer != null) {
-
+                if (createLoanRequest != null) {
+                    roleFeatureRepository.save(new RoleFeature(null, customer, createLoanRequest));
+                }
             }
 
             if (marketing != null) {
@@ -198,7 +214,18 @@ public class Seeder implements CommandLineRunner {
             }
 
             if (backOffice != null) {
-
+                if (getLoanRequestDisbursement != null) {
+                    roleFeatureRepository.save(new RoleFeature(null, backOffice, getLoanRequestDisbursement));
+                }
+                if (getLoanRequestByIdDisbursement != null) {
+                    roleFeatureRepository.save(new RoleFeature(null, backOffice, getLoanRequestByIdDisbursement));
+                }
+                if (getAllLoanRequestDisbursement != null) {
+                    roleFeatureRepository.save(new RoleFeature(null, backOffice, getAllLoanRequestDisbursement));
+                }
+                if (updateLoanRequestDisbursement != null) {
+                    roleFeatureRepository.save(new RoleFeature(null, backOffice, updateLoanRequestDisbursement));
+                }
             }
         }
     }

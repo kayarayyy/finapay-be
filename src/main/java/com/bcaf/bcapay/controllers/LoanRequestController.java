@@ -21,7 +21,7 @@ public class LoanRequestController {
     @Autowired
     private LoanRequestService loanRequestService;
 
-    @Secured({"FEATURE_CREATE_LOAN_REQUEST", "FEATURE_MANAGE_LOAN_REQUESTS"})
+    @Secured({ "FEATURE_CREATE_LOAN_REQUEST", "FEATURE_MANAGE_LOAN_REQUESTS" })
     @PostMapping
     public ResponseEntity<ResponseDto> createLoanRequest(
             @RequestHeader(value = "Authorization", required = false) String token,
@@ -31,7 +31,7 @@ public class LoanRequestController {
                 .body(new ResponseDto(201, "success", "Loan request created", loanRequest));
     }
 
-    @Secured({"FEATURE_GET_ALL_LOAN_REQUEST", "FEATURE_MANAGE_LOAN_REQUESTS"})
+    @Secured({ "FEATURE_GET_ALL_LOAN_REQUEST", "FEATURE_MANAGE_LOAN_REQUESTS" })
     @GetMapping
     public ResponseEntity<ResponseDto> getAllLoanRequests() {
         List<?> loanRequests = loanRequestService.getAllLoanRequests();
@@ -39,14 +39,14 @@ public class LoanRequestController {
                 .ok(new ResponseDto(200, "success", loanRequests.size() + " loan requests found", loanRequests));
     }
 
-    @Secured({"FEATURE_GET_LOAN_REQUEST_BY_ID", "FEATURE_MANAGE_LOAN_REQUESTS"})
+    @Secured({ "FEATURE_GET_LOAN_REQUEST_BY_ID", "FEATURE_MANAGE_LOAN_REQUESTS" })
     @GetMapping("/{id}")
     public ResponseEntity<ResponseDto> getLoanRequestById(@PathVariable String id) {
         LoanRequest loanRequest = loanRequestService.getLoanRequestById(id);
         return ResponseEntity.ok(new ResponseDto(200, "success", "Loan request found", loanRequest));
     }
 
-    @Secured({"FEATURE_UPDATE_LOAN_REQUEST", "FEATURE_MANAGE_LOAN_REQUESTS"})
+    @Secured({ "FEATURE_UPDATE_LOAN_REQUEST", "FEATURE_MANAGE_LOAN_REQUESTS" })
     @PutMapping("/{id}")
     public ResponseEntity<ResponseDto> updateLoanRequest(@PathVariable String id,
             @RequestBody Map<String, Object> payload,
@@ -54,7 +54,7 @@ public class LoanRequestController {
         LoanRequest updatedLoanRequest = loanRequestService.updateLoanRequest(id, payload, token);
         return ResponseEntity.ok(new ResponseDto(200, "success", "Loan request updated", updatedLoanRequest));
     }
-    
+
     @Secured("FEATURE_GET_ALL_LOAN_REQUEST_REVIEW")
     @GetMapping("/reviews")
     public ResponseEntity<ResponseDto> getAllLoanRequestReview() {
@@ -121,17 +121,43 @@ public class LoanRequestController {
         return ResponseEntity.ok(new ResponseDto(200, "success", "Loan request found", loanRequest));
     }
 
-    @Secured("FEATURE_UPDATE_LOAN_REQUEST_DISBURSEMENT")
-    @PutMapping("/disbursement/{id}")
-    public ResponseEntity<ResponseDto> backOfficeDisbursement(@PathVariable String id,
-            @RequestBody Map<String, Object> payload,
+    @Secured("FEATURE_GET_LOAN_REQUEST_BY_ID_DISBURSEMENT")
+    @GetMapping("/disbursement/{id}")
+    public ResponseEntity<ResponseDto> getLoanRequestByIdDisbursement(@PathVariable String id,
             @RequestHeader(value = "Authorization", required = false) String token) {
-        LoanRequestDto updatedLoanRequest = loanRequestService.backOfficeDisbursement(id, payload, token);
-        boolean disbursement = Boolean.parseBoolean(payload.get("disbursement").toString());
-        return ResponseEntity.ok(new ResponseDto(200, "success",
-                "Berhasil " + (disbursement ? "mencairkan" : "menolak") + " pengajuan",
-                updatedLoanRequest));
+        Map<String, Object> data = loanRequestService.getLoanRequestByIdDisbursement(id);
+        return ResponseEntity.ok(new ResponseDto(200, "success", "Loan request found", data));
     }
+
+    @Secured("FEATURE_GET_LOAN_REQUEST_DISBURSEMENT")
+    @GetMapping("/disbursement-count")
+    public ResponseEntity<ResponseDto> getWaitingDisbursementCount() {
+        long count = loanRequestService.countWaitingDisbursementRequests();
+        return ResponseEntity.ok(new ResponseDto(200, "success", "Loan request found", count));
+    }
+
+    @Secured("FEATURE_GET_ALL_LOAN_REQUEST_DISBURSEMENT_ONGOING")
+    @GetMapping("/disbursement-ongoing")
+    public ResponseEntity<ResponseDto> getAllLoanRequestDisbursementOngoing() {
+        List<?> loanRequests = loanRequestService.getAllLoanRequestDisbursementOngoing();
+        return ResponseEntity
+                .ok(new ResponseDto(200, "success", loanRequests.size() + " loan requests found", loanRequests));
+    }
+
+    // @Secured("FEATURE_UPDATE_LOAN_REQUEST_DISBURSEMENT")
+    // @PutMapping("/disbursement/{id}")
+    // public ResponseEntity<ResponseDto> backOfficeDisbursement(@PathVariable
+    // String id,
+    // @RequestBody Map<String, Object> payload,
+    // @RequestHeader(value = "Authorization", required = false) String token) {
+    // LoanRequestDto updatedLoanRequest =
+    // loanRequestService.backOfficeDisbursement(id, payload, token);
+    // boolean disbursement =
+    // Boolean.parseBoolean(payload.get("disbursement").toString());
+    // return ResponseEntity.ok(new ResponseDto(200, "success",
+    // "Berhasil " + (disbursement ? "mencairkan" : "menolak") + " pengajuan",
+    // updatedLoanRequest));
+    // }
 
     @Secured("FEATURE_ASSIGN_MARKETING")
     @PostMapping("/assign-marketing")
