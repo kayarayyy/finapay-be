@@ -13,7 +13,7 @@ import com.bcaf.bcapay.models.Role;
 import com.bcaf.bcapay.services.RoleService;
 
 @RestController
-@RequestMapping("api/v1/roles")
+@RequestMapping("v1/roles")
 public class RoleController {
 
     @Autowired

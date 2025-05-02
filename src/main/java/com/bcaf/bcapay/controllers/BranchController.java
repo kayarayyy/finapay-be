@@ -22,7 +22,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
 @RestController
-@RequestMapping("api/v1/branches")
+@RequestMapping("v1/branches")
 public class BranchController {
     @Autowired
     private BranchService branchService;

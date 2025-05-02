@@ -20,7 +20,7 @@ import com.bcaf.bcapay.models.Feature;
 import com.bcaf.bcapay.services.FeatureService;
 
 @Controller
-@RequestMapping("api/v1/features")
+@RequestMapping("v1/features")
 public class FeatureController {
     @Autowired
     private FeatureService featureService;

@@ -23,7 +23,7 @@ import com.bcaf.bcapay.models.RoleFeature;
 import com.bcaf.bcapay.services.RoleFeatureService;
 
 @RestController
-@RequestMapping("api/v1/role-features")
+@RequestMapping("v1/role-features")
 public class RoleFeatureController {
     @Autowired
     private RoleFeatureService roleFeatureService;

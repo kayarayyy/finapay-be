@@ -11,7 +11,7 @@ import com.bcaf.bcapay.dto.ResponseDto;
 import com.bcaf.bcapay.services.EmployeeDetailService;
 
 @RestController
-@RequestMapping("api/v1/employee-details")
+@RequestMapping("v1/employee-details")
 public class EmployeeDetailsController {
     @Autowired
     private EmployeeDetailService employeeDetailService;

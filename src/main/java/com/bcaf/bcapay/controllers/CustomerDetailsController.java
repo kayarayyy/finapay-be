@@ -13,7 +13,7 @@ import com.bcaf.bcapay.services.CustomerDetailsService;
 import java.util.List;
 
 @RestController
-@RequestMapping("api/v1/customer-details")
+@RequestMapping("v1/customer-details")
 public class CustomerDetailsController {
 
     @Autowired
