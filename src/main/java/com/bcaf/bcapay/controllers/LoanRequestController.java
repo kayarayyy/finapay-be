@@ -96,7 +96,7 @@ public class LoanRequestController {
     @GetMapping("/approvals/{id}")
     public ResponseEntity<ResponseDto> getLoanRequestByIdApproval(@PathVariable String id) {
         // Mengambil data dari service
-        Map<String, Object> data = loanRequestService.getLoanRequestByIdReview(id);
+        Map<String, Object> data = loanRequestService.getLoanRequestByIdApproval(id);
 
         // Mengembalikan response dengan status 200 OK
         return ResponseEntity.ok(new ResponseDto(200, "success", "Loan requests found", data));
