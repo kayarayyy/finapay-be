@@ -120,6 +120,9 @@ public class Seeder implements CommandLineRunner {
             featureRepository.save(new Feature(null, "GET_LOAN_REQUEST_BY_ID_DISBURSEMENT", null));
             featureRepository.save(new Feature(null, "GET_ALL_LOAN_REQUEST_DISBURSEMENT_ONGOING", null));
             featureRepository.save(new Feature(null, "UPDATE_LOAN_REQUEST_DISBURSEMENT", null));
+            // ACCESS EMPLOYEE DETAILS
+            featureRepository.save(new Feature(null, "GET_EMPLOYEE_DETAILS", null));
+            featureRepository.save(new Feature(null, "CREATE_EMPLOYEE_DETAILS", null));
         }
     }
 
@@ -133,6 +136,11 @@ public class Seeder implements CommandLineRunner {
             Feature manageRoleFeatures = featureRepository.findByName("MANAGE_ROLE_FEATURES").orElse(null);
             Feature manageLoanRequests = featureRepository.findByName("MANAGE_LOAN_REQUESTS").orElse(null);
             Feature manageBranches = featureRepository.findByName("MANAGE_BRANCHES").orElse(null);
+            
+            Feature getEmployeeDetails = featureRepository.findByName("GET_EMPLOYEE_DETAILS")
+                    .orElse(null);
+            Feature createEmployeeDetails = featureRepository.findByName("CREATE_EMPLOYEE_DETAILS")
+                    .orElse(null);
             
             Role customer = roleRepository.findByName("CUSTOMER").orElse(null);
             Feature createLoanRequest = featureRepository.findByName("CREATE_LOAN_REQUEST").orElse(null);
@@ -162,6 +170,7 @@ public class Seeder implements CommandLineRunner {
                     .orElse(null);
             Feature updateLoanRequestDisbursement = featureRepository.findByName("UPDATE_LOAN_REQUEST_DISBURSEMENT")
                     .orElse(null);
+
 
             if (superAdmin != null) {
                 if (manageRoles != null) {
@@ -199,6 +208,12 @@ public class Seeder implements CommandLineRunner {
                 if (updateLoanRequestReview != null) {
                     roleFeatureRepository.save(new RoleFeature(null, marketing, updateLoanRequestReview));
                 }
+                if (getEmployeeDetails != null) {
+                    roleFeatureRepository.save(new RoleFeature(null, marketing, getEmployeeDetails));
+                }
+                if (createEmployeeDetails != null) {
+                    roleFeatureRepository.save(new RoleFeature(null, marketing, createEmployeeDetails));
+                }
             }
 
             if (branchManager != null) {
@@ -210,6 +225,12 @@ public class Seeder implements CommandLineRunner {
                 }
                 if (updateLoanRequestApproval != null) {
                     roleFeatureRepository.save(new RoleFeature(null, branchManager, updateLoanRequestApproval));
+                }
+                if (getEmployeeDetails != null) {
+                    roleFeatureRepository.save(new RoleFeature(null, branchManager, getEmployeeDetails));
+                }
+                if (createEmployeeDetails != null) {
+                    roleFeatureRepository.save(new RoleFeature(null, branchManager, createEmployeeDetails));
                 }
             }
 
@@ -225,6 +246,12 @@ public class Seeder implements CommandLineRunner {
                 }
                 if (updateLoanRequestDisbursement != null) {
                     roleFeatureRepository.save(new RoleFeature(null, backOffice, updateLoanRequestDisbursement));
+                }
+                if (getEmployeeDetails != null) {
+                    roleFeatureRepository.save(new RoleFeature(null, backOffice, getEmployeeDetails));
+                }
+                if (createEmployeeDetails != null) {
+                    roleFeatureRepository.save(new RoleFeature(null, backOffice, createEmployeeDetails));
                 }
             }
         }
@@ -278,6 +305,7 @@ public class Seeder implements CommandLineRunner {
         if (jakartaBranch != null) {
             if (managerJakarta != null) {
                 jakartaBranch.setBranchManager(managerJakarta);
+                // managerJakarta.setBranch(jakartaBranch);
             }
 
             if (marketingJakarta != null) {
@@ -286,6 +314,9 @@ public class Seeder implements CommandLineRunner {
             }
 
             branchRepository.save(jakartaBranch); // Simpan perubahan
+            if (managerJakarta != null) {
+                userRepository.save(managerJakarta); // Simpan perubahan pada user
+            }
             if (marketingJakarta != null) {
                 userRepository.save(marketingJakarta); // Simpan perubahan pada user
             }
@@ -299,6 +330,7 @@ public class Seeder implements CommandLineRunner {
         if (bandungBranch != null) {
             if (managerBandung != null) {
                 bandungBranch.setBranchManager(managerBandung);
+                // managerBandung.setBranch(bandungBranch);
             }
 
             if (marketingBandung != null) {
@@ -316,6 +348,9 @@ public class Seeder implements CommandLineRunner {
             }
             if (marketingBandung1 != null) {
                 userRepository.save(marketingBandung1); // Simpan perubahan pada user
+            }
+            if (managerBandung != null) {
+                userRepository.save(managerBandung); // Simpan perubahan pada user
             }
         }
     }
