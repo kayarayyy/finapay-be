@@ -60,12 +60,18 @@ public class ResetPasswordService {
     }
 
     @Transactional
-    public void setNewPasswordByResetPasswordEmail(String token, String email, String newPassword, String confirmPassword) {
-        UUID resetPasswordId = UUID.fromString(token);
+    public void setNewPasswordByResetPasswordEmail(String token, String email, String newPassword,
+            String confirmPassword) {
 
+        UUID resetPasswordId = null;
+        try {
+            resetPasswordId = UUID.fromString(token);
+        } catch (IllegalArgumentException e) {
+            throw new IllegalStateException("Token tidak valid!");
+        }
+        System.out.println(resetPasswordId);
         ResetPassword resetPassword = resetPasswordRepository.findByIdAndUserEmail(resetPasswordId, email)
-                .orElseThrow(() -> new ResourceNotFoundException("User tidak ditemukan"));
-
+                .orElseThrow(() -> new ResourceNotFoundException("User atau token tidak ditemukan"));
         if (resetPassword.getExpiredAt().isBefore(LocalDateTime.now())) {
             resetPasswordRepository.delete(resetPassword);
             throw new IllegalStateException("Token sudah kedaluwarsa!");

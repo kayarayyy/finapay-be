@@ -144,6 +144,17 @@ public class LoanRequestController {
                 .ok(new ResponseDto(200, "success", loanRequests.size() + " loan requests found", loanRequests));
     }
 
+    @Secured("FEATURE_UPDATE_LOAN_REQUEST_DISBURSEMENT")
+    @PutMapping("/disbursement/{id}")
+    public ResponseEntity<ResponseDto> updateLoanRequestDisbursement(@PathVariable String id,
+            @RequestBody Map<String, Object> payload,
+            @RequestHeader(value = "Authorization", required = false) String token) {
+        LoanRequestDto updatedLoanRequest = loanRequestService.updateLoanRequestDisbursement(id, payload, token);
+        boolean disbursement = Boolean.parseBoolean(payload.get("disbursement").toString());
+        return ResponseEntity.ok(new ResponseDto(200, "success",
+                "Berhasil " + (disbursement ? "mencairkan" : "membatalkan pencairan") + " dana", updatedLoanRequest));
+    }
+
     // @Secured("FEATURE_UPDATE_LOAN_REQUEST_DISBURSEMENT")
     // @PutMapping("/disbursement/{id}")
     // public ResponseEntity<ResponseDto> backOfficeDisbursement(@PathVariable

@@ -309,6 +309,48 @@ public class LoanRequestService {
                 .collect(Collectors.toList());
     }
 
+    public LoanRequestDto updateLoanRequestDisbursement(String id, Map<String, Object> payload, String token) {
+        LoanRequest loanRequest = loanRequestRepository.findById(UUID.fromString(id))
+                .orElseThrow(() -> new ResourceNotFoundException("Loan request not found"));
+
+        if (payload.containsKey("disbursement")) {
+            String emailFromToken = jwtUtil.extractEmail(token);
+
+            User backOffice = loanRequest.getBackOffice();
+            if (backOffice != null && emailFromToken.equalsIgnoreCase(backOffice.getEmail())) {
+                Boolean disbursement = Boolean.parseBoolean(payload.get("disbursement").toString());
+                if (disbursement) {
+                    CustomerDetails customerDetails = customerDetailsService
+                            .getByEmail(loanRequest.getCustomer().getEmail());
+                    Double plafond = customerDetails.getAvailablePlafond();
+                    Double amount = loanRequest.getAmount();
+                    Double interest = loanRequest.getInterest();
+
+                    double availablePlafond = (plafond != null ? plafond : 0.0)
+                            - (amount != null ? amount : 0.0)
+                            - (interest != null ? interest : 0.0);
+
+                    if (availablePlafond < 0) {
+                        throw new IllegalArgumentException("Plafond tidak mencukupi, pengajuan tidak dapat dicairkan");
+                    }
+
+                    customerDetails.setAvailablePlafond(availablePlafond);
+                    customerDetailsService.update(customerDetails.getId(), customerDetails);
+                }
+                loanRequest.setBackOfficeApproveDisburse(disbursement);
+                loanRequest.setCompletedAt(LocalDateTime.now());
+            } else {
+                throw new AccessDeniedException("You are not authorized to approve or reject as Marketing.");
+            }
+        }
+        if (payload.containsKey("notes")) {
+            String notes = payload.get("notes").toString();
+            loanRequest.setBackOfficeNotes(notes);
+        }
+        LoanRequest savedLoanRequest = loanRequestRepository.save(loanRequest);
+        return LoanRequestDto.fromEntity(savedLoanRequest);
+    }
+
     public LoanRequestDto backOfficeDisbursement(String id, Map<String, Object> payload, String token) {
         LoanRequest loanRequest = loanRequestRepository.findById(UUID.fromString(id))
                 .orElseThrow(() -> new ResourceNotFoundException("Loan request not found"));

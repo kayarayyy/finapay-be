@@ -87,6 +87,7 @@ public class AuthController {
                 String email = (String) payload.get("email");
                 String new_password = (String) payload.get("new_password");
                 String confirm_password = (String) payload.get("confirm_password");
+                
         resetPasswordService.setNewPasswordByResetPasswordEmail(id, email,
                 new_password, confirm_password);
         return ResponseUtil.success(null, "Reset password successful");
