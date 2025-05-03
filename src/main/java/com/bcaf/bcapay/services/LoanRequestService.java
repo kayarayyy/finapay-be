@@ -202,6 +202,30 @@ public class LoanRequestService {
                 .collect(Collectors.toList());
     }
 
+    public Map<String, Object> getLoanRequestByIdApproval(String id) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String emailBranchManager = authentication.getName();
+
+        LoanRequest loanRequest = loanRequestRepository.findById(UUID.fromString(id))
+                .orElseThrow(() -> new ResourceNotFoundException("Loan request not found"));
+
+        if (!emailBranchManager.equalsIgnoreCase(loanRequest.getBranchManager().getEmail())) {
+            throw new AccessDeniedException("You are not authorized to get this loan request.");
+        }
+
+        CustomerDetails customerDetails = customerDetailsService.getByEmail(loanRequest.getCustomer().getEmail());
+
+        LoanRequestDto loanRequestDto = LoanRequestDto.fromEntity(loanRequest);
+        CustomerDetailsDto customerDetailsDto = CustomerDetailsDto.fromEntity(customerDetails);
+
+        // Pastikan kamu memasukkan objek yang sesuai dalam map
+        Map<String, Object> data = new HashMap<>();
+        data.put("loanRequest", loanRequestDto);
+        data.put("customerDetails", customerDetailsDto);
+
+        return data;
+    }
+
     public LoanRequestDto updateLoanRequestApproval(String id, Map<String, Object> payload, String token) {
         LoanRequest loanRequest = loanRequestRepository.findById(UUID.fromString(id))
                 .orElseThrow(() -> new ResourceNotFoundException("Loan request not found"));
@@ -244,12 +268,12 @@ public class LoanRequestService {
 
     public Map<String, Object> getLoanRequestByIdDisbursement(String id) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String emailMarketing = authentication.getName();
+        String emailBackOffice = authentication.getName();
 
         LoanRequest loanRequest = loanRequestRepository.findById(UUID.fromString(id))
                 .orElseThrow(() -> new ResourceNotFoundException("Loan request not found"));
 
-        if (!emailMarketing.equalsIgnoreCase(loanRequest.getBackOffice().getEmail())) {
+        if (!emailBackOffice.equalsIgnoreCase(loanRequest.getBackOffice().getEmail())) {
             throw new AccessDeniedException("You are not authorized to get this loan request.");
         }
 
