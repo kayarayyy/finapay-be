@@ -29,7 +29,7 @@ public class RoleFeatureService {
     private FeatureService featureService;
 
     // public List<RoleFeature> getAllRoleFeatures() {
-    //     return roleFeatureRepository.findAll();
+    // return roleFeatureRepository.findAll();
     // }
 
     public RoleFeature getRoleFeatureById(String id) {
@@ -47,34 +47,35 @@ public class RoleFeatureService {
         return roleFeatureRepository.save(roleFeature);
     }
 
-    public void deleteRoleFeature(String id) {
-        roleFeatureRepository.findById(UUID.fromString(id))
-                .orElseThrow(() -> new ResourceNotFoundException("Role Feature not found!"));
+    public void deleteRoleFeature(UUID roleId, UUID featureId) {
 
-        roleFeatureRepository.deleteById(UUID.fromString(id));
+        int deleted = roleFeatureRepository.deleteByRoleIdAndFeatureId(roleId, featureId);
+        if (deleted == 0) {
+            throw new ResourceNotFoundException("Role Feature not found!");
+        }
     }
 
     public List<FeatureDto> getFeaturesByRoleId(UUID roleId) {
         List<RoleFeature> roleFeatures = roleFeatureRepository.findByRoleId(roleId);
 
         return roleFeatures.stream()
-            .map(rf -> FeatureDto.builder()
-                .id(rf.getFeature().getId())
-                .name(rf.getFeature().getName())
-                .build())
-            .collect(Collectors.toList());
+                .map(rf -> FeatureDto.builder()
+                        .id(rf.getFeature().getId())
+                        .name(rf.getFeature().getName())
+                        .build())
+                .collect(Collectors.toList());
     }
 
     public List<RoleFeaturesDto> getAllRoleWithFeatures() {
-    return roleService.getAllRoles().stream().map(role -> {
-        List<FeatureDto> features = getFeaturesByRoleId(role.getId());
+        return roleService.getAllRoles().stream().map(role -> {
+            List<FeatureDto> features = getFeaturesByRoleId(role.getId());
 
-        return RoleFeaturesDto.builder()
-            .id(role.getId())
-            .name(role.getName())
-            .listFeatures(features)
-            .build();
-    }).collect(Collectors.toList());
-}
+            return RoleFeaturesDto.builder()
+                    .id(role.getId())
+                    .name(role.getName())
+                    .listFeatures(features)
+                    .build();
+        }).collect(Collectors.toList());
+    }
 
 }
