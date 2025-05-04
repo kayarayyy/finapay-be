@@ -101,6 +101,7 @@ public class AuthService {
         // Validasi input agar tidak null
         String email = Objects.toString(payload.get("email"), "").trim();
         String emailRegex = "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,6}$";
+        boolean isSuperadmin = (token != null && jwtUtil.isSuperadmin(token)) ? true : false;
 
         Pattern pattern = Pattern.compile(emailRegex);
         Matcher matcher = pattern.matcher(email);
@@ -110,7 +111,8 @@ public class AuthService {
         }
 
         String name = Objects.toString(payload.get("name"), "").trim();
-        String rawPassword = Objects.toString(payload.get("password"), "").trim();
+        String rawPassword = isSuperadmin ? rawPassword = RandomStringUtils.randomAlphanumeric(8)
+                : Objects.toString(payload.get("password"), "").trim();
         String roleId = Objects.toString(payload.get("role_id"), "").trim();
         boolean isActive = Boolean.parseBoolean(Objects.toString(payload.get("is_active"), "false"));
         String nip = Objects.toString(payload.get("nip"), "").trim();
@@ -123,7 +125,7 @@ public class AuthService {
         passwordUtils.isPasswordStrong(rawPassword);
 
         // Jika token null, default role adalah "customer"
-        Role role = (token != null && jwtUtil.isSuperadmin(token))
+        Role role = isSuperadmin
                 ? roleService.getRoleById(roleId)
                 : roleService.getRoleByName("CUSTOMER");
 
@@ -143,7 +145,7 @@ public class AuthService {
         } else if (nip.isEmpty()) {
             throw new IllegalArgumentException("NIP must not be empty");
         } else {
-            rawPassword = RandomStringUtils.randomAlphanumeric(8);
+
             user.setPassword(rawPassword);
             userService.createUser(user);
             emailService.sendInitialPasswordEmail(email, rawPassword);
@@ -152,6 +154,7 @@ public class AuthService {
         return user;
 
     }
+
     public User getUserByEmail(String email) {
         return userService.getUserByEmail(email);
     }
