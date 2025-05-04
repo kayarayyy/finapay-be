@@ -107,7 +107,7 @@ public class AuthService {
         Matcher matcher = pattern.matcher(email);
 
         if (!matcher.matches()) {
-            throw new IllegalArgumentException("Email not valid");
+            throw new IllegalArgumentException("Email tidak valid");
         }
 
         String name = Objects.toString(payload.get("name"), "").trim();
@@ -119,7 +119,7 @@ public class AuthService {
         String refferal = Objects.toString(payload.get("refferal"), "").trim();
 
         if (email.isEmpty() || name.isEmpty() || rawPassword.isEmpty()) {
-            throw new IllegalArgumentException("Email, name, and password must not be empty");
+            throw new IllegalArgumentException("Email, name, dan password tidak boleh kosong");
         }
 
         passwordUtils.isPasswordStrong(rawPassword);
@@ -143,7 +143,7 @@ public class AuthService {
 
             emailService.sendCustomerRegistrationEmail(user);
         } else if (nip.isEmpty()) {
-            throw new IllegalArgumentException("NIP must not be empty");
+            throw new IllegalArgumentException("NIP tidak boleh kosong");
         } else {
 
             user.setPassword(rawPassword);
