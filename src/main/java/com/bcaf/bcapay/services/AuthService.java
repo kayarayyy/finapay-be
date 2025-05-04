@@ -122,13 +122,12 @@ public class AuthService {
             throw new IllegalArgumentException("Email, name, dan password tidak boleh kosong");
         }
 
-        passwordUtils.isPasswordStrong(rawPassword);
-
+        
         // Jika token null, default role adalah "customer"
         Role role = isSuperadmin
-                ? roleService.getRoleById(roleId)
-                : roleService.getRoleByName("CUSTOMER");
-
+        ? roleService.getRoleById(roleId)
+        : roleService.getRoleByName("CUSTOMER");
+        
         User user = new User();
         user.setName(name);
         user.setEmail(email);
@@ -137,9 +136,10 @@ public class AuthService {
         user.setActive(isActive);
         user.setNip(nip);
         user.setRefferal(refferal);
-
+        
         if (role.getName().equals("CUSTOMER")) {
             userService.createUser(user);
+            passwordUtils.isPasswordStrong(rawPassword);
 
             emailService.sendCustomerRegistrationEmail(user);
         } else if (nip.isEmpty()) {
