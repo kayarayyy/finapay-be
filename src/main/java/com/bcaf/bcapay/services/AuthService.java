@@ -109,11 +109,12 @@ public class AuthService {
             throw new IllegalArgumentException("Email not valid");
         }
 
-        String nip = Objects.toString(payload.get("nip"), "").trim();
         String name = Objects.toString(payload.get("name"), "").trim();
         String rawPassword = Objects.toString(payload.get("password"), "").trim();
         String roleId = Objects.toString(payload.get("role_id"), "").trim();
         boolean isActive = Boolean.parseBoolean(Objects.toString(payload.get("is_active"), "false"));
+        String nip = Objects.toString(payload.get("nip"), "").trim();
+        String refferal = Objects.toString(payload.get("refferal"), "").trim();
 
         if (email.isEmpty() || name.isEmpty() || rawPassword.isEmpty()) {
             throw new IllegalArgumentException("Email, name, and password must not be empty");
@@ -127,11 +128,13 @@ public class AuthService {
                 : roleService.getRoleByName("CUSTOMER");
 
         User user = new User();
-        user.setEmail(email);
         user.setName(name);
-        user.setActive(isActive);
-        user.setRole(role);
+        user.setEmail(email);
         user.setPassword(rawPassword);
+        user.setRole(role);
+        user.setActive(isActive);
+        user.setNip(nip);
+        user.setRefferal(refferal);
 
         if (role.getName().equals("CUSTOMER")) {
             userService.createUser(user);
@@ -149,7 +152,6 @@ public class AuthService {
         return user;
 
     }
-
     public User getUserByEmail(String email) {
         return userService.getUserByEmail(email);
     }
