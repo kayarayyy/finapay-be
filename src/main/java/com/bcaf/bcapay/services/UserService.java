@@ -65,6 +65,10 @@ public class UserService {
                 .ifPresent(u -> {
                     throw new IllegalArgumentException("Email sudah digunakan user lain");
                 });
+        userRepository.findByNip(user.getNip())
+                .ifPresent(u -> {
+                    throw new IllegalArgumentException("NIP sudah digunakan user lain");
+                });
         Optional<Role> role = roleRepository.findById(user.getRole().getId());
 
         if (role.isEmpty()) {
