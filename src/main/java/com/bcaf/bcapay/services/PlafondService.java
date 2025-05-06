@@ -4,11 +4,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.bcaf.bcapay.models.Plafond;
-import com.bcaf.bcapay.models.enums.Plan;
 import com.bcaf.bcapay.repositories.PlafondRepository;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -26,7 +24,7 @@ public class PlafondService {
                 .orElseThrow(() -> new RuntimeException("Plafond not found"));
     }
 
-    public Plafond getPlafondByPlan(Plan plan) {
+    public Plafond getPlafondByPlan(String plan) {
         return plafondRepository.findByPlan(plan)
                 .orElseThrow(() -> new RuntimeException("Plafond not found for plan: " + plan));
     }

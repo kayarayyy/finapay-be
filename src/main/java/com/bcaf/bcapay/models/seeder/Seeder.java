@@ -15,7 +15,6 @@ import com.bcaf.bcapay.models.Role;
 import com.bcaf.bcapay.models.RoleFeature;
 import com.bcaf.bcapay.models.User;
 import com.bcaf.bcapay.models.enums.City;
-import com.bcaf.bcapay.models.enums.Plan;
 import com.bcaf.bcapay.repositories.BranchRepository;
 import com.bcaf.bcapay.repositories.CustomerDetailsRepository;
 import com.bcaf.bcapay.repositories.EmployeeDetailsRepoitory;
@@ -103,6 +102,7 @@ public class Seeder implements CommandLineRunner {
             featureRepository.save(new Feature(null, "MANAGE_PROFILE", null));
             featureRepository.save(new Feature(null, "MANAGE_LOAN_REQUESTS", null));
             featureRepository.save(new Feature(null, "MANAGE_BRANCHES", null));
+            featureRepository.save(new Feature(null, "MANAGE_PLAFONDS", null));
 
             // ACCESS LOAN REQUEST
             featureRepository.save(new Feature(null, "CREATE_LOAN_REQUEST", null));
@@ -133,6 +133,7 @@ public class Seeder implements CommandLineRunner {
             Feature manageRoleFeatures = featureRepository.findByName("MANAGE_ROLE_FEATURES").orElse(null);
             Feature manageLoanRequests = featureRepository.findByName("MANAGE_LOAN_REQUESTS").orElse(null);
             Feature manageBranches = featureRepository.findByName("MANAGE_BRANCHES").orElse(null);
+            Feature managePlafonds = featureRepository.findByName("MANAGE_PLAFONDS").orElse(null);
             
             Role customer = roleRepository.findByName("CUSTOMER").orElse(null);
             Feature createLoanRequest = featureRepository.findByName("CREATE_LOAN_REQUEST").orElse(null);
@@ -181,6 +182,9 @@ public class Seeder implements CommandLineRunner {
                 }
                 if (manageBranches != null) {
                     roleFeatureRepository.save(new RoleFeature(null, superAdmin, manageBranches));
+                }
+                if (managePlafonds != null) {
+                    roleFeatureRepository.save(new RoleFeature(null, superAdmin, managePlafonds));
                 }
             }
             if (customer != null) {
@@ -344,19 +348,19 @@ public class Seeder implements CommandLineRunner {
 
     private void seedPlafond() {
         if (plafondRepository.count() == 0) {
-            plafondRepository.save(new Plafond(null, 1000000.00, Plan.BRONZE, 0.05));
-            plafondRepository.save(new Plafond(null, 5000000.00, Plan.SILVER, 0.047));
-            plafondRepository.save(new Plafond(null, 10000000.00, Plan.GOLD, 0.04));
-            plafondRepository.save(new Plafond(null, 25000000.00, Plan.PLATINUM, 0.035));
+            plafondRepository.save(new Plafond(null, 1000000.00, "BRONZE", 0.05,"#CD7F32", "#A97142" ));
+            plafondRepository.save(new Plafond(null, 5000000.00, "SILVER", 0.047, "#C0C0C0", "#808080"));
+            plafondRepository.save(new Plafond(null, 10000000.00, "GOLD", 0.04, "#FFD700", "#B8860B"));
+            plafondRepository.save(new Plafond(null, 25000000.00, "PLATINUM", 0.035, "#E5E4E2", "#BCC6CC"));            
         }
     }
 
     private void seedCustomerDetails() {
         if (userRepository.existsByEmail("customer@gmail.com") &&
-                plafondRepository.existsByPlan(Plan.BRONZE)) {
+                plafondRepository.existsByPlan("BRONZE")) {
 
             User customer = userRepository.findByEmail("customer@gmail.com").orElse(null);
-            Plafond bronzePlafond = plafondRepository.findByPlan(Plan.BRONZE).orElse(null);
+            Plafond bronzePlafond = plafondRepository.findByPlan("BRONZE").orElse(null);
 
             if (customer != null && bronzePlafond != null) {
                 // Cek apakah data customer detail sudah pernah dibuat
@@ -375,10 +379,10 @@ public class Seeder implements CommandLineRunner {
             }
         }
         if (userRepository.existsByEmail("customer1@gmail.com") &&
-                plafondRepository.existsByPlan(Plan.BRONZE)) {
+                plafondRepository.existsByPlan("BRONZE")) {
 
             User customer = userRepository.findByEmail("customer1@gmail.com").orElse(null);
-            Plafond bronzePlafond = plafondRepository.findByPlan(Plan.BRONZE).orElse(null);
+            Plafond bronzePlafond = plafondRepository.findByPlan("BRONZE").orElse(null);
 
             if (customer != null && bronzePlafond != null) {
                 // Cek apakah data customer detail sudah pernah dibuat
