@@ -35,7 +35,7 @@ public class Role implements GrantedAuthority {
         return name;
     }
 
-    @OneToMany(mappedBy = "role", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "role", fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnore
     private List<RoleFeature> roleFeatures = new ArrayList<>();
 

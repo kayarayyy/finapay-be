@@ -96,7 +96,7 @@ public class LoanRequestController {
     @GetMapping("/approvals/{id}")
     public ResponseEntity<ResponseDto> getLoanRequestByIdApproval(@PathVariable String id) {
         // Mengambil data dari service
-        Map<String, Object> data = loanRequestService.getLoanRequestByIdReview(id);
+        Map<String, Object> data = loanRequestService.getLoanRequestByIdApproval(id);
 
         // Mengembalikan response dengan status 200 OK
         return ResponseEntity.ok(new ResponseDto(200, "success", "Loan requests found", data));
@@ -142,6 +142,17 @@ public class LoanRequestController {
         List<?> loanRequests = loanRequestService.getAllLoanRequestDisbursementOngoing();
         return ResponseEntity
                 .ok(new ResponseDto(200, "success", loanRequests.size() + " loan requests found", loanRequests));
+    }
+
+    @Secured("FEATURE_UPDATE_LOAN_REQUEST_DISBURSEMENT")
+    @PutMapping("/disbursement/{id}")
+    public ResponseEntity<ResponseDto> updateLoanRequestDisbursement(@PathVariable String id,
+            @RequestBody Map<String, Object> payload,
+            @RequestHeader(value = "Authorization", required = false) String token) {
+        LoanRequestDto updatedLoanRequest = loanRequestService.updateLoanRequestDisbursement(id, payload, token);
+        boolean disbursement = Boolean.parseBoolean(payload.get("disbursement").toString());
+        return ResponseEntity.ok(new ResponseDto(200, "success",
+                "Berhasil " + (disbursement ? "mencairkan" : "membatalkan pencairan") + " dana", updatedLoanRequest));
     }
 
     // @Secured("FEATURE_UPDATE_LOAN_REQUEST_DISBURSEMENT")

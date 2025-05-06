@@ -101,46 +101,51 @@ public class AuthService {
         // Validasi input agar tidak null
         String email = Objects.toString(payload.get("email"), "").trim();
         String emailRegex = "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,6}$";
+        boolean isSuperadmin = (token != null && jwtUtil.isSuperadmin(token)) ? true : false;
 
         Pattern pattern = Pattern.compile(emailRegex);
         Matcher matcher = pattern.matcher(email);
 
         if (!matcher.matches()) {
-            throw new IllegalArgumentException("Email not valid");
+            throw new IllegalArgumentException("Email tidak valid");
         }
 
-        String nip = Objects.toString(payload.get("nip"), "").trim();
         String name = Objects.toString(payload.get("name"), "").trim();
-        String rawPassword = Objects.toString(payload.get("password"), "").trim();
+        String rawPassword = isSuperadmin ? rawPassword = RandomStringUtils.randomAlphanumeric(8)
+                : Objects.toString(payload.get("password"), "").trim();
         String roleId = Objects.toString(payload.get("role_id"), "").trim();
         boolean isActive = Boolean.parseBoolean(Objects.toString(payload.get("is_active"), "false"));
+        String nip = Objects.toString(payload.get("nip"), "").trim();
+        String refferal = Objects.toString(payload.get("refferal"), "").trim();
 
         if (email.isEmpty() || name.isEmpty() || rawPassword.isEmpty()) {
-            throw new IllegalArgumentException("Email, name, and password must not be empty");
+            throw new IllegalArgumentException("Email, name, dan password tidak boleh kosong");
         }
 
-        passwordUtils.isPasswordStrong(rawPassword);
-
+        
         // Jika token null, default role adalah "customer"
-        Role role = (token != null && jwtUtil.isSuperadmin(token))
-                ? roleService.getRoleById(roleId)
-                : roleService.getRoleByName("CUSTOMER");
-
+        Role role = isSuperadmin
+        ? roleService.getRoleById(roleId)
+        : roleService.getRoleByName("CUSTOMER");
+        
         User user = new User();
-        user.setEmail(email);
         user.setName(name);
-        user.setActive(isActive);
-        user.setRole(role);
+        user.setEmail(email);
         user.setPassword(rawPassword);
-
+        user.setRole(role);
+        user.setActive(isActive);
+        user.setNip(nip);
+        user.setRefferal(refferal);
+        
         if (role.getName().equals("CUSTOMER")) {
             userService.createUser(user);
+            passwordUtils.isPasswordStrong(rawPassword);
 
             emailService.sendCustomerRegistrationEmail(user);
         } else if (nip.isEmpty()) {
-            throw new IllegalArgumentException("NIP must not be empty");
+            throw new IllegalArgumentException("NIP tidak boleh kosong");
         } else {
-            rawPassword = RandomStringUtils.randomAlphanumeric(8);
+
             user.setPassword(rawPassword);
             userService.createUser(user);
             emailService.sendInitialPasswordEmail(email, rawPassword);

@@ -63,12 +63,16 @@ public class UserService {
     public UserDto createUser(User user) {
         userRepository.findByEmail(user.getEmail())
                 .ifPresent(u -> {
-                    throw new IllegalArgumentException("User already exists");
+                    throw new IllegalArgumentException("Email sudah digunakan user lain");
+                });
+        userRepository.findByNip(user.getNip())
+                .ifPresent(u -> {
+                    throw new IllegalArgumentException("NIP sudah digunakan user lain");
                 });
         Optional<Role> role = roleRepository.findById(user.getRole().getId());
 
         if (role.isEmpty()) {
-            throw new ResourceNotFoundException("Role not found!");
+            throw new ResourceNotFoundException("Role tidak ditemukan!");
         }
 
         user.setPassword(passwordEncoder.encode(user.getPassword()));
@@ -79,7 +83,7 @@ public class UserService {
     // Update user
     public UserDto updateUser(String id, User userDetails) {
         User user = userRepository.findById(UUID.fromString(id))
-                .orElseThrow(() -> new ResourceNotFoundException("User not found!"));
+                .orElseThrow(() -> new ResourceNotFoundException("User tidak ditemukan!"));
 
         user.setName(userDetails.getName());
         user.setEmail(userDetails.getEmail());

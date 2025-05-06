@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.bcaf.bcapay.dto.FeatureDto;
@@ -31,9 +32,10 @@ public class RoleFeatureController {
     // @Secured("FEATURE_MANAGE_ROLE_FEATURES")
     // @GetMapping
     // public ResponseEntity<ResponseDto> getAllRoleFeatures() {
-    //     List<RoleFeature> roleFeatures = roleFeatureService.getAllRoleFeatures();
-    //     return ResponseEntity
-    //             .ok(new ResponseDto(200, "success", roleFeatures.size() + " role features found", roleFeatures));
+    // List<RoleFeature> roleFeatures = roleFeatureService.getAllRoleFeatures();
+    // return ResponseEntity
+    // .ok(new ResponseDto(200, "success", roleFeatures.size() + " role features
+    // found", roleFeatures));
     // }
 
     @Secured("FEATURE_MANAGE_ROLE_FEATURES")
@@ -53,9 +55,13 @@ public class RoleFeatureController {
     }
 
     @Secured("FEATURE_MANAGE_ROLE_FEATURES")
-    @DeleteMapping("/{id}")
-    public ResponseEntity<ResponseDto> deleteRoleFeatureById(@PathVariable String id) {
-        roleFeatureService.deleteRoleFeature(id);
+    @DeleteMapping("/{roleId}/{featureId}")
+    public ResponseEntity<ResponseDto> deleteRoleFeatureById(@PathVariable String roleId,
+    @PathVariable String featureId) {
+        UUID roleUuid = UUID.fromString(roleId);
+        UUID featureUuid = UUID.fromString(featureId);
+
+        roleFeatureService.deleteRoleFeature(roleUuid, featureUuid);
         return ResponseEntity.ok(new ResponseDto(200, "success", "Role Feature deleted", null));
     }
 

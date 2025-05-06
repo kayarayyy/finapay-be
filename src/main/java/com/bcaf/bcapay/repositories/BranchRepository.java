@@ -12,6 +12,7 @@ import com.bcaf.bcapay.models.Branch;
 public interface BranchRepository extends JpaRepository<Branch, UUID> {
 
     Optional<Branch> findByName(String string);
+    Optional<Branch> findByBranchManagerId(UUID id);
 
     
 }

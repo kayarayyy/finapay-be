@@ -5,6 +5,7 @@ import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -37,15 +38,15 @@ public class AuthController {
     @PostMapping("/login")
     public ResponseEntity<ResponseDto> login(@RequestBody Map<String, Object> payload) {
         AuthDto authDto = authService.login(
-                (String) payload.get("email"),
-                (String) payload.get("password"));
-        return ResponseUtil.success(authDto, "Login successful");
-
-    }
-
-    @PostMapping("/login-employee")
-    public ResponseEntity<ResponseDto> loginEmployee(@RequestBody Map<String, Object> payload) {
-        AuthDto authDto = authService.login_employee(
+            (String) payload.get("email"),
+            (String) payload.get("password"));
+            return ResponseUtil.success(authDto, "Login successful");
+            
+        }
+        
+        @PostMapping("/login-employee")
+        public ResponseEntity<ResponseDto> loginEmployee(@RequestBody Map<String, Object> payload) {
+            AuthDto authDto = authService.login_employee(
                 (String) payload.get("nip"),
                 (String) payload.get("password"));
         return ResponseUtil.success(authDto, "Login successful");
@@ -87,6 +88,7 @@ public class AuthController {
                 String email = (String) payload.get("email");
                 String new_password = (String) payload.get("new_password");
                 String confirm_password = (String) payload.get("confirm_password");
+                
         resetPasswordService.setNewPasswordByResetPasswordEmail(id, email,
                 new_password, confirm_password);
         return ResponseUtil.success(null, "Reset password successful");

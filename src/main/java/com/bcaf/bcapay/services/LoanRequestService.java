@@ -202,6 +202,30 @@ public class LoanRequestService {
                 .collect(Collectors.toList());
     }
 
+    public Map<String, Object> getLoanRequestByIdApproval(String id) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String emailBranchManager = authentication.getName();
+
+        LoanRequest loanRequest = loanRequestRepository.findById(UUID.fromString(id))
+                .orElseThrow(() -> new ResourceNotFoundException("Loan request not found"));
+
+        if (!emailBranchManager.equalsIgnoreCase(loanRequest.getBranchManager().getEmail())) {
+            throw new AccessDeniedException("You are not authorized to get this loan request.");
+        }
+
+        CustomerDetails customerDetails = customerDetailsService.getByEmail(loanRequest.getCustomer().getEmail());
+
+        LoanRequestDto loanRequestDto = LoanRequestDto.fromEntity(loanRequest);
+        CustomerDetailsDto customerDetailsDto = CustomerDetailsDto.fromEntity(customerDetails);
+
+        // Pastikan kamu memasukkan objek yang sesuai dalam map
+        Map<String, Object> data = new HashMap<>();
+        data.put("loanRequest", loanRequestDto);
+        data.put("customerDetails", customerDetailsDto);
+
+        return data;
+    }
+
     public LoanRequestDto updateLoanRequestApproval(String id, Map<String, Object> payload, String token) {
         LoanRequest loanRequest = loanRequestRepository.findById(UUID.fromString(id))
                 .orElseThrow(() -> new ResourceNotFoundException("Loan request not found"));
@@ -244,12 +268,12 @@ public class LoanRequestService {
 
     public Map<String, Object> getLoanRequestByIdDisbursement(String id) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String emailMarketing = authentication.getName();
+        String emailBackOffice = authentication.getName();
 
         LoanRequest loanRequest = loanRequestRepository.findById(UUID.fromString(id))
                 .orElseThrow(() -> new ResourceNotFoundException("Loan request not found"));
 
-        if (!emailMarketing.equalsIgnoreCase(loanRequest.getBackOffice().getEmail())) {
+        if (!emailBackOffice.equalsIgnoreCase(loanRequest.getBackOffice().getEmail())) {
             throw new AccessDeniedException("You are not authorized to get this loan request.");
         }
 
@@ -283,6 +307,48 @@ public class LoanRequestService {
                 .stream()
                 .map(LoanRequestDto::fromEntity)
                 .collect(Collectors.toList());
+    }
+
+    public LoanRequestDto updateLoanRequestDisbursement(String id, Map<String, Object> payload, String token) {
+        LoanRequest loanRequest = loanRequestRepository.findById(UUID.fromString(id))
+                .orElseThrow(() -> new ResourceNotFoundException("Loan request not found"));
+
+        if (payload.containsKey("disbursement")) {
+            String emailFromToken = jwtUtil.extractEmail(token);
+
+            User backOffice = loanRequest.getBackOffice();
+            if (backOffice != null && emailFromToken.equalsIgnoreCase(backOffice.getEmail())) {
+                Boolean disbursement = Boolean.parseBoolean(payload.get("disbursement").toString());
+                if (disbursement) {
+                    CustomerDetails customerDetails = customerDetailsService
+                            .getByEmail(loanRequest.getCustomer().getEmail());
+                    Double plafond = customerDetails.getAvailablePlafond();
+                    Double amount = loanRequest.getAmount();
+                    Double interest = loanRequest.getInterest();
+
+                    double availablePlafond = (plafond != null ? plafond : 0.0)
+                            - (amount != null ? amount : 0.0)
+                            - (interest != null ? interest : 0.0);
+
+                    if (availablePlafond < 0) {
+                        throw new IllegalArgumentException("Plafond tidak mencukupi, pengajuan tidak dapat dicairkan");
+                    }
+
+                    customerDetails.setAvailablePlafond(availablePlafond);
+                    customerDetailsService.update(customerDetails.getId(), customerDetails);
+                }
+                loanRequest.setBackOfficeApproveDisburse(disbursement);
+                loanRequest.setCompletedAt(LocalDateTime.now());
+            } else {
+                throw new AccessDeniedException("You are not authorized to approve or reject as Marketing.");
+            }
+        }
+        if (payload.containsKey("notes")) {
+            String notes = payload.get("notes").toString();
+            loanRequest.setBackOfficeNotes(notes);
+        }
+        LoanRequest savedLoanRequest = loanRequestRepository.save(loanRequest);
+        return LoanRequestDto.fromEntity(savedLoanRequest);
     }
 
     public LoanRequestDto backOfficeDisbursement(String id, Map<String, Object> payload, String token) {

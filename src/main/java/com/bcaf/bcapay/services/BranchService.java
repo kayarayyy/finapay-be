@@ -38,6 +38,13 @@ public class BranchService {
         return BranchDto.fromEntity(branch);
     }
 
+    public Branch getBranchByBranchManagerId(UUID id) {
+        Branch branch = branchRepository.findByBranchManagerId(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Branch not found!"));
+
+        return branch;
+    }
+
     public Branch createBranch(Map<String, Object> payload) {
         String name = Objects.toString(payload.get("name"), "").trim();
         String cityName = Objects.toString(payload.get("city"), "").trim().toUpperCase();
