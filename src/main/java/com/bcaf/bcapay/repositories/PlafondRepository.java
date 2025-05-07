@@ -1,5 +1,6 @@
 package com.bcaf.bcapay.repositories;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -12,4 +13,6 @@ import com.bcaf.bcapay.models.Plafond;
 public interface PlafondRepository extends JpaRepository<Plafond, UUID> {
     Optional<Plafond> findByPlan(String plan);
     boolean existsByPlan(String plan);
+    List<Plafond> findAllByOrderByAmountAsc();
+
 }

@@ -16,7 +16,7 @@ public class PlafondService {
     private PlafondRepository plafondRepository;
 
     public List<Plafond> getAllPlafonds() {
-        return plafondRepository.findAll();
+        return plafondRepository.findAllByOrderByAmountAsc();
     }
 
     public Plafond getPlafondById(UUID id) {
