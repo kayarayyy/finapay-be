@@ -39,7 +39,6 @@ public class Plafond {
     @Column(nullable = true)
     private String colorEnd;
 
-
     @PrePersist
     public void prePersist() {
         if (this.colorStart == null) {

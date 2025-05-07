@@ -1,5 +1,6 @@
 package com.bcaf.bcapay.controllers;
 
+import com.bcaf.bcapay.dto.PlafondDto;
 import com.bcaf.bcapay.dto.ResponseDto;
 import com.bcaf.bcapay.models.Plafond;
 import com.bcaf.bcapay.services.PlafondService;
@@ -19,9 +20,12 @@ public class PlafondController {
     private PlafondService plafondService;
 
     @GetMapping
-    public ResponseEntity<ResponseDto<List<Plafond>>> getAllPlafonds() {
+    public ResponseEntity<ResponseDto<List<PlafondDto>>> getAllPlafonds() {
         List<Plafond> data = plafondService.getAllPlafonds();
-        return ResponseEntity.ok(new ResponseDto<>(200, "success", data.size() + " plafonds found", data));
+        List<PlafondDto> plafonds = data.stream()
+                .map(PlafondDto::fromEntity)
+                .toList();
+        return ResponseEntity.ok(new ResponseDto<>(200, "success", plafonds.size() + " plafonds found", plafonds));
     }
 
     @GetMapping("/{id}")
@@ -45,7 +49,8 @@ public class PlafondController {
 
     @Secured("FEATURE_MANAGE_PLAFONDS")
     @PutMapping("/{id}")
-    public ResponseEntity<ResponseDto<Plafond>> updatePlafond(@PathVariable UUID id, @RequestBody Plafond updatedPlafond) {
+    public ResponseEntity<ResponseDto<Plafond>> updatePlafond(@PathVariable UUID id,
+            @RequestBody Plafond updatedPlafond) {
         Plafond data = plafondService.updatePlafond(id, updatedPlafond);
         return ResponseEntity.ok(new ResponseDto<>(200, "updated", "plafond updated successfully", data));
     }
