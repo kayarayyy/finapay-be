@@ -43,7 +43,7 @@ public class UserService {
     // return User with password for auth
     public User getUserByEmail(String email) {
         return userRepository.findByEmail(email)
-        .orElseThrow(() -> new ResourceNotFoundException("User tidak ditemukan"));
+        .orElseThrow(() -> new ResourceNotFoundException("User tidak ditemukan, silahkan registrasi terlebih dahulu"));
     }
     public User getUserByRefferal(String refferal) {
         return userRepository.findByRefferal(refferal)
