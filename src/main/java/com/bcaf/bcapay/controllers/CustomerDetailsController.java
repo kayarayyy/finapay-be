@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.*;
 
 import com.bcaf.bcapay.dto.CustomerDetailsDto;
 import com.bcaf.bcapay.dto.ResponseDto;
+import com.bcaf.bcapay.models.CustomerDetails;
 import com.bcaf.bcapay.services.CustomerDetailsService;
 
 import java.util.List;
@@ -25,13 +26,20 @@ public class CustomerDetailsController {
         List<CustomerDetailsDto> customers = customerDetailsService.getAll();
         return ResponseEntity.ok(new ResponseDto(200, "success", customers.size() + " customers found", customers));
     }
-
+    
+    @GetMapping("/by-email")
+    public ResponseEntity<ResponseDto> getCustomerByEmail() {
+        CustomerDetails customer = customerDetailsService.getCustomerDetails();
+        CustomerDetailsDto customerDto = CustomerDetailsDto.fromEntity(customer);
+        return ResponseEntity.ok(new ResponseDto(200, "success", "Customer found", customerDto));
+    }
     // @Secured("FEATURE_VIEW_CUSTOMERS")
     // @GetMapping("/{id}")
     // public ResponseEntity<ResponseDto> getCustomerById(@PathVariable String id) {
     //     CustomerDetailsDto customer = customerDetailsService.getById(id);
     //     return ResponseEntity.ok(new ResponseDto(200, "success", "Customer found", customer));
     // }
+    
 
     // @Secured("FEATURE_MANAGE_CUSTOMERS")
     // @PostMapping
