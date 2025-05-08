@@ -15,7 +15,7 @@ import lombok.NoArgsConstructor;
 public class CustomerDetailsDto {
     private UUID id;
     private String availablePlafond;
-    private PlafondDto plafondId;
+    private PlafondDto plafond;
     private UserDto user;
     private String street;
     private String district;
