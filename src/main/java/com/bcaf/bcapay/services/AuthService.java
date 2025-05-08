@@ -60,6 +60,7 @@ public class AuthService {
                 .toList();
 
         String token = jwtUtil.generateToken(authentication);
+        
 
         return new AuthDto(
                 user.getEmail(),

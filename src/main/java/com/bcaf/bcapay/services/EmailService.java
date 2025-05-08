@@ -44,7 +44,7 @@ public class EmailService {
             throw new IllegalArgumentException("Password sementara tidak boleh kosong.");
         }
 
-        String subject = "Akun Pegawai Baru - BCAPay";
+        String subject = "Akun Pegawai Baru - FINAPay";
         String body = "Selamat, akun Anda telah dibuat.\n\n"
                 + "Berikut adalah detail akun Anda:\n"
                 + "Email: " + to + "\n"
@@ -57,9 +57,9 @@ public class EmailService {
 
 
     public void sendRequestResetPassword(String name, String email, String id) {
-        String subject = "Reset Password - BCAPay";
+        String subject = "Reset Password - FINAPay";
         String body = String.format(
-                "Akun Anda meminta reset password di BCAPay.\n\n" +
+                "Akun Anda meminta reset password di FINAPay.\n\n" +
                         "Abaikan jika ini bukan Anda,\n\n" +
                         "Berikut adalah detail akun Anda:\n" +
                         "Nama: " + name + "\n" +
@@ -68,7 +68,7 @@ public class EmailService {
                         generateResetLink(id) + "\n\n" +
                         "Link ini hanya berlaku selama 24 jam.\n\n" +
                         "Terima kasih,\n" +
-                        "Tim BCAPay");
+                        "Tim FINAPay");
 
         sendEmail(email, subject, body);
     }
@@ -80,16 +80,16 @@ public class EmailService {
     }
 
     public void sendCustomerRegistrationEmail(User user) {
-        String subject = "Registrasi Akun Berhasil - BCAPay";
+        String subject = "Registrasi Akun Berhasil - FINAPay";
         String body = String.format(
             "Halo " + user.getName() + ",\n\n" +
-                    "Selamat! Akun Anda telah berhasil dibuat di BCAPay.\n\n" +
+                    "Selamat! Akun Anda telah berhasil dibuat di FINAPay.\n\n" +
                     "Berikut adalah detail akun Anda:\n" +
                     "Nama: " + user.getName() + "\n" +
                     "Email: " + user.getEmail() + "\n\n" +
                     "Anda sekarang dapat menggunakan layanan kami. Jika ada pertanyaan, hubungi support kami.\n\n" +
                     "Terima kasih,\n" +
-                    "Tim BCAPay");
+                    "Tim FINAPay");
         sendEmail(user.getEmail(), subject, body);
     }
 
