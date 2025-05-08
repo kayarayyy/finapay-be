@@ -15,6 +15,7 @@ import lombok.NoArgsConstructor;
 public class CustomerDetailsDto {
     private UUID id;
     private String availablePlafond;
+    private String usedPlafond;
     private PlafondDto plafond;
     private UserDto user;
     private String street;
@@ -29,6 +30,7 @@ public class CustomerDetailsDto {
         return new CustomerDetailsDto(
             entity.getId(),
             CurrencyUtil.toRupiah(entity.getAvailablePlafond()),
+            CurrencyUtil.toRupiah(entity.getPlafondPlan().getAmount() - entity.getAvailablePlafond()),
             PlafondDto.fromEntity(entity.getPlafondPlan()),
             UserDto.fromEntity(entity.getUser()),
             entity.getStreet(),
