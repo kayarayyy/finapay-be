@@ -3,8 +3,6 @@ package com.bcaf.bcapay.dto;
 import java.util.UUID;
 
 import com.bcaf.bcapay.models.CustomerDetails;
-import com.bcaf.bcapay.models.Plafond;
-import com.bcaf.bcapay.models.User;
 import com.bcaf.bcapay.utils.CurrencyUtil;
 
 import lombok.AllArgsConstructor;
@@ -17,7 +15,7 @@ import lombok.NoArgsConstructor;
 public class CustomerDetailsDto {
     private UUID id;
     private String availablePlafond;
-    private UUID plafondId;
+    private PlafondDto plafondId;
     private UserDto user;
     private String street;
     private String district;
@@ -31,7 +29,7 @@ public class CustomerDetailsDto {
         return new CustomerDetailsDto(
             entity.getId(),
             CurrencyUtil.toRupiah(entity.getAvailablePlafond()),
-            entity.getPlafondPlan() != null ? entity.getPlafondPlan().getId() : null,
+            PlafondDto.fromEntity(entity.getPlafondPlan()),
             UserDto.fromEntity(entity.getUser()),
             entity.getStreet(),
             entity.getDistrict(),
