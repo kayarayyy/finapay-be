@@ -56,9 +56,9 @@ public class AuthController {
     }
 
 
-    @PostMapping("/google-login/{tokenId}")
-    public ResponseEntity<ResponseDto> loginWithGoogle(@PathVariable String tokenId) {
-        AuthDto authDto = authService.login_with_google(tokenId);
+    @PostMapping("/login-google")
+    public ResponseEntity<ResponseDto> loginWithGoogle(@RequestBody Map<String, Object> payload) {
+        AuthDto authDto = authService.login_with_google((String) payload.get("tokenId"));
     return ResponseUtil.success(authDto, "Login successful");
     }
 
