@@ -92,5 +92,19 @@ public class EmailService {
                     "Tim FINAPay");
         sendEmail(user.getEmail(), subject, body);
     }
+    public void sendCustomerGoogleRegistrationEmail(User user, String rawPassword) {
+        String subject = "Registrasi dengan Google Berhasil - FINAPay";
+        String body = String.format(
+            "Halo " + user.getName() + ",\n\n" +
+                    "Selamat! Akun Anda telah berhasil dibuat di FINAPay dengan Google. Abaikan jika anda tidak melakukannya\n\n" +
+                    "Berikut adalah detail akun Anda:\n" +
+                    "Nama: " + user.getName() + "\n" +
+                    "Email: " + user.getEmail() + "\n" +
+                    "Password (Default): " + rawPassword + "\n\n" +
+                    "Anda sekarang dapat menggunakan layanan kami. Jika ada pertanyaan, hubungi support kami.\n\n" +
+                    "Terima kasih,\n" +
+                    "Tim FINAPay");
+        sendEmail(user.getEmail(), subject, body);
+    }
 
 }

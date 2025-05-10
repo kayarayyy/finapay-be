@@ -7,21 +7,28 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.RandomStringUtils;
+import org.apache.tomcat.websocket.AuthenticationException;
+import org.hibernate.usertype.UserType;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.bcaf.bcapay.dto.AuthDto;
 import com.bcaf.bcapay.models.Role;
 import com.bcaf.bcapay.models.User;
+import com.bcaf.bcapay.repositories.UserRepository;
 import com.bcaf.bcapay.security.CustomUserDetails;
+import com.bcaf.bcapay.utils.GoogleTokenVerifier;
 import com.bcaf.bcapay.utils.JwtUtil;
 import com.bcaf.bcapay.utils.PasswordUtils;
+import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
 
 @Service
 public class AuthService {
@@ -44,6 +51,15 @@ public class AuthService {
     @Autowired
     private AuthenticationManager authenticationManager;
 
+    @Autowired
+    private GoogleTokenVerifier googleTokenVerifier;
+
+    @Autowired
+    private UserRepository userRepository;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
     public AuthDto login(String email, String rawPassword) {
         User user = userService.getUserByEmail(email);
 
@@ -60,7 +76,6 @@ public class AuthService {
                 .toList();
 
         String token = jwtUtil.generateToken(authentication);
-        
 
         return new AuthDto(
                 user.getEmail(),
@@ -70,6 +85,62 @@ public class AuthService {
                 token,
                 features);
     }
+
+    public AuthDto login_with_google(String idToken) {
+        GoogleIdToken.Payload payload = googleTokenVerifier.verify(idToken);
+    
+        if (payload == null) {
+            throw new AuthenticationCredentialsNotFoundException("User not authenticated.");
+        }
+    
+        String email = payload.getEmail();
+        String name = (String) payload.get("name");
+        String pictureUrl = (String) payload.get("picture");
+    
+        User user = userRepository.findByEmail(email).orElse(null);
+        boolean isNewUser = false;
+    
+        if (user == null) {
+            // Buat akun baru
+            Role customerRole = roleService.getRoleByName("CUSTOMER");
+            String rawPassword = RandomStringUtils.randomAlphanumeric(8); // password dummy
+    
+            user = new User();
+            user.setEmail(email);
+            user.setName(name);
+            user.setPassword(passwordEncoder.encode(rawPassword)); // password dummy
+            user.setRole(customerRole);
+            user.setActive(true);
+    
+            user = userRepository.save(user);
+            emailService.sendCustomerGoogleRegistrationEmail(user, rawPassword);
+            isNewUser = true;
+        }
+    
+        // Set autentikasi manual tanpa pakai password
+        CustomUserDetails userDetails = (CustomUserDetails) CustomUserDetails.build(user);
+        Authentication authentication = new UsernamePasswordAuthenticationToken(
+                userDetails,
+                null,
+                userDetails.getAuthorities());
+    
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+    
+        List<String> features = userDetails.getAuthorities().stream()
+                .map(GrantedAuthority::getAuthority)
+                .toList();
+    
+        String token = jwtUtil.generateToken(authentication);
+    
+        return new AuthDto(
+                user.getEmail(),
+                user.getName(),
+                user.getRole(),
+                user.isActive(),
+                token,
+                features);
+    }
+    
 
     public AuthDto login_employee(String nip, String rawPassword) {
         User user = userService.getUserByNip(nip);
@@ -123,12 +194,11 @@ public class AuthService {
             throw new IllegalArgumentException("Email, name, dan password tidak boleh kosong");
         }
 
-        
         // Jika token null, default role adalah "customer"
         Role role = isSuperadmin
-        ? roleService.getRoleById(roleId)
-        : roleService.getRoleByName("CUSTOMER");
-        
+                ? roleService.getRoleById(roleId)
+                : roleService.getRoleByName("CUSTOMER");
+
         User user = new User();
         user.setName(name);
         user.setEmail(email);
@@ -137,10 +207,12 @@ public class AuthService {
         user.setActive(isActive);
         user.setNip(nip);
         user.setRefferal(refferal);
-        
+
         if (role.getName().equals("CUSTOMER")) {
-            userService.createUser(user);
+            user.setNip(null);
+            user.setRefferal(null);
             passwordUtils.isPasswordStrong(rawPassword);
+            userService.createUser(user);
 
             emailService.sendCustomerRegistrationEmail(user);
         } else if (nip.isEmpty()) {

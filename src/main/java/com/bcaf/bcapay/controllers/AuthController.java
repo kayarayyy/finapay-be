@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -27,12 +28,13 @@ import org.springframework.web.bind.annotation.PutMapping;
 @RestController
 @RequestMapping("v1/auth")
 public class AuthController {
-
+    
     @Autowired
     private AuthService authService;
 
     @Autowired
     private ResetPasswordService resetPasswordService;
+    
 
     // @Secured("MANAGE_USERS")
     @PostMapping("/login")
@@ -51,6 +53,13 @@ public class AuthController {
                 (String) payload.get("password"));
         return ResponseUtil.success(authDto, "Login successful");
 
+    }
+
+
+    @PostMapping("/google-login/{tokenId}")
+    public ResponseEntity<ResponseDto> loginWithGoogle(@PathVariable String tokenId) {
+        AuthDto authDto = authService.login_with_google(tokenId);
+    return ResponseUtil.success(authDto, "Login successful");
     }
 
     @PostMapping("/register")

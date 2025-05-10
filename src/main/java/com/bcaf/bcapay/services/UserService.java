@@ -45,6 +45,7 @@ public class UserService {
         return userRepository.findByEmail(email)
         .orElseThrow(() -> new ResourceNotFoundException("User tidak ditemukan, silahkan registrasi terlebih dahulu"));
     }
+    
     public User getUserByRefferal(String refferal) {
         return userRepository.findByRefferal(refferal)
         .orElseThrow(() -> new ResourceNotFoundException("Refferal tidak ditemukan"));
@@ -65,10 +66,12 @@ public class UserService {
                 .ifPresent(u -> {
                     throw new IllegalArgumentException("Email sudah digunakan user lain");
                 });
-        userRepository.findByNip(user.getNip())
-                .ifPresent(u -> {
-                    throw new IllegalArgumentException("NIP sudah digunakan user lain");
-                });
+        if (user.getNip() != null) {
+            userRepository.findByNip(user.getNip())
+                    .ifPresent(u -> {
+                        throw new IllegalArgumentException("NIP sudah digunakan user lain");
+                    });
+        }
         Optional<Role> role = roleRepository.findById(user.getRole().getId());
 
         if (role.isEmpty()) {
