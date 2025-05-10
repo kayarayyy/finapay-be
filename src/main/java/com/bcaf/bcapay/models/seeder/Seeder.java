@@ -267,7 +267,7 @@ public class Seeder implements CommandLineRunner {
             createUser("Marketing", "rayrizkyfawzy@gmail.com", "marketing123", "MARKETING", "2025111", "REF2025111");
             createUser("Marketing 1", "marketing1@gmail.com", "marketing123", "MARKETING", "2025112", "REF2025112");
             createUser("Marketing 2", "marketing2@gmail.com", "marketing123", "MARKETING", "2025113", "REF2025113");
-            createUser("Customer", "customer@gmail.com", "customer123", "CUSTOMER", null, null);
+            createUser("Customer", "bitcoinid86@gmail.com", "customer123", "CUSTOMER", null, null);
             createUser("Customer 1", "customer1@gmail.com", "customer123", "CUSTOMER", null, null);
             createUser("Branch Manager", "branchmanager@gmail.com", "branchmanager123", "BRANCH_MANAGER", "2025121",
                     null);
@@ -361,8 +361,8 @@ public class Seeder implements CommandLineRunner {
 
     private void seedLoanRequests() {
         if (loanRequestRepository.count() == 0) {
-            // Ambil customer dengan email customer@gmail.com
-            Optional<CustomerDetails> customerDetails = customerDetailsRepository.findByUserEmail("customer@gmail.com");
+            // Ambil customer dengan email bitcoinid86@gmail.com
+            Optional<CustomerDetails> customerDetails = customerDetailsRepository.findByUserEmail("bitcoinid86@gmail.com");
             User customer = customerDetails.get().getUser();
             if (customer != null) {
                 // Membuat LoanRequest dengan customer yang ditemukan
@@ -391,10 +391,10 @@ public class Seeder implements CommandLineRunner {
     }
 
     private void seedCustomerDetails() {
-        if (userRepository.existsByEmail("customer@gmail.com") &&
+        if (userRepository.existsByEmail("bitcoinid86@gmail.com") &&
                 plafondRepository.existsByPlan("BRONZE")) {
 
-            User customer = userRepository.findByEmail("customer@gmail.com").orElse(null);
+            User customer = userRepository.findByEmail("bitcoinid86@gmail.com").orElse(null);
             Plafond bronzePlafond = plafondRepository.findByPlan("BRONZE").orElse(null);
 
             if (customer != null && bronzePlafond != null) {

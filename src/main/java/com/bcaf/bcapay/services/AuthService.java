@@ -10,6 +10,7 @@ import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.tomcat.websocket.AuthenticationException;
 import org.hibernate.usertype.UserType;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -63,6 +64,10 @@ public class AuthService {
     public AuthDto login(String email, String rawPassword) {
         User user = userService.getUserByEmail(email);
 
+        if (!user.getRole().getName().equalsIgnoreCase("CUSTOMER")) {
+            throw new AccessDeniedException("Anda tidak memiliki akses untuk login");
+        }
+
         passwordUtils.verifyPasswordMatch(rawPassword, user.getPassword());
 
         Authentication authentication = authenticationManager
@@ -98,8 +103,6 @@ public class AuthService {
         String pictureUrl = (String) payload.get("picture");
     
         User user = userRepository.findByEmail(email).orElse(null);
-        boolean isNewUser = false;
-    
         if (user == null) {
             // Buat akun baru
             Role customerRole = roleService.getRoleByName("CUSTOMER");
@@ -114,8 +117,12 @@ public class AuthService {
     
             user = userRepository.save(user);
             emailService.sendCustomerGoogleRegistrationEmail(user, rawPassword);
-            isNewUser = true;
         }
+        
+        if (!user.getRole().getName().equalsIgnoreCase("CUSTOMER")) {
+            throw new AccessDeniedException("Anda tidak memiliki akses untuk login");
+        }
+    
     
         // Set autentikasi manual tanpa pakai password
         CustomUserDetails userDetails = (CustomUserDetails) CustomUserDetails.build(user);
