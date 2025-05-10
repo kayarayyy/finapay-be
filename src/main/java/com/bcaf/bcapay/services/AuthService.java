@@ -118,7 +118,7 @@ public class AuthService {
             user = userRepository.save(user);
             emailService.sendCustomerGoogleRegistrationEmail(user, rawPassword);
         }
-        
+
         if (!user.getRole().getName().equalsIgnoreCase("CUSTOMER")) {
             throw new AccessDeniedException("Anda tidak memiliki akses untuk login");
         }
