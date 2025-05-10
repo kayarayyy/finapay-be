@@ -3,6 +3,8 @@ package com.bcaf.bcapay.services;
 import jakarta.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
 import org.springframework.security.core.Authentication;
@@ -53,6 +55,9 @@ public class LoanRequestService {
 
     @Autowired
     private LoanUtil loanUtil;
+
+    @Autowired
+    private FCMService fcmService;
 
     public LoanRequestDto createLoanRequest(Map<String, Object> payload, String token) {
         String email = jwtUtil.extractEmail(token);
@@ -336,6 +341,14 @@ public class LoanRequestService {
 
                     customerDetails.setAvailablePlafond(availablePlafond);
                     customerDetailsService.update(customerDetails.getId(), customerDetails);
+                    try {
+                        fcmService.sendNotification(
+                                "fcmToken",
+                                "Pencairan Dana - FINAPay",
+                                "Pengajuan telah disetujui dana telah dicairkan");
+                    } catch (Exception e) {
+                        throw new IllegalArgumentException("Notifikasi gagal terkirim");
+                    }
                 }
                 loanRequest.setBackOfficeApproveDisburse(disbursement);
                 loanRequest.setCompletedAt(LocalDateTime.now());

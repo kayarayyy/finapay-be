@@ -116,6 +116,16 @@
             <artifactId>google-http-client-jackson2</artifactId>
             <version>1.41.5</version>
         </dependency>
+		<dependency>
+			<groupId>com.google.firebase</groupId>
+			<artifactId>firebase-admin</artifactId>
+			<version>9.2.0</version>
+		</dependency>
+		<dependency>
+			<groupId>io.grpc</groupId>
+			<artifactId>grpc-context</artifactId>
+			<version>1.57.2</version> 
+		</dependency>
 	</dependencies>
 
 	<build>

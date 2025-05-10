@@ -2,6 +2,7 @@ package com.bcaf.bcapay.utils;
 
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
@@ -14,9 +15,9 @@ public class GoogleTokenVerifier {
 
     private final GoogleIdTokenVerifier verifier;
 
-    public GoogleTokenVerifier() {
+    public GoogleTokenVerifier(@Value("${web.client.id}") String webClientId) {
         verifier = new GoogleIdTokenVerifier.Builder(new NetHttpTransport(), new JacksonFactory())
-                .setAudience(List.of("630482567435-4ck2eqarg55ua42v9g2d2gmj5kgphfv5.apps.googleusercontent.com"))
+                .setAudience(List.of(webClientId))
                 .build();
     }
 

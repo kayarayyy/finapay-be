@@ -39,6 +39,7 @@ public class AuthController {
     // @Secured("MANAGE_USERS")
     @PostMapping("/login")
     public ResponseEntity<ResponseDto> login(@RequestBody Map<String, Object> payload) {
+        System.out.println(payload);
         AuthDto authDto = authService.login(
             (String) payload.get("email"),
             (String) payload.get("password"));
@@ -58,6 +59,7 @@ public class AuthController {
 
     @PostMapping("/login-google")
     public ResponseEntity<ResponseDto> loginWithGoogle(@RequestBody Map<String, Object> payload) {
+        System.out.println(payload);
         AuthDto authDto = authService.login_with_google((String) payload.get("tokenId"));
     return ResponseUtil.success(authDto, "Login successful");
     }
