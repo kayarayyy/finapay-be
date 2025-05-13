@@ -61,7 +61,10 @@ public class AuthService {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
-    public AuthDto login(String email, String rawPassword) {
+    @Autowired
+    private FcmTokenServices fcmTokenServices;
+
+    public AuthDto login(String email, String rawPassword, String fcmToken) {
         User user = userService.getUserByEmail(email);
 
         if (!user.getRole().getName().equalsIgnoreCase("CUSTOMER")) {
@@ -81,6 +84,8 @@ public class AuthService {
                 .toList();
 
         String token = jwtUtil.generateToken(authentication);
+        fcmTokenServices.saveToken(email, fcmToken);
+
 
         return new AuthDto(
                 user.getEmail(),
@@ -91,7 +96,7 @@ public class AuthService {
                 features);
     }
 
-    public AuthDto login_with_google(String idToken) {
+    public AuthDto login_with_google(String idToken, String fcmToken) {
         GoogleIdToken.Payload payload = googleTokenVerifier.verify(idToken);
     
         if (payload == null) {
@@ -138,6 +143,7 @@ public class AuthService {
                 .toList();
     
         String token = jwtUtil.generateToken(authentication);
+        fcmTokenServices.saveToken(email, fcmToken);
     
         return new AuthDto(
                 user.getEmail(),

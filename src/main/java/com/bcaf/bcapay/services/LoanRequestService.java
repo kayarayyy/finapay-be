@@ -16,6 +16,7 @@ import com.bcaf.bcapay.dto.LoanRequestDto;
 import com.bcaf.bcapay.exceptions.ResourceNotFoundException;
 import com.bcaf.bcapay.models.Branch;
 import com.bcaf.bcapay.models.CustomerDetails;
+import com.bcaf.bcapay.models.FcmToken;
 import com.bcaf.bcapay.models.LoanRequest;
 import com.bcaf.bcapay.models.User;
 import com.bcaf.bcapay.repositories.LoanRequestRepository;
@@ -58,6 +59,9 @@ public class LoanRequestService {
 
     @Autowired
     private FCMService fcmService;
+
+    @Autowired
+    private FcmTokenServices fcmTokenServices;
 
     public LoanRequestDto createLoanRequest(Map<String, Object> payload, String token) {
         String email = jwtUtil.extractEmail(token);
@@ -341,13 +345,22 @@ public class LoanRequestService {
 
                     customerDetails.setAvailablePlafond(availablePlafond);
                     customerDetailsService.update(customerDetails.getId(), customerDetails);
-                    try {
-                        fcmService.sendNotification(
-                                "fcmToken",
-                                "Pencairan Dana - FINAPay",
-                                "Pengajuan telah disetujui dana telah dicairkan");
-                    } catch (Exception e) {
-                        throw new IllegalArgumentException("Notifikasi gagal terkirim");
+
+                    List<FcmToken> tokens = fcmTokenServices.getTokensByEmail(loanRequest.getCustomer().getEmail());
+
+                    if (tokens.isEmpty()) {
+                        throw new IllegalArgumentException("FCM token tidak ditemukan untuk email: " + loanRequest.getCustomer().getEmail());
+                    }
+
+                    for (FcmToken fcmToken : tokens) {
+                        try {
+                            fcmService.sendNotification(
+                                    fcmToken.getToken(),
+                                    "Pencairan Dana - FINAPay",
+                                    "Pengajuan telah disetujui dana telah dicairkan");
+                        } catch (Exception e) {
+                            throw new IllegalArgumentException("Notifikasi gagal terkirim");
+                        }
                     }
                 }
                 loanRequest.setBackOfficeApproveDisburse(disbursement);
