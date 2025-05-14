@@ -84,7 +84,9 @@ public class AuthService {
                 .toList();
 
         String token = jwtUtil.generateToken(authentication);
-        fcmTokenServices.saveToken(email, fcmToken);
+        if (fcmToken != null) {
+            fcmTokenServices.saveToken(email, fcmToken);
+        }
 
 
         return new AuthDto(
@@ -143,7 +145,9 @@ public class AuthService {
                 .toList();
     
         String token = jwtUtil.generateToken(authentication);
-        fcmTokenServices.saveToken(email, fcmToken);
+         if (fcmToken != null) {
+            fcmTokenServices.saveToken(email, fcmToken);
+        }
     
         return new AuthDto(
                 user.getEmail(),

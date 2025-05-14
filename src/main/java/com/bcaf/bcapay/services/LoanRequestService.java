@@ -10,6 +10,7 @@ import org.springframework.security.authentication.AuthenticationCredentialsNotF
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.bcaf.bcapay.dto.CustomerDetailsDto;
 import com.bcaf.bcapay.dto.LoanRequestDto;
@@ -63,6 +64,9 @@ public class LoanRequestService {
     @Autowired
     private FcmTokenServices fcmTokenServices;
 
+    @Autowired
+    private FileStorageService fileStorageService;
+
     public LoanRequestDto createLoanRequest(Map<String, Object> payload, String token) {
         String email = jwtUtil.extractEmail(token);
         long activeRequestCount = loanRequestRepository.countActiveLoanRequestsByCustomerEmail(email);
@@ -72,8 +76,13 @@ public class LoanRequestService {
 
         LoanRequest loanRequest = new LoanRequest();
 
-        double amount = Double.parseDouble(payload.get("amount").toString());
-        int tenor = Integer.parseInt(payload.get("tenor").toString());
+        double amount = (payload.containsKey("amount") && payload.get("amount") instanceof Number)
+                ? ((Number) payload.get("amount")).doubleValue()
+                : 0.0;
+
+        int tenor = (payload.containsKey("tenor") && payload.get("tenor") instanceof Number)
+                ? ((Number) payload.get("tenor")).intValue()
+                : 0;
 
         double userLat = Double.parseDouble(payload.get("latitude").toString());
         double userLon = Double.parseDouble(payload.get("longitude").toString());
@@ -93,14 +102,24 @@ public class LoanRequestService {
             throw new IllegalArgumentException(
                     "Tenor exceeds the maximum limit of 12 and the minimum is 1 monthTenor exceeds the limit ma");
         }
+        MultipartFile ktpImage = (MultipartFile) payload.get("ktp_image");
+        if (ktpImage == null || ktpImage.isEmpty()) {
+            throw new IllegalArgumentException("KTP image is required.");
+        }
+
         double annualRate = customerDetails.getPlafondPlan().getAnnualRate();
         double interest = loanUtil.calculateTotalInterest(amount, annualRate, tenor);
+        
+        // Simpan ke storage (local/cloud), misalnya:
+        String ktpPath = fileStorageService.saveImage(ktpImage);
+        // loanRequest.setKtpImagePath(ktpPath);
 
         loanRequest.setAmount(amount);
         loanRequest.setInterest(interest);
         loanRequest.setCustomer(customer);
         loanRequest.setLatitude(userLat);
         loanRequest.setLongitude(userLon);
+        loanRequest.setTenor(tenor);
 
         // Set Marketing (optional)
         if (payload.containsKey("refferal") && payload.get("refferal") != null) {
@@ -349,7 +368,8 @@ public class LoanRequestService {
                     List<FcmToken> tokens = fcmTokenServices.getTokensByEmail(loanRequest.getCustomer().getEmail());
 
                     if (tokens.isEmpty()) {
-                        throw new IllegalArgumentException("FCM token tidak ditemukan untuk email: " + loanRequest.getCustomer().getEmail());
+                        throw new IllegalArgumentException(
+                                "FCM token tidak ditemukan untuk email: " + loanRequest.getCustomer().getEmail());
                     }
 
                     for (FcmToken fcmToken : tokens) {

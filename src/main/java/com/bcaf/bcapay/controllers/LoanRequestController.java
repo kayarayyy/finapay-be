@@ -2,15 +2,18 @@ package com.bcaf.bcapay.controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.bcaf.bcapay.dto.LoanRequestDto;
 import com.bcaf.bcapay.dto.ResponseDto;
 import com.bcaf.bcapay.models.LoanRequest;
 import com.bcaf.bcapay.services.LoanRequestService;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -22,14 +25,57 @@ public class LoanRequestController {
     private LoanRequestService loanRequestService;
 
     @Secured({ "FEATURE_CREATE_LOAN_REQUEST", "FEATURE_MANAGE_LOAN_REQUESTS" })
-    @PostMapping
+    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<ResponseDto> createLoanRequest(
             @RequestHeader(value = "Authorization", required = false) String token,
-            @RequestBody Map<String, Object> payload) {
+            @RequestPart("amount") String amountStr,
+            @RequestPart("tenor") String tenorStr,
+            @RequestPart("latitude") String latitudeStr,
+            @RequestPart("longitude") String longitudeStr,
+            @RequestPart(value = "refferal", required = false) String refferal,
+            @RequestPart("ktpImage") MultipartFile ktpImage) {
+
+        double amount = Double.parseDouble(amountStr);
+        int tenor = Integer.parseInt(tenorStr);
+        double latitude = Double.parseDouble(latitudeStr);
+        double longitude = Double.parseDouble(longitudeStr);
+
+        Map<String, Object> payload = new HashMap<>();
+        payload.put("amount", amount);
+        payload.put("tenor", tenor);
+        payload.put("latitude", latitude);
+        payload.put("longitude", longitude);
+        payload.put("refferal", refferal);
+        payload.put("ktpImage", ktpImage);
+
         LoanRequestDto loanRequest = loanRequestService.createLoanRequest(payload, token);
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(new ResponseDto(201, "success", "Loan request created", loanRequest));
     }
+
+    // @Secured({ "FEATURE_CREATE_LOAN_REQUEST", "FEATURE_MANAGE_LOAN_REQUESTS" })
+    // @PostMapping(value = "/a", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    // public ResponseEntity<ResponseDto> createLoanRequest(
+    //         @RequestHeader(value = "Authorization", required = false) String token,
+    //         @RequestPart("amount") double amount,
+    //         @RequestPart("tenor") int tenor,
+    //         @RequestPart("latitude") double latitude,
+    //         @RequestPart("longitude") double longitude,
+    //         @RequestPart(value = "refferal", required = false) String refferal,
+    //         @RequestPart("ktp_image") MultipartFile ktpImage) {
+
+    //     Map<String, Object> payload = new HashMap<>();
+    //     payload.put("amount", amount);
+    //     payload.put("tenor", tenor);
+    //     payload.put("latitude", latitude);
+    //     payload.put("longitude", longitude);
+    //     payload.put("refferal", refferal);
+    //     payload.put("ktp_image", ktpImage);
+
+    //     LoanRequestDto loanRequest = loanRequestService.createLoanRequest(payload, token);
+    //     return ResponseEntity.status(HttpStatus.CREATED)
+    //             .body(new ResponseDto(201, "success", "Loan request created", loanRequest));
+    // }
 
     @Secured({ "FEATURE_GET_ALL_LOAN_REQUEST", "FEATURE_MANAGE_LOAN_REQUESTS" })
     @GetMapping
