@@ -102,7 +102,7 @@ public class LoanRequestService {
             throw new IllegalArgumentException(
                     "Tenor exceeds the maximum limit of 12 and the minimum is 1 monthTenor exceeds the limit ma");
         }
-        MultipartFile ktpImage = (MultipartFile) payload.get("ktp_image");
+        MultipartFile ktpImage = (MultipartFile) payload.get("ktpImage");
         if (ktpImage == null || ktpImage.isEmpty()) {
             throw new IllegalArgumentException("KTP image is required.");
         }
