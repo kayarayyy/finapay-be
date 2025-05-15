@@ -49,62 +49,62 @@ public class CustomerDetailsController {
     // customer));
     // }
 
-    @Secured({ "FEATURE_MANAGE_CUSTOMERS", "FEATURE_CREATE_CUSTOMER_DETAILS" })
-    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<ResponseDto> createCustomer(
-            @RequestPart("street") String streetStr,
-            @RequestPart("district") String districtStr,
-            @RequestPart("province") String provinceStr,
-            @RequestPart("postal_code") String postalCodeStr,
-            @RequestPart("latitude") String latitudeStr,
-            @RequestPart("longitude") String longitudeStr,
-            @RequestPart("gender") String genderStr,
-            @RequestPart("ttl") String ttlStr,
-            @RequestPart("no_telp") String noTelpStr,
-            @RequestPart("nik") String nikStr,
-            @RequestPart("mothers_name") String mothersNameStr,
-            @RequestPart("job") String jobStr,
-            @RequestPart("salary") String salaryStr,
-            @RequestPart("no_rek") String noRekStr,
-            @RequestPart("house_status") String houseStatusStr,
-            @RequestPart("selfie_ktp") MultipartFile selfieKtp,
-            @RequestPart("house") MultipartFile house,
-            @RequestPart("ktp") MultipartFile ktp) {
+    // @Secured({ "FEATURE_MANAGE_CUSTOMERS", "FEATURE_CREATE_CUSTOMER_DETAILS" })
+    // @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    // public ResponseEntity<ResponseDto> createCustomer(
+    //         @RequestPart("street") String streetStr,
+    //         @RequestPart("district") String districtStr,
+    //         @RequestPart("province") String provinceStr,
+    //         @RequestPart("postal_code") String postalCodeStr,
+    //         @RequestPart("latitude") String latitudeStr,
+    //         @RequestPart("longitude") String longitudeStr,
+    //         @RequestPart("gender") String genderStr,
+    //         @RequestPart("ttl") String ttlStr,
+    //         @RequestPart("no_telp") String noTelpStr,
+    //         @RequestPart("nik") String nikStr,
+    //         @RequestPart("mothers_name") String mothersNameStr,
+    //         @RequestPart("job") String jobStr,
+    //         @RequestPart("salary") String salaryStr,
+    //         @RequestPart("no_rek") String noRekStr,
+    //         @RequestPart("house_status") String houseStatusStr,
+    //         @RequestPart("selfie_ktp") MultipartFile selfieKtp,
+    //         @RequestPart("house") MultipartFile house,
+    //         @RequestPart("ktp") MultipartFile ktp) {
 
-        Double latitude = Double.parseDouble(latitudeStr);
-        Double longitude = Double.parseDouble(longitudeStr);
-        Gender gender = Gender.valueOf(genderStr.toUpperCase()); // pastikan string-nya sesuai nama enum
+    //     Double latitude = Double.parseDouble(latitudeStr);
+    //     Double longitude = Double.parseDouble(longitudeStr);
+    //     Gender gender = Gender.valueOf(genderStr.toUpperCase()); // pastikan string-nya sesuai nama enum
 
-        // Parse tanggal lahir (ttl), misal dalam format yyyy-MM-dd
-        LocalDate ttl = LocalDate.parse(ttlStr, DateTimeFormatter.ISO_LOCAL_DATE);
-        Double salary = Double.parseDouble(salaryStr);
+    //     // Parse tanggal lahir (ttl), misal dalam format yyyy-MM-dd
+    //     LocalDate ttl = LocalDate.parse(ttlStr, DateTimeFormatter.ISO_LOCAL_DATE);
+    //     Double salary = Double.parseDouble(salaryStr);
 
-        CustomerDetailsDto payload = new CustomerDetailsDto();
-        payload.setStreet(streetStr);
-        payload.setDistrict(districtStr);
-        payload.setProvince(provinceStr);
-        payload.setPostalCode(postalCodeStr);
-        payload.setLatitude(latitude);
-        payload.setLongitude(longitude);
-        payload.setGender(gender);
-        payload.setTtl(ttl);
-        payload.setNoTelp(noTelpStr);
-        payload.setNik(nikStr);
-        payload.setMothersName(mothersNameStr);
-        payload.setJob(jobStr);
-        payload.setSalary(salary);
-        payload.setNoRek(noRekStr);
-        payload.setHouseStatus(houseStatusStr);
+    //     CustomerDetailsDto payload = new CustomerDetailsDto();
+    //     payload.setStreet(streetStr);
+    //     payload.setDistrict(districtStr);
+    //     payload.setProvince(provinceStr);
+    //     payload.setPostalCode(postalCodeStr);
+    //     payload.setLatitude(latitude);
+    //     payload.setLongitude(longitude);
+    //     payload.setGender(gender);
+    //     payload.setTtl(ttl);
+    //     payload.setNoTelp(noTelpStr);
+    //     payload.setNik(nikStr);
+    //     payload.setMothersName(mothersNameStr);
+    //     payload.setJob(jobStr);
+    //     payload.setSalary(salary);
+    //     payload.setNoRek(noRekStr);
+    //     payload.setHouseStatus(houseStatusStr);
 
-        Map<String, Object> multipartFile = new HashMap<>();
-        multipartFile.put("ktp", ktp);
-        multipartFile.put("selfieKtp", selfieKtp);
-        multipartFile.put("house", house);
+    //     Map<String, Object> multipartFile = new HashMap<>();
+    //     multipartFile.put("ktp", ktp);
+    //     multipartFile.put("selfieKtp", selfieKtp);
+    //     multipartFile.put("house", house);
 
-        CustomerDetailsDto createdCustomer = customerDetailsService.create(payload, multipartFile);
-        return ResponseEntity.status(HttpStatus.CREATED)
-                .body(new ResponseDto(201, "success", "Customer created", createdCustomer));
-    }
+    //     CustomerDetailsDto createdCustomer = customerDetailsService.create(payload, multipartFile);
+    //     return ResponseEntity.status(HttpStatus.CREATED)
+    //             .body(new ResponseDto(201, "success", "Customer created", createdCustomer));
+    // }
 
     // @Secured("FEATURE_MANAGE_CUSTOMERS")
     // @PutMapping("/{id}")
