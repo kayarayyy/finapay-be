@@ -265,6 +265,26 @@ public class LoanRequestService {
             if (branchManager != null && emailFromToken.equalsIgnoreCase(branchManager.getEmail())) {
                 Boolean approval = Boolean.parseBoolean(payload.get("approval").toString());
 
+                if (approval) {
+                    List<FcmToken> tokens = fcmTokenServices.getTokensByEmail(loanRequest.getCustomer().getEmail());
+
+                    if (tokens.isEmpty()) {
+                        throw new IllegalArgumentException(
+                                "FCM token tidak ditemukan untuk email: " + loanRequest.getCustomer().getEmail());
+                    }
+
+                    for (FcmToken fcmToken : tokens) {
+                        try {
+                            fcmService.sendNotification(
+                                    fcmToken.getToken(),
+                                    "Pencairan Dana - FINAPay",
+                                    "Pengajuan telah disetujui dana telah dicairkan");
+                        } catch (Exception e) {
+                            throw new IllegalArgumentException("Notifikasi gagal terkirim");
+                        }
+                    }
+                }
+
                 loanRequest.setBranchManagerApprove(approval);
             } else {
                 throw new AccessDeniedException("You are not authorized to approve or reject as Marketing.");
