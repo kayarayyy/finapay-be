@@ -1,9 +1,14 @@
 package com.bcaf.bcapay.models;
 
+import java.time.LocalDate;
 import java.util.UUID;
+
+import com.bcaf.bcapay.models.enums.Gender;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -25,7 +30,7 @@ public class CustomerDetails {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private UUID id;
 
-    @Column(nullable = true)
+    @Column(name = "available_plafond")
     private double availablePlafond;
 
     @ManyToOne
@@ -47,6 +52,37 @@ public class CustomerDetails {
     private Double latitude;
 
     private Double longitude;
+
+    @Enumerated(EnumType.STRING)
+    private Gender gender;
+
+    private LocalDate ttl;
+
+    @Column(name = "ktp_url")
+    private String ktpUrl;
+
+    @Column(name = "selfie_ktp_url")
+    private String selfieKtpUrl;
+    
+    private String noTelp;
+
+    private String nik;
+
+    @Column(name = "mothers_name")
+    private String mothersName;
+    
+    private String job;
+    
+    private Double salary;
+    
+    @Column(name = "no_rek")
+    private String noRek;
+    
+    @Column(name = "house_url")
+    private String houseUrl;
+
+    @Column(name = "house_status")
+    private String houseStatus;
 
     @OneToOne
     @JoinColumn(name = "user_email", referencedColumnName = "email", nullable = false, unique = true)

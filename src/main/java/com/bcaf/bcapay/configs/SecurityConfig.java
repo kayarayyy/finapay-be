@@ -24,6 +24,7 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.servlet.config.annotation.ContentNegotiationConfigurer;
+import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import com.bcaf.bcapay.security.CustomAccessDeniedHandler;
@@ -31,7 +32,8 @@ import com.bcaf.bcapay.security.CustomAuthenticationEntryPoint;
 import com.bcaf.bcapay.services.CustomUserDetailsService;
 
 @Configuration
-@EnableMethodSecurity(securedEnabled = true) // Aktifkan @Secured
+@EnableWebSecurity
+@EnableMethodSecurity(securedEnabled = true)
 public class SecurityConfig implements WebMvcConfigurer {
 
     @Autowired
@@ -57,9 +59,8 @@ public class SecurityConfig implements WebMvcConfigurer {
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/v1/auth/**").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/v1/plafonds").permitAll()
                         .requestMatchers(HttpMethod.GET, "/v1/plafonds/**").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/v1/plafonds/plan/**").permitAll() 
+                        .requestMatchers("/uploads/**").permitAll() // 💡 Izinkan akses folder uploads
                         .anyRequest().authenticated())
                 .authenticationProvider(authenticationProvider())
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
@@ -104,5 +105,12 @@ public class SecurityConfig implements WebMvcConfigurer {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
         return source;
+    }
+
+    // ✅ Tambahkan ini untuk akses file static dari /uploads/**
+    @Override
+    public void addResourceHandlers(ResourceHandlerRegistry registry) {
+        registry.addResourceHandler("/uploads/**")
+                .addResourceLocations("file:uploads/");
     }
 }

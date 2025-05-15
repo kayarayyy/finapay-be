@@ -64,8 +64,8 @@ public class LoanRequestService {
     @Autowired
     private FcmTokenServices fcmTokenServices;
 
-    @Autowired
-    private FileStorageService fileStorageService;
+    // @Autowired
+    // private FileStorageService fileStorageService;
 
     public LoanRequestDto createLoanRequest(Map<String, Object> payload, String token) {
         String email = jwtUtil.extractEmail(token);
@@ -102,16 +102,16 @@ public class LoanRequestService {
             throw new IllegalArgumentException(
                     "Tenor exceeds the maximum limit of 12 and the minimum is 1 monthTenor exceeds the limit ma");
         }
-        MultipartFile ktpImage = (MultipartFile) payload.get("ktpImage");
-        if (ktpImage == null || ktpImage.isEmpty()) {
-            throw new IllegalArgumentException("KTP image is required.");
-        }
+        // MultipartFile ktpImage = (MultipartFile) payload.get("ktpImage");
+        // if (ktpImage == null || ktpImage.isEmpty()) {
+        //     throw new IllegalArgumentException("KTP image is required.");
+        // }
 
         double annualRate = customerDetails.getPlafondPlan().getAnnualRate();
         double interest = loanUtil.calculateTotalInterest(amount, annualRate, tenor);
         
         // Simpan ke storage (local/cloud), misalnya:
-        String ktpPath = fileStorageService.saveImage(ktpImage);
+        // String ktpPath = fileStorageService.saveImage(ktpImage);
         // loanRequest.setKtpImagePath(ktpPath);
 
         loanRequest.setAmount(amount);

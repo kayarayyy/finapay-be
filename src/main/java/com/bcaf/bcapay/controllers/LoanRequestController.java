@@ -32,8 +32,7 @@ public class LoanRequestController {
             @RequestPart("tenor") String tenorStr,
             @RequestPart("latitude") String latitudeStr,
             @RequestPart("longitude") String longitudeStr,
-            @RequestPart(value = "refferal", required = false) String refferal,
-            @RequestPart("ktpImage") MultipartFile ktpImage) {
+            @RequestPart(value = "refferal", required = false) String refferal) {
 
         double amount = Double.parseDouble(amountStr);
         int tenor = Integer.parseInt(tenorStr);
@@ -46,7 +45,6 @@ public class LoanRequestController {
         payload.put("latitude", latitude);
         payload.put("longitude", longitude);
         payload.put("refferal", refferal);
-        payload.put("ktpImage", ktpImage);
 
         LoanRequestDto loanRequest = loanRequestService.createLoanRequest(payload, token);
         return ResponseEntity.status(HttpStatus.CREATED)
