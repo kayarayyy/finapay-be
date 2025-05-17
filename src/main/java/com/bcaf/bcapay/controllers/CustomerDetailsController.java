@@ -76,7 +76,8 @@ public class CustomerDetailsController {
         Gender gender = Gender.valueOf(genderStr.toUpperCase()); // pastikan string-nya sesuai nama enum
 
         // Parse tanggal lahir (ttl), misal dalam format yyyy-MM-dd
-        LocalDate ttl = LocalDate.parse(ttlStr, DateTimeFormatter.ISO_LOCAL_DATE);
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
+        LocalDate ttl = LocalDate.parse(ttlStr, formatter);
         Double salary = Double.parseDouble(salaryStr);
 
         CustomerDetailsDto payload = new CustomerDetailsDto();
