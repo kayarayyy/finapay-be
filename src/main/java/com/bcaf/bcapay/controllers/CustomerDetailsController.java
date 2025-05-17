@@ -67,7 +67,7 @@ public class CustomerDetailsController {
             @RequestPart("salary") String salaryStr,
             @RequestPart("no_rek") String noRekStr,
             @RequestPart("house_status") String houseStatusStr,
-            @RequestPart("selfie_ktp") MultipartFile selfieKtp,
+            @RequestPart("selfieKtp") MultipartFile selfieKtp,
             @RequestPart("house") MultipartFile house,
             @RequestPart("ktp") MultipartFile ktp) {
 
