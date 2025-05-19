@@ -5,6 +5,8 @@ import java.util.UUID;
 
 import com.bcaf.bcapay.models.enums.Gender;
 
+
+import java.math.BigDecimal;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -73,7 +75,7 @@ public class CustomerDetails {
     
     private String job;
     
-    private Double salary;
+    private BigDecimal salary;
     
     @Column(name = "no_rek")
     private String noRek;

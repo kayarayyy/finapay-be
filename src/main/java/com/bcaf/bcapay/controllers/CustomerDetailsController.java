@@ -14,6 +14,7 @@ import com.bcaf.bcapay.models.CustomerDetails;
 import com.bcaf.bcapay.models.enums.Gender;
 import com.bcaf.bcapay.services.CustomerDetailsService;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
@@ -70,8 +71,6 @@ public class CustomerDetailsController {
             @RequestPart("selfieKtp") MultipartFile selfieKtp,
             @RequestPart("house") MultipartFile house,
             @RequestPart("ktp") MultipartFile ktp) {
-
-                System.out.println("masuk");
                 
                 Double latitude = Double.parseDouble(latitudeStr);
                 Double longitude = Double.parseDouble(longitudeStr);
@@ -80,8 +79,7 @@ public class CustomerDetailsController {
         // Parse tanggal lahir (ttl), misal dalam format yyyy-MM-dd
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
         LocalDate ttl = LocalDate.parse(ttlStr, formatter);
-        Double salary = Double.parseDouble(salaryStr);
-        System.out.println("sini");
+        BigDecimal salary = new BigDecimal(salaryStr);
         
         CustomerDetailsDto payload = new CustomerDetailsDto();
         payload.setStreet(streetStr);
@@ -99,9 +97,6 @@ public class CustomerDetailsController {
         payload.setSalary(salary);
         payload.setNoRek(noRekStr);
         payload.setHouseStatus(houseStatusStr);
-        
-        System.out.println(payload.getStreet());
-        System.out.println(payload.getDistrict());
         
         Map<String, Object> multipartFile = new HashMap<>();
         multipartFile.put("ktp", ktp);

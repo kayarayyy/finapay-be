@@ -34,3 +34,5 @@ build/
 
 application.properties
 firebase-service-account.json
+
+uploads/

@@ -1,5 +1,6 @@
 package com.bcaf.bcapay.dto;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.UUID;
 
@@ -37,7 +38,7 @@ public class CustomerDetailsDto {
     private String nik;
     private String mothersName;
     private String job;
-    private Double salary;
+    private BigDecimal salary;
     private String noRek;
     private String houseStatus;
 
