@@ -71,15 +71,18 @@ public class CustomerDetailsController {
             @RequestPart("house") MultipartFile house,
             @RequestPart("ktp") MultipartFile ktp) {
 
-        Double latitude = Double.parseDouble(latitudeStr);
-        Double longitude = Double.parseDouble(longitudeStr);
-        Gender gender = Gender.valueOf(genderStr.toUpperCase()); // pastikan string-nya sesuai nama enum
-
+                System.out.println("masuk");
+                
+                Double latitude = Double.parseDouble(latitudeStr);
+                Double longitude = Double.parseDouble(longitudeStr);
+                Gender gender = Gender.valueOf(genderStr.toUpperCase()); // pastikan string-nya sesuai nama enum
+                
         // Parse tanggal lahir (ttl), misal dalam format yyyy-MM-dd
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
         LocalDate ttl = LocalDate.parse(ttlStr, formatter);
         Double salary = Double.parseDouble(salaryStr);
-
+        System.out.println("sini");
+        
         CustomerDetailsDto payload = new CustomerDetailsDto();
         payload.setStreet(streetStr);
         payload.setDistrict(districtStr);
@@ -96,7 +99,10 @@ public class CustomerDetailsController {
         payload.setSalary(salary);
         payload.setNoRek(noRekStr);
         payload.setHouseStatus(houseStatusStr);
-
+        
+        System.out.println(payload.getStreet());
+        System.out.println(payload.getDistrict());
+        
         Map<String, Object> multipartFile = new HashMap<>();
         multipartFile.put("ktp", ktp);
         multipartFile.put("selfieKtp", selfieKtp);
