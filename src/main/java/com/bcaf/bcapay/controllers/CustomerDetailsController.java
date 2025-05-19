@@ -13,6 +13,7 @@ import com.bcaf.bcapay.dto.ResponseDto;
 import com.bcaf.bcapay.models.CustomerDetails;
 import com.bcaf.bcapay.models.enums.Gender;
 import com.bcaf.bcapay.services.CustomerDetailsService;
+import com.bcaf.bcapay.utils.DateFormatterUtil;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -27,6 +28,9 @@ public class CustomerDetailsController {
 
     @Autowired
     private CustomerDetailsService customerDetailsService;
+
+    @Autowired
+    private DateFormatterUtil dateFormatter;
 
     @Secured("FEATURE_MANAGE_CUSTOMER_DETAILS")
     @GetMapping
@@ -77,8 +81,7 @@ public class CustomerDetailsController {
                 Gender gender = Gender.valueOf(genderStr.toUpperCase()); // pastikan string-nya sesuai nama enum
                 
         // Parse tanggal lahir (ttl), misal dalam format yyyy-MM-dd
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
-        LocalDate ttl = LocalDate.parse(ttlStr, formatter);
+        LocalDate ttl = dateFormatter.convertLongIndonesianDateToLocalDate(ttlStr);
         BigDecimal salary = new BigDecimal(salaryStr);
         
         CustomerDetailsDto payload = new CustomerDetailsDto();

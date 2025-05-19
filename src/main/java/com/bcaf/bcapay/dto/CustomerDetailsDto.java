@@ -7,6 +7,7 @@ import java.util.UUID;
 import com.bcaf.bcapay.models.CustomerDetails;
 import com.bcaf.bcapay.models.enums.Gender;
 import com.bcaf.bcapay.utils.CurrencyUtil;
+import com.bcaf.bcapay.utils.DateFormatterUtil;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -33,6 +34,7 @@ public class CustomerDetailsDto {
 
     private Gender gender;
     private LocalDate ttl;
+    private String formattedTtl;
 
     private String noTelp;
     private String nik;
@@ -62,6 +64,7 @@ public class CustomerDetailsDto {
             entity.getLongitude(),
             entity.getGender(),
             entity.getTtl(),
+            DateFormatterUtil.formatIsoToIndonesianDate(entity.getTtl().toString()),
             entity.getNoTelp(),
             entity.getNik(),
             entity.getMothersName(),
