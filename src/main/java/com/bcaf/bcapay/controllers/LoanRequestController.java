@@ -83,6 +83,14 @@ public class LoanRequestController {
                 .ok(new ResponseDto(200, "success", loanRequests.size() + " loan requests found", loanRequests));
     }
 
+    @Secured({ "FEATURE_GET_ALL_LOAN_REQUEST_BY_EMAIL", "FEATURE_MANAGE_LOAN_REQUESTS" })
+    @GetMapping("/by-email")
+    public ResponseEntity<ResponseDto> getAllLoanRequestsByEmail() {
+        List<?> loanRequests = loanRequestService.getAllLoanRequestsByEmail();
+        return ResponseEntity
+                .ok(new ResponseDto(200, "success", loanRequests.size() + " loan requests found", loanRequests));
+    }
+
     @Secured({ "FEATURE_GET_LOAN_REQUEST_BY_ID", "FEATURE_MANAGE_LOAN_REQUESTS" })
     @GetMapping("/{id}")
     public ResponseEntity<ResponseDto> getLoanRequestById(@PathVariable String id) {

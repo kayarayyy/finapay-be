@@ -23,6 +23,7 @@ public interface LoanRequestRepository extends JpaRepository<LoanRequest, UUID> 
     Optional<LoanRequest> findWithLockById(@Param("id") UUID id);
 
     List<LoanRequest> findByBranch(Branch branch);
+    List<LoanRequest> findByCustomerEmail(String customer);
     List<LoanRequest> findByMarketingEmail(String marketing);
     List<LoanRequest> findByMarketingEmailAndMarketingApproveIsNull(String marketing);
     List<LoanRequest> findByMarketingIsNotNullAndMarketingApproveTrueAndBranchManagerApproveIsNullAndBranchManagerEmail(String branchManagerEmail);

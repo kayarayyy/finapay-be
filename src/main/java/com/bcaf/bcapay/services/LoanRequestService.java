@@ -149,6 +149,19 @@ public class LoanRequestService {
                 .map(LoanRequestDto::fromEntity)
                 .collect(Collectors.toList());
     }
+    public List<LoanRequestDto> getAllLoanRequestsByEmail() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String emailCustomer = null;
+        if (authentication.getName() != null && authentication.getName() != "") {
+            emailCustomer = authentication.getName();
+        } else {
+            throw new AuthenticationCredentialsNotFoundException("User not authenticated.");
+        }
+        return loanRequestRepository.findByCustomerEmail(emailCustomer)
+                .stream()
+                .map(LoanRequestDto::fromEntity)
+                .collect(Collectors.toList());
+    }
 
     public List<LoanRequestDto> getAllLoanRequestReview() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();

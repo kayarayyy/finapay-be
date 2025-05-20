@@ -107,6 +107,7 @@ public class Seeder implements CommandLineRunner {
 
             // ACCESS LOAN REQUEST
             featureRepository.save(new Feature(null, "CREATE_LOAN_REQUEST", null));
+            featureRepository.save(new Feature(null, "GET_ALL_LOAN_REQUEST_BY_EMAIL", null));
             // ACCESS LOAN REQUEST REVIEW
             featureRepository.save(new Feature(null, "GET_ALL_LOAN_REQUEST_REVIEW", null));
             featureRepository.save(new Feature(null, "GET_LOAN_REQUEST_BY_ID_REVIEW", null));
@@ -141,16 +142,19 @@ public class Seeder implements CommandLineRunner {
             Feature manageBranches = featureRepository.findByName("MANAGE_BRANCHES").orElse(null);
             Feature managePlafonds = featureRepository.findByName("MANAGE_PLAFONDS").orElse(null);
             Feature manageCustomerDetails = featureRepository.findByName("MANAGE_CUSTOMER_DETAILS").orElse(null);
-            
+
             Feature getEmployeeDetails = featureRepository.findByName("GET_EMPLOYEE_DETAILS")
                     .orElse(null);
             Feature createEmployeeDetails = featureRepository.findByName("CREATE_EMPLOYEE_DETAILS")
                     .orElse(null);
-            
+
             Role customer = roleRepository.findByName("CUSTOMER").orElse(null);
             Feature createLoanRequest = featureRepository.findByName("CREATE_LOAN_REQUEST").orElse(null);
             Feature createCustomerDetails = featureRepository.findByName("CREATE_CUSTOMER_DETAILS").orElse(null);
-            Feature getCustomerDetailsByEmail = featureRepository.findByName("GET_CUSTOMER_DETAILS_BY_EMAIL").orElse(null);
+            Feature getCustomerDetailsByEmail = featureRepository.findByName("GET_CUSTOMER_DETAILS_BY_EMAIL")
+                    .orElse(null);
+            Feature getAllLoanRequestByEmail = featureRepository.findByName("GET_ALL_LOAN_REQUEST_BY_EMAIL")
+                    .orElse(null);
 
             Role marketing = roleRepository.findByName("MARKETING").orElse(null);
             Feature getAllLoanRequestReview = featureRepository.findByName("GET_ALL_LOAN_REQUEST_REVIEW")
@@ -173,11 +177,11 @@ public class Seeder implements CommandLineRunner {
                     .orElse(null);
             Feature getLoanRequestByIdDisbursement = featureRepository.findByName("GET_LOAN_REQUEST_BY_ID_DISBURSEMENT")
                     .orElse(null);
-            Feature getAllLoanRequestDisbursement = featureRepository.findByName("GET_ALL_LOAN_REQUEST_DISBURSEMENT_ONGOING")
+            Feature getAllLoanRequestDisbursement = featureRepository
+                    .findByName("GET_ALL_LOAN_REQUEST_DISBURSEMENT_ONGOING")
                     .orElse(null);
             Feature updateLoanRequestDisbursement = featureRepository.findByName("UPDATE_LOAN_REQUEST_DISBURSEMENT")
                     .orElse(null);
-
 
             if (superAdmin != null) {
                 if (manageRoles != null) {
@@ -214,6 +218,9 @@ public class Seeder implements CommandLineRunner {
                 }
                 if (getCustomerDetailsByEmail != null) {
                     roleFeatureRepository.save(new RoleFeature(null, customer, getCustomerDetailsByEmail));
+                }
+                if (getAllLoanRequestByEmail != null) {
+                    roleFeatureRepository.save(new RoleFeature(null, customer, getAllLoanRequestByEmail));
                 }
             }
 
@@ -377,7 +384,8 @@ public class Seeder implements CommandLineRunner {
     private void seedLoanRequests() {
         if (loanRequestRepository.count() == 0) {
             // Ambil customer dengan email bitcoinid86@gmail.com
-            Optional<CustomerDetails> customerDetails = customerDetailsRepository.findByUserEmail("bitcoinid86@gmail.com");
+            Optional<CustomerDetails> customerDetails = customerDetailsRepository
+                    .findByUserEmail("bitcoinid86@gmail.com");
             User customer = customerDetails.get().getUser();
             if (customer != null) {
                 // Membuat LoanRequest dengan customer yang ditemukan
@@ -398,10 +406,10 @@ public class Seeder implements CommandLineRunner {
 
     private void seedPlafond() {
         if (plafondRepository.count() == 0) {
-            plafondRepository.save(new Plafond(null, 1000000.00, "BRONZE", 0.05,"#CD7F32", "#A97142" ));
+            plafondRepository.save(new Plafond(null, 1000000.00, "BRONZE", 0.05, "#CD7F32", "#A97142"));
             plafondRepository.save(new Plafond(null, 5000000.00, "SILVER", 0.047, "#C0C0C0", "#808080"));
             plafondRepository.save(new Plafond(null, 10000000.00, "GOLD", 0.04, "#FFD700", "#B8860B"));
-            plafondRepository.save(new Plafond(null, 25000000.00, "PLATINUM", 0.035, "#E5E4E2", "#BCC6CC"));            
+            plafondRepository.save(new Plafond(null, 25000000.00, "PLATINUM", 0.035, "#E5E4E2", "#BCC6CC"));
         }
     }
 
