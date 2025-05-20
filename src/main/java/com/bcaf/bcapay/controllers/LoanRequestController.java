@@ -48,7 +48,7 @@ public class LoanRequestController {
 
         LoanRequestDto loanRequest = loanRequestService.createLoanRequest(payload, token);
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(new ResponseDto(201, "success", "Loan request created", loanRequest));
+                .body(new ResponseDto(201, "success", "Pengajuan berhasil dibuat menunggu persetujuan", loanRequest));
     }
 
     // @Secured({ "FEATURE_CREATE_LOAN_REQUEST", "FEATURE_MANAGE_LOAN_REQUESTS" })

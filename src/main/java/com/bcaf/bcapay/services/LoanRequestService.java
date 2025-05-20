@@ -71,7 +71,7 @@ public class LoanRequestService {
         String email = jwtUtil.extractEmail(token);
         long activeRequestCount = loanRequestRepository.countActiveLoanRequestsByCustomerEmail(email);
         if (activeRequestCount > 0) {
-            throw new IllegalArgumentException("You still have an ongoing loan request being processed.");
+            throw new IllegalArgumentException("Masih ada pengajuan yang sedang berlangsung, silahkan menunggu terlebih dahulu");
         }
 
         LoanRequest loanRequest = new LoanRequest();
@@ -92,15 +92,15 @@ public class LoanRequestService {
         User customer = customerDetails.getUser();
         double availablePlafond = customerDetails.getAvailablePlafond();
         if (amount < 50000) {
-            throw new IllegalArgumentException("The minimum allowed amount is Rp50.000.");
+            throw new IllegalArgumentException("Pengajuan peminjaman minimal Rp50.000.");
         }
         if (amount > availablePlafond) {
-            throw new IllegalArgumentException("Your remaining plafond is " + currencyUtil.toRupiah(availablePlafond) +
-                    ". You cannot request an amount greater than your available plafond.");
+            throw new IllegalArgumentException("Sisa plafond anda adalah " + currencyUtil.toRupiah(availablePlafond) +
+                    ". Anda tidak dapat mengajukan lebih dari sisa plafond anda.");
         }
-        if (tenor < 1 || tenor > 12) {
+        if (tenor < 6 || tenor > 24) {
             throw new IllegalArgumentException(
-                    "Tenor exceeds the maximum limit of 12 and the minimum is 1 monthTenor exceeds the limit ma");
+                    "Tenor tidak memenuhi syarat, tenor minimal 6 dan maksimal 24");
         }
         // MultipartFile ktpImage = (MultipartFile) payload.get("ktpImage");
         // if (ktpImage == null || ktpImage.isEmpty()) {
