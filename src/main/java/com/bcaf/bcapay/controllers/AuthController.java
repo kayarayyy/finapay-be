@@ -92,7 +92,7 @@ public class AuthController {
             @RequestBody Map<String, Object> payload) {
         authService.changePassword(payload, token);
 
-        return ResponseUtil.success(null, "Ubah kata berhasil!");
+        return ResponseUtil.success(true, "Ubah kata berhasil!");
     }
 
     @PostMapping("/reset-password")

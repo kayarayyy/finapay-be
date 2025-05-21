@@ -256,12 +256,12 @@ public class AuthService {
         String newPassword = Objects.toString(payload.get("new_password")).trim();
         String confirmPassword = Objects.toString(payload.get("confirm_password")).trim();
 
+        passwordUtils.verifyPasswordMatch(oldPassword, user.getPassword());
         if (!newPassword.equals(confirmPassword)) {
             throw new IllegalArgumentException("Konfirmasi password tidak sesuai!");
         }
 
         passwordUtils.isPasswordStrong(confirmPassword);
-        passwordUtils.verifyPasswordMatch(oldPassword, user.getPassword());
 
         user.setPassword(newPassword);
 
