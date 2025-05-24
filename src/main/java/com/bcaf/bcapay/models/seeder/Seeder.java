@@ -28,6 +28,7 @@ import com.bcaf.bcapay.services.BranchService;
 
 import jakarta.transaction.Transactional;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -79,7 +80,7 @@ public class Seeder implements CommandLineRunner {
         seedBranches();
         seedPlafond();
         seedEmployeeDetails();
-        // seedCustomerDetails();
+        seedCustomerDetails();
         // seedLoanRequests();
     }
 
@@ -406,10 +407,10 @@ public class Seeder implements CommandLineRunner {
 
     private void seedPlafond() {
         if (plafondRepository.count() == 0) {
-            plafondRepository.save(new Plafond(null, 1000000.00, "BRONZE", 0.05, "#CD7F32", "#A97142"));
-            plafondRepository.save(new Plafond(null, 5000000.00, "SILVER", 0.047, "#C0C0C0", "#808080"));
-            plafondRepository.save(new Plafond(null, 10000000.00, "GOLD", 0.04, "#FFD700", "#B8860B"));
-            plafondRepository.save(new Plafond(null, 25000000.00, "PLATINUM", 0.035, "#E5E4E2", "#BCC6CC"));
+            plafondRepository.save(new Plafond(null, 1000000.00, "BRONZE", 0.16, 0.025,"#CD7F32", "#A97142"));
+            plafondRepository.save(new Plafond(null, 5000000.00, "SILVER", 0.14, 0.025,"#C0C0C0", "#808080"));
+            plafondRepository.save(new Plafond(null, 10000000.00, "GOLD", 0.12, 0.025,"#FFD700", "#B8860B"));
+            plafondRepository.save(new Plafond(null, 25000000.00, "PLATINUM", 0.1, 0.025,"#E5E4E2", "#BCC6CC"));
         }
     }
 
@@ -418,11 +419,12 @@ public class Seeder implements CommandLineRunner {
                 plafondRepository.existsByPlan("BRONZE")) {
 
             User customer = userRepository.findByEmail("bitcoinid86@gmail.com").orElse(null);
-            Plafond bronzePlafond = plafondRepository.findByPlan("BRONZE").orElse(null);
+            Plafond bronzePlafond = plafondRepository.findByPlan("GOLD").orElse(null);
 
             if (customer != null && bronzePlafond != null) {
                 // Cek apakah data customer detail sudah pernah dibuat
                 boolean exists = customerDetailsRepository.findByUserEmail(customer.getEmail()).isPresent();
+                LocalDate ttl = LocalDate.now();
                 if (!exists) {
                     CustomerDetails details = new CustomerDetails();
                     details.setUser(customer);
@@ -432,6 +434,7 @@ public class Seeder implements CommandLineRunner {
                     details.setDistrict("Bekasi");
                     details.setProvince("Jawa Barat");
                     details.setPostalCode("17530");
+                    details.setTtl(ttl);
                     customerDetailsRepository.save(details);
                 }
             }

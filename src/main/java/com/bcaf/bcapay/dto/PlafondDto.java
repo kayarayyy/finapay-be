@@ -17,6 +17,7 @@ public class PlafondDto {
     private String amount;
     private String plan;
     private Double annualRate;
+    private Double adminRate;
     private String colorStart;
     private String colorEnd;
 
@@ -26,6 +27,7 @@ public class PlafondDto {
             CurrencyUtil.toRupiah(entity.getAmount()),
             entity.getPlan(),
             entity.getAnnualRate(),
+            entity.getAdminRate(),
             entity.getColorStart(),
             entity.getColorEnd()
         );

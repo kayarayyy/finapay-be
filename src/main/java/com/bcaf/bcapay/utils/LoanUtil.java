@@ -11,6 +11,11 @@ public class LoanUtil {
         return amount * monthlyRate * tenorInMonths;
     }
 
+    public static double calculateTotalAdminFee(double amount, double adminRate) {
+        
+        return amount * adminRate;
+    }
+
 
     public static double calculateMonthlyInstallment(double amount, double annualRate, int tenorInMonths) {
         double totalInterest = calculateTotalInterest(amount, annualRate, tenorInMonths);

@@ -32,6 +32,9 @@ public class Plafond {
 
     @Column(nullable = false)
     private Double annualRate;
+    
+    @Column(nullable = false)
+    private Double adminRate;
 
     @Column(nullable = true)
     private String colorStart;

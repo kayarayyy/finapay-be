@@ -3,14 +3,11 @@ package com.bcaf.bcapay.services;
 import jakarta.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
 
 import com.bcaf.bcapay.dto.CustomerDetailsDto;
 import com.bcaf.bcapay.dto.LoanRequestDto;
@@ -20,6 +17,7 @@ import com.bcaf.bcapay.models.CustomerDetails;
 import com.bcaf.bcapay.models.FcmToken;
 import com.bcaf.bcapay.models.LoanRequest;
 import com.bcaf.bcapay.models.User;
+import com.bcaf.bcapay.models.enums.LoanStatus;
 import com.bcaf.bcapay.repositories.LoanRequestRepository;
 import com.bcaf.bcapay.utils.CurrencyUtil;
 import com.bcaf.bcapay.utils.JwtUtil;
@@ -108,7 +106,9 @@ public class LoanRequestService {
         // }
 
         double annualRate = customerDetails.getPlafondPlan().getAnnualRate();
+        double adminRate = customerDetails.getPlafondPlan().getAdminRate();
         double interest = loanUtil.calculateTotalInterest(amount, annualRate, tenor);
+        double adminFee = loanUtil.calculateTotalAdminFee(amount, adminRate);
         
         // Simpan ke storage (local/cloud), misalnya:
         // String ktpPath = fileStorageService.saveImage(ktpImage);
@@ -116,10 +116,12 @@ public class LoanRequestService {
 
         loanRequest.setAmount(amount);
         loanRequest.setInterest(interest);
+        loanRequest.setAdminFee(adminFee);
         loanRequest.setCustomer(customer);
         loanRequest.setLatitude(userLat);
         loanRequest.setLongitude(userLon);
         loanRequest.setTenor(tenor);
+        loanRequest.setStatus(LoanStatus.REVIEW);
 
         // Set Marketing (optional)
         if (payload.containsKey("refferal") && payload.get("refferal") != null) {
@@ -149,6 +151,7 @@ public class LoanRequestService {
                 .map(LoanRequestDto::fromEntity)
                 .collect(Collectors.toList());
     }
+
     public List<LoanRequestDto> getAllLoanRequestsByEmail() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String emailCustomer = null;
@@ -212,7 +215,10 @@ public class LoanRequestService {
             if (marketing != null && emailFromToken.equalsIgnoreCase(marketing.getEmail())) {
                 Boolean approval = Boolean.parseBoolean(payload.get("review").toString());
                 if (approval) {
+                    loanRequest.setStatus(LoanStatus.APPROVAL);
                     loanRequest.setBranchManager(loanRequest.getBranch().getBranchManager());
+                } else {
+                    loanRequest.setStatus(LoanStatus.REJECTED);
                 }
                 loanRequest.setMarketingApprove(approval);
             } else {
@@ -279,23 +285,27 @@ public class LoanRequestService {
                 Boolean approval = Boolean.parseBoolean(payload.get("approval").toString());
 
                 if (approval) {
+                    loanRequest.setStatus(LoanStatus.DISBURSEMENT);
                     List<FcmToken> tokens = fcmTokenServices.getTokensByEmail(loanRequest.getCustomer().getEmail());
 
-                    if (tokens.isEmpty()) {
-                        throw new IllegalArgumentException(
-                                "FCM token tidak ditemukan untuk email: " + loanRequest.getCustomer().getEmail());
-                    }
+                    // if (tokens.isEmpty()) {
+                    // throw new IllegalArgumentException(
+                    // "FCM token tidak ditemukan untuk email: " +
+                    // loanRequest.getCustomer().getEmail());
+                    // }
 
                     for (FcmToken fcmToken : tokens) {
                         try {
                             fcmService.sendNotification(
                                     fcmToken.getToken(),
-                                    "Pencairan Dana - FINAPay",
-                                    "Pengajuan telah disetujui dana telah dicairkan");
+                                    "Pengajuan Disetujui - FINAPay",
+                                    "Pengajuan telah disetujui menunggu pencairan dana");
                         } catch (Exception e) {
                             throw new IllegalArgumentException("Notifikasi gagal terkirim");
                         }
                     }
+                } else {
+                    loanRequest.setStatus(LoanStatus.REJECTED);
                 }
 
                 loanRequest.setBranchManagerApprove(approval);
@@ -381,15 +391,18 @@ public class LoanRequestService {
             if (backOffice != null && emailFromToken.equalsIgnoreCase(backOffice.getEmail())) {
                 Boolean disbursement = Boolean.parseBoolean(payload.get("disbursement").toString());
                 if (disbursement) {
+                    loanRequest.setStatus(LoanStatus.APPROVED);
                     CustomerDetails customerDetails = customerDetailsService
                             .getByEmail(loanRequest.getCustomer().getEmail());
                     Double plafond = customerDetails.getAvailablePlafond();
                     Double amount = loanRequest.getAmount();
                     Double interest = loanRequest.getInterest();
+                    Double adminFee = loanRequest.getAdminFee();
 
                     double availablePlafond = (plafond != null ? plafond : 0.0)
                             - (amount != null ? amount : 0.0)
-                            - (interest != null ? interest : 0.0);
+                            - (interest != null ? interest : 0.0)
+                            - (adminFee != null ? adminFee : 0.0);
 
                     if (availablePlafond < 0) {
                         throw new IllegalArgumentException("Plafond tidak mencukupi, pengajuan tidak dapat dicairkan");
@@ -400,21 +413,23 @@ public class LoanRequestService {
 
                     List<FcmToken> tokens = fcmTokenServices.getTokensByEmail(loanRequest.getCustomer().getEmail());
 
-                    if (tokens.isEmpty()) {
-                        throw new IllegalArgumentException(
-                                "FCM token tidak ditemukan untuk email: " + loanRequest.getCustomer().getEmail());
-                    }
+                    // if (tokens.isEmpty()) {
+                    //     throw new IllegalArgumentException(
+                    //             "FCM token tidak ditemukan untuk email: " + loanRequest.getCustomer().getEmail());
+                    // }
 
                     for (FcmToken fcmToken : tokens) {
                         try {
                             fcmService.sendNotification(
                                     fcmToken.getToken(),
                                     "Pencairan Dana - FINAPay",
-                                    "Pengajuan telah disetujui dana telah dicairkan");
+                                    "Data telah dicairkan sejumlah: " + loanRequest.getAmount());
                         } catch (Exception e) {
                             throw new IllegalArgumentException("Notifikasi gagal terkirim");
                         }
                     }
+                } else {
+                    loanRequest.setStatus(LoanStatus.REJECTED);
                 }
                 loanRequest.setBackOfficeApproveDisburse(disbursement);
                 loanRequest.setCompletedAt(LocalDateTime.now());

@@ -5,11 +5,14 @@ import java.util.UUID;
 
 import org.hibernate.annotations.CreationTimestamp;
 
+import com.bcaf.bcapay.models.enums.LoanStatus;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -35,6 +38,9 @@ public class LoanRequest {
 
     @Column(nullable = true)
     private Double interest;
+
+    @Column(nullable = true)
+    private Double adminFee;
 
     @Column(nullable = true)
     private String refferal;
@@ -91,9 +97,13 @@ public class LoanRequest {
     @Column(nullable = true)
     private String backOfficeNotes;
 
+    
     @Column(updatable = false)
     @CreationTimestamp
     private LocalDateTime createdAt;
-
+    
     private LocalDateTime completedAt;
+    
+    @Enumerated(EnumType.STRING)
+    private LoanStatus status;
 }
