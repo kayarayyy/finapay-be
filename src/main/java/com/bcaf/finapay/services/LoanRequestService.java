@@ -440,9 +440,9 @@ public class LoanRequestService {
                     if (availablePlafond < 0) {
                         throw new IllegalArgumentException("Plafond tidak mencukupi, pengajuan tidak dapat dicairkan");
                     }
-                    if (customerDetails.getNoRek().isBlank()) {
-                        throw new IllegalArgumentException("Nomor rekening tujuan tidak ditemukan");
-                    }
+                    // if (customerDetails.getNoRek().isEmpty()) {
+                    //     throw new IllegalArgumentException("Nomor rekening tujuan tidak ditemukan");
+                    // }
 
                     customerDetails.setAvailablePlafond(availablePlafond);
                     customerDetailsService.update(customerDetails.getId(), customerDetails);
