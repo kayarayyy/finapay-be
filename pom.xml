@@ -10,9 +10,9 @@
 		<relativePath /> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>com.bcaf</groupId>
-	<artifactId>bcapay</artifactId>
+	<artifactId>finapay</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>bcapay</name>
+	<name>finapay</name>
 	<description>Demo project for Spring Boot</description>
 	<url />
 	<licenses>
