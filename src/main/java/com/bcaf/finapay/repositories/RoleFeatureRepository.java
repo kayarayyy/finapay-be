@@ -25,4 +25,8 @@ public interface RoleFeatureRepository extends JpaRepository<RoleFeature, UUID> 
     @Query("DELETE FROM RoleFeature rf WHERE rf.role.id = :roleId AND rf.feature.id = :featureId")
     int deleteByRoleIdAndFeatureId(@Param("roleId") UUID roleId, @Param("featureId") UUID featureId);
 
+    @Modifying
+    @Query("DELETE FROM RoleFeature rf WHERE rf.feature.id = :featureId")
+    void deleteAllByFeatureId(@Param("featureId") UUID featureId);
+
 }

@@ -1,5 +1,6 @@
 package com.bcaf.finapay.services;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.UUID;
 
@@ -8,12 +9,19 @@ import org.springframework.stereotype.Service;
 
 import com.bcaf.finapay.exceptions.ResourceNotFoundException;
 import com.bcaf.finapay.models.Feature;
+import com.bcaf.finapay.models.RoleFeature;
 import com.bcaf.finapay.repositories.FeatureRepository;
+import com.bcaf.finapay.repositories.RoleFeatureRepository;
+
+import jakarta.transaction.Transactional;
 
 @Service
 public class FeatureService {
     @Autowired
     private FeatureRepository featureRepository;
+
+    @Autowired
+    private RoleFeatureRepository roleFeatureRepository;
 
     public List<Feature> getAllFeatures() {
         return featureRepository.findAll();
@@ -36,10 +44,19 @@ public class FeatureService {
         return featureRepository.save(updatedFeature);
     }
 
+    @Transactional
     public void deleteFeature(String id) {
-        featureRepository.findById(UUID.fromString(id))
+        UUID uuid = UUID.fromString(id);
+
+        // pastikan feature ada
+        featureRepository.findById(uuid)
                 .orElseThrow(() -> new ResourceNotFoundException("Feature not found!"));
 
-        featureRepository.deleteById(UUID.fromString(id));
+        // hapus semua role-feature relasi
+        roleFeatureRepository.deleteAllByFeatureId(uuid);
+
+        // hapus feature
+        featureRepository.deleteById(uuid);
     }
+
 }
