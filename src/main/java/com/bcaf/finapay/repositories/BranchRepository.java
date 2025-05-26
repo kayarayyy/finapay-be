@@ -12,7 +12,9 @@ import com.bcaf.finapay.models.Branch;
 public interface BranchRepository extends JpaRepository<Branch, UUID> {
 
     Optional<Branch> findByName(String string);
+
     Optional<Branch> findByBranchManagerId(UUID id);
 
-    
+    boolean existsByNameIgnoreCase(String name);
+
 }

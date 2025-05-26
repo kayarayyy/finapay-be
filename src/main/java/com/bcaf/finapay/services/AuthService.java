@@ -203,7 +203,7 @@ public class AuthService {
         String rawPassword = isSuperadmin ? rawPassword = RandomStringUtils.randomAlphanumeric(8)
                 : Objects.toString(payload.get("password"), "").trim();
         String roleId = Objects.toString(payload.get("role_id"), "").trim();
-        boolean isActive = Boolean.parseBoolean(Objects.toString(payload.get("is_active"), "false"));
+        boolean isActive = Boolean.parseBoolean(Objects.toString(payload.get("is_active"), "true"));
         String nip = Objects.toString(payload.get("nip"), "").trim();
         String refferal = Objects.toString(payload.get("refferal"), "").trim();
 

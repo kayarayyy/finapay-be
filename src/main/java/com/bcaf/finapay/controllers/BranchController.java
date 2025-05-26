@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
 @RestController
@@ -33,24 +34,35 @@ public class BranchController {
         List<BranchDto> brances = branchService.getAllBranches();
         return ResponseEntity.ok(new ResponseDto(200, "success", brances.size() + " brances found", brances));
     }
-    
+
     @Secured("FEATURE_MANAGE_BRANCHES")
     @GetMapping("/{id}")
     public ResponseEntity<ResponseDto> getBranchById(@PathVariable String id) {
         BranchDto branch = branchService.getBranchById(id);
         return ResponseEntity.ok(new ResponseDto(200, "success", "brances found", branch));
     }
-    
+
     @Secured("FEATURE_MANAGE_BRANCHES")
     @PostMapping
     public ResponseEntity<ResponseDto> createBranch(@RequestBody Map<String, Object> payload) {
         Branch createdBranch = branchService.createBranch(payload);
         return ResponseEntity.status(HttpStatus.CREATED)
-        .body(new ResponseDto(201, "success", "Branch created", createdBranch));
+                .body(new ResponseDto(201, "success", "Branch created", createdBranch));
     }
-    
+
     @Secured("FEATURE_MANAGE_BRANCHES")
-    @DeleteMapping
+    @PutMapping("/{id}")
+    public ResponseEntity<ResponseDto> updateBranch(
+            @PathVariable String id,
+            @RequestBody Map<String, Object> payload) {
+        Branch updatedBranch = branchService.editBranch(id, payload);
+
+        return ResponseEntity.ok(
+                new ResponseDto(200, "success", "Branch updated", updatedBranch));
+    }
+
+    @Secured("FEATURE_MANAGE_BRANCHES")
+    @DeleteMapping("/{id}")
     public ResponseEntity<ResponseDto> deleteBranch(@PathVariable String id) {
         branchService.deleteBranch(id);
         return ResponseEntity.ok(new ResponseDto(200, "success", "Branch deleted", null));

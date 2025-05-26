@@ -54,7 +54,7 @@ public class CustomerDetailsController {
     // customer));
     // }
 
-    @Secured({ "FEATURE_MANAGE_CUSTOMERS", "FEATURE_CREATE_CUSTOMER_DETAILS" })
+    @Secured("FEATURE_CREATE_CUSTOMER_DETAILS")
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<ResponseDto> createCustomer(
             @RequestPart("street") String streetStr,
@@ -75,15 +75,15 @@ public class CustomerDetailsController {
             @RequestPart("selfieKtp") MultipartFile selfieKtp,
             @RequestPart("house") MultipartFile house,
             @RequestPart("ktp") MultipartFile ktp) {
-                
-                Double latitude = Double.parseDouble(latitudeStr);
-                Double longitude = Double.parseDouble(longitudeStr);
-                Gender gender = Gender.valueOf(genderStr.toUpperCase()); // pastikan string-nya sesuai nama enum
-                
+
+        Double latitude = Double.parseDouble(latitudeStr);
+        Double longitude = Double.parseDouble(longitudeStr);
+        Gender gender = Gender.valueOf(genderStr.toUpperCase()); // pastikan string-nya sesuai nama enum
+
         // Parse tanggal lahir (ttl), misal dalam format yyyy-MM-dd
         LocalDate ttl = dateFormatter.convertLongIndonesianDateToLocalDate(ttlStr);
         BigDecimal salary = new BigDecimal(salaryStr);
-        
+
         CustomerDetailsDto payload = new CustomerDetailsDto();
         payload.setStreet(streetStr);
         payload.setDistrict(districtStr);
@@ -100,7 +100,7 @@ public class CustomerDetailsController {
         payload.setSalary(salary);
         payload.setNoRek(noRekStr);
         payload.setHouseStatus(houseStatusStr);
-        
+
         Map<String, Object> multipartFile = new HashMap<>();
         multipartFile.put("ktp", ktp);
         multipartFile.put("selfieKtp", selfieKtp);
@@ -121,11 +121,11 @@ public class CustomerDetailsController {
     // updatedCustomer));
     // }
 
-    // @Secured("FEATURE_MANAGE_CUSTOMERS")
-    // @DeleteMapping("/{id}")
-    // public ResponseEntity<ResponseDto> deleteCustomer(@PathVariable String id) {
-    // customerDetailsService.delete(id);
-    // return ResponseEntity.ok(new ResponseDto(200, "success", "Customer deleted",
-    // null));
-    // }
+    @Secured({"FEATURE_MANAGE_CUSTOMER_DETAILS"})
+    @DeleteMapping("/{id}")
+    public ResponseEntity<ResponseDto> deleteCustomer(@PathVariable String id) {
+        customerDetailsService.delete(id);
+        return ResponseEntity.ok(new ResponseDto(200, "success", "Customer details deleted",
+                null));
+    }
 }

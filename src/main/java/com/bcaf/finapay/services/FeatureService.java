@@ -33,6 +33,13 @@ public class FeatureService {
     }
 
     public Feature creaFeature(Feature feature) {
+        // Ubah nama jadi uppercase dan snake_case
+        String formattedName = feature.getName()
+                .trim()
+                .toUpperCase()
+                .replaceAll("[^A-Z0-9]+", "_"); // Ganti spasi/simbol jadi "_"
+
+        feature.setName(formattedName);
         return featureRepository.save(feature);
     }
 

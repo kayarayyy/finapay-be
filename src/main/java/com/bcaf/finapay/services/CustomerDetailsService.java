@@ -82,6 +82,10 @@ public class CustomerDetailsService {
         String email = authentication.getName();
         User user = userService.getUserByEmail(email);
 
+        if (customerDetailsRepository.existsByUser(user)) {
+            throw new IllegalStateException("Customer details for user already exist.");
+        }
+
         Plafond plan = plafondService.getPlafondByPlan("BRONZE");
 
         CustomerDetails customerDetails = new CustomerDetails();
@@ -134,8 +138,8 @@ public class CustomerDetailsService {
         return customerDetailsRepository.save(existing);
     }
 
-    public void delete(UUID id) {
-        CustomerDetails existing = customerDetailsRepository.findById(id)
+    public void delete(String id) {
+        CustomerDetails existing = customerDetailsRepository.findById(UUID.fromString(id))
                 .orElseThrow(() -> new ResourceNotFoundException("Customer details not found!"));
         customerDetailsRepository.delete(existing);
     }

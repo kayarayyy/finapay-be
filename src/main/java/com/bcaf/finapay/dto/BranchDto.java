@@ -10,12 +10,12 @@ public class BranchDto {
     private UUID id;
     private String name;
     private String city;
-    private double latitude;
-    private double longitude;
+    private Double latitude;
+    private Double longitude;
     private UserDto branchManager;
     private List<UserDto> marketing;
 
-    public BranchDto(UUID id, String name, String city, double latitude, double longitude,
+    public BranchDto(UUID id, String name, String city, Double latitude, Double longitude,
                      UserDto branchManager, List<UserDto> marketing) {
         this.id = id;
         this.name = name;
@@ -26,12 +26,12 @@ public class BranchDto {
         this.marketing = marketing;
     }
 
-    // Getter
+    // ✅ Gunakan tipe wrapper Double, bukan primitif double
     public UUID getId() { return id; }
     public String getName() { return name; }
     public String getCity() { return city; }
-    public double getLatitude() { return latitude; }
-    public double getLongitude() { return longitude; }
+    public Double getLatitude() { return latitude; }
+    public Double getLongitude() { return longitude; }
     public UserDto getBranchManager() { return branchManager; }
     public List<UserDto> getMarketing() { return marketing; }
 
@@ -43,9 +43,11 @@ public class BranchDto {
             branch.getLatitude(),
             branch.getLongitude(),
             branch.getBranchManager() != null ? UserDto.fromEntity(branch.getBranchManager()) : null,
-            branch.getMarketing().stream()
-                .map(UserDto::fromEntity)
-                .collect(Collectors.toList())
+            branch.getMarketing() != null ?
+                branch.getMarketing().stream()
+                    .map(UserDto::fromEntity)
+                    .collect(Collectors.toList())
+                : null
         );
     }
 }
