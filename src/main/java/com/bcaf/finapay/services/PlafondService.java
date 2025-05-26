@@ -38,6 +38,8 @@ public class PlafondService {
         existing.setAmount(updatedPlafond.getAmount());
         existing.setAnnualRate(updatedPlafond.getAnnualRate());
         existing.setPlan(updatedPlafond.getPlan());
+        existing.setColorStart(updatedPlafond.getColorStart());
+        existing.setColorEnd(updatedPlafond.getColorEnd());
         return plafondRepository.save(existing);
     }
 
