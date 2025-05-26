@@ -7,6 +7,7 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
 import com.bcaf.finapay.dto.FeatureDto;
@@ -21,16 +22,10 @@ import com.bcaf.finapay.repositories.RoleFeatureRepository;
 public class RoleFeatureService {
     @Autowired
     private RoleFeatureRepository roleFeatureRepository;
-
     @Autowired
     private RoleService roleService;
-
     @Autowired
     private FeatureService featureService;
-
-    // public List<RoleFeature> getAllRoleFeatures() {
-    // return roleFeatureRepository.findAll();
-    // }
 
     public RoleFeature getRoleFeatureById(String id) {
         return roleFeatureRepository.findById(UUID.fromString(id))
@@ -53,6 +48,10 @@ public class RoleFeatureService {
         if (deleted == 0) {
             throw new ResourceNotFoundException("Role Feature not found!");
         }
+    }
+
+    public void delete(RoleFeature roleFeature) {
+        roleFeatureRepository.delete(roleFeature);
     }
 
     public List<FeatureDto> getFeaturesByRoleId(UUID roleId) {
