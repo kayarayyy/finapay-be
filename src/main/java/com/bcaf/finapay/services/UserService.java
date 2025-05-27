@@ -92,15 +92,6 @@ public class UserService {
     public UserDto updateUser(String id, Map<String, Object> payload) {
         User user = userRepository.findById(UUID.fromString(id))
                 .orElseThrow(() -> new ResourceNotFoundException("User tidak ditemukan!"));
-        String email = Objects.toString(payload.get("email"), "").trim();
-        String emailRegex = "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,6}$";
-
-        Pattern pattern = Pattern.compile(emailRegex);
-        Matcher matcher = pattern.matcher(email);
-
-        if (!matcher.matches()) {
-            throw new IllegalArgumentException("Email tidak valid");
-        }
         String name = Objects.toString(payload.get("name"), "").trim();
         String roleId = Objects.toString(payload.get("role_id"), "").trim();
         boolean isActive = Boolean.parseBoolean(Objects.toString(payload.get("is_active"), "true"));
@@ -108,7 +99,6 @@ public class UserService {
         String refferal = Objects.toString(payload.get("refferal"), "").trim();
 
         user.setName(name);
-        user.setEmail(email);
         user.setActive(isActive);
         user.setNip(nip);
         user.setRefferal(refferal);
