@@ -2,6 +2,7 @@ package com.bcaf.finapay.services;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.MailException;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -13,6 +14,8 @@ import com.bcaf.finapay.models.User;
 public class EmailService {
     private static final Logger logger = LoggerFactory.getLogger(EmailService.class);
     private final JavaMailSender emailSender;
+    @Value("${base.url}")
+    private String baseUrl;
 
     public EmailService(JavaMailSender emailSender) {
         this.emailSender = emailSender;
@@ -75,8 +78,8 @@ public class EmailService {
 
     private String generateResetLink(String id) {
         
-        String baseUrl = "http://localhost:4200/reset-password/"; // Sesuaikan dengan domain frontend
-        return baseUrl + id.toString();
+        String url = baseUrl + "/reset-password/";
+        return url + id.toString();
     }
 
     public void sendCustomerRegistrationEmail(User user) {

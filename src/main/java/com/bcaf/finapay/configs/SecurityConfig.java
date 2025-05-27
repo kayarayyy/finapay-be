@@ -3,6 +3,7 @@ package com.bcaf.finapay.configs;
 import java.util.Arrays;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -47,6 +48,9 @@ public class SecurityConfig implements WebMvcConfigurer {
 
     @Autowired
     private CustomAccessDeniedHandler customAccessDeniedHandler;
+
+    @Value("${base.url}")
+    private String baseUrl;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -97,7 +101,7 @@ public class SecurityConfig implements WebMvcConfigurer {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(Arrays.asList("https://labs.lua.co.id", "http://localhost:4200"));
+        configuration.setAllowedOrigins(Arrays.asList("https://labs.lua.co.id", "http://localhost:4200", baseUrl));
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "PATCH"));
         configuration.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type"));
         configuration.setAllowCredentials(true);
