@@ -121,7 +121,7 @@ public class JwtUtil {
 
     public boolean isSuperadmin(String token) {
         if (token == null || token.trim().isEmpty()) {
-            return false;// Jika tidak ada token, bukan superadmin
+            return false;
         }
 
         if (token.startsWith("Bearer ")) {
@@ -131,7 +131,7 @@ public class JwtUtil {
         Claims claims = extractAllClaims(token);
         String roleId = claims.get("roleId", String.class);
         Optional<Role> role = roleRepository.findById(UUID.fromString(roleId));
-
+        // Always false if the server restarted
         return role.isPresent() && role.get().getName().equals("SUPERADMIN");
     }
 
