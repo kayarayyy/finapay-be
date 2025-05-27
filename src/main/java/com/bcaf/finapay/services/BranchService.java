@@ -14,14 +14,19 @@ import org.springframework.stereotype.Service;
 import com.bcaf.finapay.dto.BranchDto;
 import com.bcaf.finapay.exceptions.ResourceNotFoundException;
 import com.bcaf.finapay.models.Branch;
+import com.bcaf.finapay.models.User;
 import com.bcaf.finapay.models.enums.City;
 import com.bcaf.finapay.repositories.BranchRepository;
+import com.bcaf.finapay.repositories.UserRepository;
 import com.bcaf.finapay.utils.LocationCheck;
 
 @Service
 public class BranchService {
     @Autowired
     private BranchRepository branchRepository;
+
+    @Autowired
+    private UserRepository userRepository;
 
     @Autowired
     private LocationCheck locationCheck;
@@ -143,6 +148,33 @@ public class BranchService {
                 .min(Comparator.comparingDouble(branch -> locationCheck.countDistance(userLat, userLon,
                         branch.getLatitude(), branch.getLongitude())))
                 .orElseThrow(() -> new RuntimeException("No branches with available marketing found"));
+    }
+
+    public Branch assignBranchManager(String branchId, String email) {
+        Branch branch = branchRepository.findById(UUID.fromString(branchId))
+                .orElseThrow(() -> new ResourceNotFoundException("Branch not found!"));
+
+        User manager = userRepository.findByEmailIgnoreCase(email)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with email: " + email));
+
+        branch.setBranchManager(manager);
+        return branchRepository.save(branch);
+    }
+
+    public Branch assignMarketing(String branchId, List<String> emails) {
+        Branch branch = branchRepository.findById(UUID.fromString(branchId))
+                .orElseThrow(() -> new ResourceNotFoundException("Branch not found!"));
+
+        List<User> marketers = emails.stream()
+                .map(email -> userRepository.findByEmailIgnoreCase(email)
+                        .orElseThrow(() -> new ResourceNotFoundException("User not found with email: " + email)))
+                .collect(Collectors.toList());
+
+        marketers.forEach(marketing -> marketing.setBranch(branch));
+        userRepository.saveAll(marketers);
+        
+        branch.setMarketing(marketers);
+        return branchRepository.save(branch);
     }
 
 }

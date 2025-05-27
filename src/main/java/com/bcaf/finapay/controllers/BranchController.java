@@ -68,4 +68,34 @@ public class BranchController {
         return ResponseEntity.ok(new ResponseDto(200, "success", "Branch deleted", null));
     }
 
+    @Secured("FEATURE_MANAGE_BRANCHES")
+    @PostMapping("/{branchId}/assign-manager")
+    public ResponseEntity<ResponseDto> assignBranchManager(
+            @PathVariable String branchId,
+            @RequestBody Map<String, String> payload) {
+        String email = payload.get("email");
+        if (email == null || email.isBlank()) {
+            throw new IllegalArgumentException("Email is required");
+        }
+
+        Branch updated = branchService.assignBranchManager(branchId, email);
+        return ResponseEntity.ok(
+                new ResponseDto(200, "success", "Branch manager assigned", updated));
+    }
+
+    @Secured("FEATURE_MANAGE_BRANCHES")
+    @PostMapping("/{branchId}/assign-marketing")
+    public ResponseEntity<ResponseDto> assignMarketing(
+            @PathVariable String branchId,
+            @RequestBody Map<String, List<String>> payload) {
+        List<String> emails = payload.get("emails");
+        if (emails == null || emails.isEmpty()) {
+            throw new IllegalArgumentException("Email list is required");
+        }
+
+        Branch updated = branchService.assignMarketing(branchId, emails);
+        return ResponseEntity.ok(
+                new ResponseDto(200, "success", emails.size() + " marketing(s) assigned", updated));
+    }
+
 }

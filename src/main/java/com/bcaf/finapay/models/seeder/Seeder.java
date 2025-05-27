@@ -349,37 +349,37 @@ public class Seeder implements CommandLineRunner {
             }
         }
 
-        Branch bandungBranch = branchRepository.findByName("Bandung 1").orElse(null);
-        User managerBandung = userRepository.findByEmail("branchmanager1@gmail.com").orElse(null);
-        User marketingBandung = userRepository.findByEmail("marketing1@gmail.com").orElse(null);
-        User marketingBandung1 = userRepository.findByEmail("marketing2@gmail.com").orElse(null);
+        // Branch bandungBranch = branchRepository.findByName("Bandung 1").orElse(null);
+        // User managerBandung = userRepository.findByEmail("branchmanager1@gmail.com").orElse(null);
+        // User marketingBandung = userRepository.findByEmail("marketing1@gmail.com").orElse(null);
+        // User marketingBandung1 = userRepository.findByEmail("marketing2@gmail.com").orElse(null);
 
-        if (bandungBranch != null) {
-            if (managerBandung != null) {
-                bandungBranch.setBranchManager(managerBandung);
-                // managerBandung.setBranch(bandungBranch);
-            }
+        // if (bandungBranch != null) {
+        //     if (managerBandung != null) {
+        //         bandungBranch.setBranchManager(managerBandung);
+        //         // managerBandung.setBranch(bandungBranch);
+        //     }
 
-            if (marketingBandung != null) {
-                marketingBandung.setBranch(bandungBranch); // Set branch untuk user marketing
-                bandungBranch.getMarketing().add(marketingBandung);
-            }
-            if (marketingBandung1 != null) {
-                marketingBandung1.setBranch(bandungBranch); // Set branch untuk user marketing
-                bandungBranch.getMarketing().add(marketingBandung1);
-            }
+        //     if (marketingBandung != null) {
+        //         marketingBandung.setBranch(bandungBranch); // Set branch untuk user marketing
+        //         bandungBranch.getMarketing().add(marketingBandung);
+        //     }
+        //     if (marketingBandung1 != null) {
+        //         marketingBandung1.setBranch(bandungBranch); // Set branch untuk user marketing
+        //         bandungBranch.getMarketing().add(marketingBandung1);
+        //     }
 
-            branchRepository.save(bandungBranch); // Simpan perubahan
-            if (marketingBandung != null) {
-                userRepository.save(marketingBandung); // Simpan perubahan pada user
-            }
-            if (marketingBandung1 != null) {
-                userRepository.save(marketingBandung1); // Simpan perubahan pada user
-            }
-            if (managerBandung != null) {
-                userRepository.save(managerBandung); // Simpan perubahan pada user
-            }
-        }
+        //     branchRepository.save(bandungBranch); // Simpan perubahan
+        //     if (marketingBandung != null) {
+        //         userRepository.save(marketingBandung); // Simpan perubahan pada user
+        //     }
+        //     if (marketingBandung1 != null) {
+        //         userRepository.save(marketingBandung1); // Simpan perubahan pada user
+        //     }
+        //     if (managerBandung != null) {
+        //         userRepository.save(managerBandung); // Simpan perubahan pada user
+        //     }
+        // }
     }
 
     private void seedLoanRequests() {
