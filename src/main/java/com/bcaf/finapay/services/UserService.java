@@ -83,6 +83,8 @@ public class UserService {
         return UserDto.fromEntity(user);
     }
 
+    
+
     // Update user
     public UserDto updateUser(String id, User userDetails) {
         User user = userRepository.findById(UUID.fromString(id))

@@ -200,7 +200,7 @@ public class AuthService {
         }
 
         String name = Objects.toString(payload.get("name"), "").trim();
-        String rawPassword = isSuperadmin ? rawPassword = RandomStringUtils.randomAlphanumeric(8)
+        String rawPassword = isSuperadmin ? RandomStringUtils.randomAlphanumeric(8)
                 : Objects.toString(payload.get("password"), "").trim();
         String roleId = Objects.toString(payload.get("role_id"), "").trim();
         boolean isActive = Boolean.parseBoolean(Objects.toString(payload.get("is_active"), "true"));
