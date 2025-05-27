@@ -265,7 +265,7 @@ public class AuthService {
 
         user.setPassword(newPassword);
 
-        userService.updateUser(user.getId().toString(), user);
+        userService.changePassword(user.getId().toString(), user);
     }
 
 }

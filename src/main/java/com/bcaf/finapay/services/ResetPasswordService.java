@@ -69,7 +69,6 @@ public class ResetPasswordService {
         } catch (IllegalArgumentException e) {
             throw new IllegalStateException("Token tidak valid!");
         }
-        System.out.println(resetPasswordId);
         ResetPassword resetPassword = resetPasswordRepository.findByIdAndUserEmail(resetPasswordId, email)
                 .orElseThrow(() -> new ResourceNotFoundException("User atau token tidak ditemukan"));
         if (resetPassword.getExpiredAt().isBefore(LocalDateTime.now())) {
@@ -85,7 +84,7 @@ public class ResetPasswordService {
 
         User user = resetPassword.getUser();
         user.setPassword(newPassword);
-        userService.updateUser(user.getId().toString(), user);
+        userService.changePassword(user.getId().toString(), user);
 
         resetPasswordRepository.delete(resetPassword);
     }

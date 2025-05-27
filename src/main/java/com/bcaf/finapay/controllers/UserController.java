@@ -12,6 +12,7 @@ import com.bcaf.finapay.models.User;
 import com.bcaf.finapay.services.UserService;
 
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @RestController
@@ -52,8 +53,8 @@ public class UserController {
 
     @Secured("FEATURE_MANAGE_USERS")
     @PutMapping("/{id}")
-    public ResponseEntity<ResponseDto> updateUser(@PathVariable String id, @RequestBody User user) {
-        UserDto updatedUser = userService.updateUser(id, user);
+    public ResponseEntity<ResponseDto> editUser(@PathVariable String id, @RequestBody Map<String, Object> payload) {
+        UserDto updatedUser = userService.updateUser(id, payload);
         return ResponseEntity.ok(new ResponseDto(200, "success", "User updated", updatedUser));
     }
     

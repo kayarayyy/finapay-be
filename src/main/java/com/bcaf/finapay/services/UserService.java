@@ -12,8 +12,12 @@ import com.bcaf.finapay.repositories.RoleRepository;
 import com.bcaf.finapay.repositories.UserRepository;
 
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 @Service
@@ -43,13 +47,15 @@ public class UserService {
     // return User with password for auth
     public User getUserByEmail(String email) {
         return userRepository.findByEmail(email)
-        .orElseThrow(() -> new ResourceNotFoundException("User tidak ditemukan, silahkan registrasi terlebih dahulu"));
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        "User tidak ditemukan, silahkan registrasi terlebih dahulu"));
     }
-    
+
     public User getUserByRefferal(String refferal) {
         return userRepository.findByRefferal(refferal)
-        .orElseThrow(() -> new ResourceNotFoundException("Refferal tidak ditemukan"));
+                .orElseThrow(() -> new ResourceNotFoundException("Refferal tidak ditemukan"));
     }
+
     // return User with password for auth
     public User getUserByNip(String nip) {
         return userRepository.findByNip(nip)
@@ -83,10 +89,41 @@ public class UserService {
         return UserDto.fromEntity(user);
     }
 
-    
+    public UserDto updateUser(String id, Map<String, Object> payload) {
+        User user = userRepository.findById(UUID.fromString(id))
+                .orElseThrow(() -> new ResourceNotFoundException("User tidak ditemukan!"));
+        String email = Objects.toString(payload.get("email"), "").trim();
+        String emailRegex = "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,6}$";
+
+        Pattern pattern = Pattern.compile(emailRegex);
+        Matcher matcher = pattern.matcher(email);
+
+        if (!matcher.matches()) {
+            throw new IllegalArgumentException("Email tidak valid");
+        }
+        String name = Objects.toString(payload.get("name"), "").trim();
+        String roleId = Objects.toString(payload.get("role_id"), "").trim();
+        boolean isActive = Boolean.parseBoolean(Objects.toString(payload.get("is_active"), "true"));
+        String nip = Objects.toString(payload.get("nip"), "").trim();
+        String refferal = Objects.toString(payload.get("refferal"), "").trim();
+
+        user.setName(name);
+        user.setEmail(email);
+        user.setActive(isActive);
+        user.setNip(nip);
+        user.setRefferal(refferal);
+        Optional<Role> role = roleRepository.findById(UUID.fromString(roleId));
+        if (role.isEmpty()) {
+            throw new ResourceNotFoundException("Role not found!");
+        }
+        user.setRole(role.get());
+
+        user = userRepository.save(user);
+        return UserDto.fromEntity(user);
+    }
 
     // Update user
-    public UserDto updateUser(String id, User userDetails) {
+    public UserDto changePassword(String id, User userDetails) {
         User user = userRepository.findById(UUID.fromString(id))
                 .orElseThrow(() -> new ResourceNotFoundException("User tidak ditemukan!"));
 
