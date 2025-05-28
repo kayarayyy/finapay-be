@@ -25,11 +25,11 @@ jobs:
       - name: Build Spring Boot App (Maven)
         run: ./mvnw clean package -DskipTests
 
-      - name: Copy JAR to Ubuntu VM
+      - name: Copy JAR to GCP VM
         uses: appleboy/scp-action@v0.1.4
         with:
           host: ${{ secrets.VM_HOST }}
           username: ${{ secrets.VM_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           source: "target/*.jar"
-          target: "/var/www/yourapp/app.jar"
+          target: "/home/${{ secrets.VM_USER }}/finapay"
