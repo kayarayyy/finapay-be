@@ -80,7 +80,7 @@ public class Seeder implements CommandLineRunner {
         seedBranches();
         seedPlafond();
         seedEmployeeDetails();
-        seedCustomerDetails();
+        // seedCustomerDetails();
         // seedLoanRequests();
     }
 
