@@ -41,14 +41,33 @@ jobs:
           username: ${{ secrets.VM_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
+            echo "Stopping existing Java process if running..."
             pkill -f 'java' || true
+
+            echo "Navigating to app directory..."
             cd /home/${{ secrets.VM_USER }}/finapay/target
-            
+
+            echo "Loading environment variables from /etc/environment..."
             set -a
             source /etc/environment
             set +a
+
             echo "DB_URL=$DB_URL"
             echo "DB_USER=$DB_USER"
             echo "DB_PASS=$DB_PASS"
+
+            echo "Starting Spring Boot app..."
+            nohup java -jar *.jar --spring.profiles.active=prod > app.log 2>&1 &
+            disown
+
+            echo "Waiting 5 seconds for the app to initialize..."
+            sleep 5
+
+            echo "Showing last 20 lines of app.log:"
+            tail -n 20 app.log || true
+
+            echo "Deployment finished. Spring Boot app started."
+
+
 
 
