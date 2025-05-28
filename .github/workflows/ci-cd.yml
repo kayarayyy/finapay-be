@@ -45,7 +45,9 @@ jobs:
             export DB_URL=${{ secrets.DB_URL }}
             export DB_USER=${{ secrets.DB_USER }}
             export DB_PASS=${{ secrets.DB_PASS }}
-            
+
             pkill -f 'java' || true
             cd /home/${{ secrets.VM_USER }}/finapay/target
-            nohup java -jar *.jar --spring.profiles.active=prod > app.log 2>&1 &
+            setsid java -jar *.jar --spring.profiles.active=prod > /home/${{ secrets.VM_USER }}/finapay/app.log 2>&1 < /dev/null &
+            echo "Spring Boot app started successfully in background."
+
