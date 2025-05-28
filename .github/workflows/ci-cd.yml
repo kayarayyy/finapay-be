@@ -42,7 +42,11 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
             echo "Stopping existing Java process if running..."
-            pkill -f 'java' || true
+            pids=$(pgrep -f 'java.*finapay')
+            if [ -n "$pids" ]; then
+              echo "Found Java PIDs: $pids"
+              kill $pids
+            fi
 
             echo "Navigating to app directory..."
             cd /home/${{ secrets.VM_USER }}/finapay/target
@@ -58,15 +62,15 @@ jobs:
 
             echo "Starting Spring Boot app..."
             nohup java -jar finapay-0.0.1-SNAPSHOT.jar --spring.profiles.active=prod > app.log 2>&1 &
-            disown
 
             echo "Waiting 5 seconds for the app to initialize..."
             sleep 5
 
-            echo "Tailing app.log for 30 seconds..."
-            timeout 30s tail -f app.log || true
+            echo "Tailing app.log for 10 lines..."
+            tail -n 10 app.log || true
 
             echo "Deployment finished. Spring Boot app started."
+
 
 
 
