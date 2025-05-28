@@ -22,6 +22,11 @@ jobs:
       - name: Give execute permission to mvnw
         run: chmod +x ./mvnw
 
+      - name: Decode Firebase credentials and save to resources
+        run: |
+          mkdir -p src/main/resources
+          echo "${{ secrets.FIREBASE_SERVICE_ACCOUNT_B64 }}" | base64 -d > src/main/resources/firebase-service-account.json
+
       - name: Build Spring Boot App (Maven)
         run: ./mvnw clean package -DskipTests
 
