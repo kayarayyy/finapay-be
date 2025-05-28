@@ -63,13 +63,19 @@ jobs:
             echo "Starting Spring Boot app..."
             nohup java -jar finapay-0.0.1-SNAPSHOT.jar --spring.profiles.active=prod > app.log 2>&1 &
 
-            echo "Waiting 5 seconds for the app to initialize..."
+            # Simpan PID-nya ke file
+            echo $! > app.pid
+
             sleep 5
 
-            echo "Tailing app.log for 10 lines..."
-            tail -n 10 app.log || true
+            echo "Checking if Spring Boot is running..."
+            if ps -p $(cat app.pid) > /dev/null; then
+              echo "Spring Boot is running with PID $(cat app.pid)"
+            else
+              echo "Spring Boot failed to start"
+              exit 1
+            fi
 
-            echo "Deployment finished. Spring Boot app started."
 
 
 
