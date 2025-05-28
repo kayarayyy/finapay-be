@@ -3,7 +3,7 @@ name: Deploy Spring Boot to Ubuntu VM
 on:
   push:
     branches:
-      - main  # Sesuaikan dengan branch kamu
+      - main
 
 jobs:
   build:
@@ -18,6 +18,9 @@ jobs:
         with:
           java-version: '21'
           distribution: 'temurin'
+
+      - name: Give execute permission to mvnw
+        run: chmod +x ./mvnw
 
       - name: Build Spring Boot App (Maven)
         run: ./mvnw clean package -DskipTests
