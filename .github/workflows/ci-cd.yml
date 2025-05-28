@@ -25,59 +25,21 @@ jobs:
       - name: Build Spring Boot App (Maven)
         run: ./mvnw clean package -DskipTests
 
-      - name: Copy JAR to GCP VM
+      - name: Copy JAR to GCP VM target folder
         uses: appleboy/scp-action@v0.1.4
         with:
           host: ${{ secrets.VM_HOST }}
           username: ${{ secrets.VM_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           source: "target/*.jar"
-          target: "/home/${{ secrets.VM_USER }}/finapay"
+          target: "/home/${{ secrets.VM_USER }}/finapay/target"
 
-      - name: Run Spring Boot on Ubuntu VM with Env Vars
+      - name: Run start.sh on Ubuntu VM with Env Vars
         uses: appleboy/ssh-action@v0.1.7
         with:
           host: ${{ secrets.VM_HOST }}
           username: ${{ secrets.VM_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
-            echo "Stopping existing Java process if running..."
-            pids=$(pgrep -f 'java.*finapay')
-            if [ -n "$pids" ]; then
-              echo "Found Java PIDs: $pids"
-              kill $pids
-            fi
 
-            echo "Navigating to app directory..."
-            cd /home/${{ secrets.VM_USER }}/finapay/target
-
-            echo "Loading environment variables from /etc/environment..."
-            set -a
-            source /etc/environment
-            set +a
-
-            echo "DB_URL=$DB_URL"
-            echo "DB_USER=$DB_USER"
-            echo "DB_PASS=$DB_PASS"
-
-            echo "Starting Spring Boot app..."
-            nohup java -jar finapay-0.0.1-SNAPSHOT.jar --spring.profiles.active=prod > app.log 2>&1 &
-
-            # Simpan PID-nya ke file
-            echo $! > app.pid
-
-            sleep 5
-
-            echo "Checking if Spring Boot is running..."
-            if ps -p $(cat app.pid) > /dev/null; then
-              echo "Spring Boot is running with PID $(cat app.pid)"
-            else
-              echo "Spring Boot failed to start"
-              exit 1
-            fi
-
-
-
-
-
-
+            /home/${{ secrets.VM_USER }}/start.sh
