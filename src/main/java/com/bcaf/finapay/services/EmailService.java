@@ -78,8 +78,8 @@ public class EmailService {
 
     private String generateResetLink(String id) {
         
-        String url = baseUrl + "/reset-password/";
-        return url + id.toString();
+        String url = baseUrl + "/reset-password?id=" + id.toString();
+        return url;
     }
 
     public void sendCustomerRegistrationEmail(User user) {

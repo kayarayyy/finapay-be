@@ -39,13 +39,13 @@ public class JwtUtil {
     private RoleRepository roleRepository;
 
     private Key getSigningKey() {
-        System.out.println(secretKey);
+        // System.out.println(secretKey);
         byte[] keyBytes = secretKey.getBytes(StandardCharsets.UTF_8);
         return new SecretKeySpec(keyBytes, SignatureAlgorithm.HS256.getJcaName());
     }
 
     public String generateToken(Authentication authentication) {
-        try {
+        // try {
             String username;
             String roleId;
             if (authentication.getPrincipal() instanceof CustomUserDetails userPrincipal) {
@@ -69,10 +69,10 @@ public class JwtUtil {
                     .signWith(getSigningKey())
                     .compact();
             return token;
-        } catch (Exception e) {
-            System.out.println("Error generate jwt: " + e);
-            return null;
-        }
+        // } catch (Exception e) {
+        //     System.out.println("Error generate jwt: " + e);
+        //     return null;
+        // }
     }
 
     public boolean validateToken(String token) {
