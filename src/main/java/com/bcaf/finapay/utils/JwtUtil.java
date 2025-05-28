@@ -39,6 +39,7 @@ public class JwtUtil {
     private RoleRepository roleRepository;
 
     private Key getSigningKey() {
+        System.out.println(secretKey);
         byte[] keyBytes = secretKey.getBytes(StandardCharsets.UTF_8);
         return new SecretKeySpec(keyBytes, SignatureAlgorithm.HS256.getJcaName());
     }
