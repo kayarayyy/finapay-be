@@ -53,4 +53,4 @@ jobs:
             pkill -f 'java' || true
             cd /home/${{ secrets.VM_USER }}/finapay/target
             setsid java -jar *.jar --spring.profiles.active=prod > /home/${{ secrets.VM_USER }}/finapay/app.log 2>&1 < /dev/null & disown
-            echo "Spring Boot app started successfully."
+            echo "Spring Boot app started successfull."
