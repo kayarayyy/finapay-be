@@ -44,28 +44,34 @@ public class JwtUtil {
     }
 
     public String generateToken(Authentication authentication) {
-        String username;
-        String roleId;
-        if (authentication.getPrincipal() instanceof CustomUserDetails userPrincipal) {
-            username = userPrincipal.getUsername();
-            roleId = userPrincipal.getUser().getRole().getId().toString();
-        } else {
-            throw new IllegalArgumentException("Unsupported principal type");
+        try {
+            String username;
+            String roleId;
+            if (authentication.getPrincipal() instanceof CustomUserDetails userPrincipal) {
+                username = userPrincipal.getUsername();
+                roleId = userPrincipal.getUser().getRole().getId().toString();
+            } else {
+                throw new IllegalArgumentException("Unsupported principal type");
+            }
+            Map<String, Object> claims = new HashMap<>();
+            claims.put("roleId", roleId);
+            Date now = new Date();
+            Calendar calendar = Calendar.getInstance();
+            calendar.setTime(new Date());
+            calendar.add(calendar.HOUR, expiration);
+            Date expiredDate = calendar.getTime();
+            String token = Jwts.builder()
+                    .setSubject(username)
+                    .addClaims(claims)
+                    .setIssuedAt(now)
+                    .setExpiration(expiredDate)
+                    .signWith(getSigningKey())
+                    .compact();
+            return token;
+        } catch (Exception e) {
+            System.out.println("Error generate jwt: " + e);
+            return null;
         }
-        Map<String, Object> claims = new HashMap<>();
-        claims.put("roleId", roleId);
-        Date now = new Date();
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTime(new Date());
-        calendar.add(calendar.HOUR, expiration);
-        Date expiredDate = calendar.getTime();
-        return Jwts.builder()
-                .setSubject(username)
-                .addClaims(claims)
-                .setIssuedAt(now)
-                .setExpiration(expiredDate)
-                .signWith(getSigningKey())
-                .compact();
     }
 
     public boolean validateToken(String token) {
@@ -93,6 +99,7 @@ public class JwtUtil {
                 .parseClaimsJws(token)
                 .getBody();
     }
+
     public boolean isTokenExpired(String token) {
         return extractAllClaims(token).getExpiration().before(new Date());
     }
@@ -117,7 +124,6 @@ public class JwtUtil {
 
         return token;
     }
-
 
     public boolean isSuperadmin(String token) {
         if (token == null || token.trim().isEmpty()) {
