@@ -39,7 +39,6 @@ public class Role implements GrantedAuthority {
     @JsonIgnore
     private List<RoleFeature> roleFeatures = new ArrayList<>();
 
-    // Constructor hanya dengan name
     public Role(String name) {
         this.name = name;
     }
