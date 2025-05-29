@@ -290,7 +290,7 @@ public class Seeder implements CommandLineRunner {
             createUser("Marketing", "rayrizkyfawzy@gmail.com", "marketing123", "MARKETING", "2025111", "REF2025111");
             createUser("Marketing 1", "marketing1@gmail.com", "marketing123", "MARKETING", "2025112", "REF2025112");
             createUser("Marketing 2", "marketing2@gmail.com", "marketing123", "MARKETING", "2025113", "REF2025113");
-            createUser("Customer", "bitcoinid86@gmail.com", "customer123", "CUSTOMER", null, null);
+            // createUser("Customer", "bitcoinid86@gmail.com", "customer123", "CUSTOMER", null, null);
             createUser("Customer 1", "customer1@gmail.com", "customer123", "CUSTOMER", null, null);
             createUser("Branch Manager", "branchmanager@gmail.com", "branchmanager123", "BRANCH_MANAGER", "2025121",
                     null);
