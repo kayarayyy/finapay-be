@@ -49,7 +49,7 @@ public class SecurityConfig implements WebMvcConfigurer {
     @Autowired
     private CustomAccessDeniedHandler customAccessDeniedHandler;
 
-    @Value("${base.url}")
+    @Value("${base.url.vercel}")
     private String baseUrl;
 
     @Bean
