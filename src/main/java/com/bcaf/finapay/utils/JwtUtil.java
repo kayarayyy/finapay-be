@@ -15,7 +15,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
 import com.bcaf.finapay.models.Role;
@@ -29,18 +28,18 @@ import io.jsonwebtoken.SignatureAlgorithm;
 
 @Component
 public class JwtUtil {
-    @Value("${jwt.secret}")
-    private String secretKey;
+    // @Value("${jwt.secret}")
+    // private String secretKey;
 
-    @Value("${jwt.expiration}")
-    private int expiration;
+    // @Value("${jwt.expiration}")
+    // private int expiration;
 
     @Autowired
     private RoleRepository roleRepository;
 
     private Key getSigningKey() {
         // System.out.println(secretKey);
-        byte[] keyBytes = secretKey.getBytes(StandardCharsets.UTF_8);
+        byte[] keyBytes = "S7vZ8y!wK#f*Pm4eRqLdGtBjXzU9aCvH".getBytes(StandardCharsets.UTF_8);
         return new SecretKeySpec(keyBytes, SignatureAlgorithm.HS256.getJcaName());
     }
 
@@ -59,7 +58,7 @@ public class JwtUtil {
             Date now = new Date();
             Calendar calendar = Calendar.getInstance();
             calendar.setTime(new Date());
-            calendar.add(calendar.HOUR, expiration);
+            calendar.add(calendar.HOUR, 24);
             Date expiredDate = calendar.getTime();
             String token = Jwts.builder()
                     .setSubject(username)
