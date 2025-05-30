@@ -14,7 +14,7 @@ import com.bcaf.finapay.models.User;
 public class EmailService {
     private static final Logger logger = LoggerFactory.getLogger(EmailService.class);
     private final JavaMailSender emailSender;
-    @Value("${base.url}")
+    @Value("${base.url.vercel}")
     private String baseUrl;
 
     public EmailService(JavaMailSender emailSender) {
