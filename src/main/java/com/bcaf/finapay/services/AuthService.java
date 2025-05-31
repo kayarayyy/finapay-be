@@ -3,6 +3,7 @@ package com.bcaf.finapay.services;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -22,6 +23,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.bcaf.finapay.dto.AuthDto;
+import com.bcaf.finapay.dto.UserDto;
+import com.bcaf.finapay.exceptions.ResourceNotFoundException;
 import com.bcaf.finapay.models.Role;
 import com.bcaf.finapay.models.User;
 import com.bcaf.finapay.repositories.UserRepository;
@@ -66,6 +69,10 @@ public class AuthService {
 
     public AuthDto login(String email, String rawPassword, String fcmToken) {
         User user = userService.getUserByEmail(email);
+        if (!user.isActive()) {
+            throw new AccessDeniedException(
+                    "Akun Anda belum aktif. Silakan periksa email Anda dan ikuti tautan aktivasi yang telah dikirimkan saat registrasi.");
+        }
 
         if (!user.getRole().getName().equalsIgnoreCase("CUSTOMER")) {
             throw new AccessDeniedException("Anda tidak memiliki akses untuk login");
@@ -88,7 +95,6 @@ public class AuthService {
             fcmTokenServices.saveToken(email, fcmToken);
         }
 
-
         return new AuthDto(
                 user.getEmail(),
                 user.getName(),
@@ -100,28 +106,28 @@ public class AuthService {
 
     public AuthDto login_with_google(String idToken, String fcmToken) {
         GoogleIdToken.Payload payload = googleTokenVerifier.verify(idToken);
-    
+
         if (payload == null) {
             throw new AuthenticationCredentialsNotFoundException("User not authenticated.");
         }
-    
+
         String email = payload.getEmail();
         String name = (String) payload.get("name");
         String pictureUrl = (String) payload.get("picture");
-    
+
         User user = userRepository.findByEmail(email).orElse(null);
         if (user == null) {
             // Buat akun baru
             Role customerRole = roleService.getRoleByName("CUSTOMER");
             String rawPassword = RandomStringUtils.randomAlphanumeric(8); // password dummy
-    
+
             user = new User();
             user.setEmail(email);
             user.setName(name);
             user.setPassword(passwordEncoder.encode(rawPassword)); // password dummy
             user.setRole(customerRole);
             user.setActive(true);
-    
+
             user = userRepository.save(user);
             emailService.sendCustomerGoogleRegistrationEmail(user, rawPassword);
         }
@@ -129,26 +135,25 @@ public class AuthService {
         if (!user.getRole().getName().equalsIgnoreCase("CUSTOMER")) {
             throw new AccessDeniedException("Anda tidak memiliki akses untuk login");
         }
-    
-    
+
         // Set autentikasi manual tanpa pakai password
         CustomUserDetails userDetails = (CustomUserDetails) CustomUserDetails.build(user);
         Authentication authentication = new UsernamePasswordAuthenticationToken(
                 userDetails,
                 null,
                 userDetails.getAuthorities());
-    
+
         SecurityContextHolder.getContext().setAuthentication(authentication);
-    
+
         List<String> features = userDetails.getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority)
                 .toList();
-    
+
         String token = jwtUtil.generateToken(authentication);
-         if (fcmToken != null) {
+        if (fcmToken != null) {
             fcmTokenServices.saveToken(email, fcmToken);
         }
-    
+
         return new AuthDto(
                 user.getEmail(),
                 user.getName(),
@@ -157,7 +162,6 @@ public class AuthService {
                 token,
                 features);
     }
-    
 
     public AuthDto login_employee(String nip, String rawPassword) {
         User user = userService.getUserByNip(nip);
@@ -183,6 +187,23 @@ public class AuthService {
                 user.isActive(),
                 token,
                 features);
+    }
+
+    @Transactional
+    public void generateActivationLink(String email) {
+        User user = userService.getUserByEmail(email);
+        if (user.isActive()) {
+            throw new IllegalArgumentException("Akun telah teraktivasi, silahkan login");
+        }
+
+        emailService.sendActivationLink(user);
+    }
+
+    public void activate(String id) {
+        User user = userRepository.findById(UUID.fromString(id))
+                .orElseThrow(() -> new ResourceNotFoundException("User not found!"));
+        user.setActive(true);
+        userRepository.save(user);
     }
 
     @Transactional
@@ -228,6 +249,7 @@ public class AuthService {
         if (role.getName().equals("CUSTOMER")) {
             user.setNip(null);
             user.setRefferal(null);
+            user.setActive(false);
             passwordUtils.isPasswordStrong(rawPassword);
             userService.createUser(user);
 

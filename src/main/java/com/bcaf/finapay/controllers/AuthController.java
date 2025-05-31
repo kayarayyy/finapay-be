@@ -77,7 +77,6 @@ public class AuthController {
                 user.isActive(),
                 token,
                 Arrays.asList("")), "Register successful");
-
     }
 
     @DeleteMapping("/logout/{fcmToken}")
@@ -112,5 +111,18 @@ public class AuthController {
         resetPasswordService.setNewPasswordByResetPasswordEmail(id, email,
                 new_password, confirm_password);
         return ResponseUtil.success(null, "Reset password successful");
+    }
+
+    @PostMapping("/generate-activation-link")
+    public ResponseEntity<ResponseDto> getActivationLink(@RequestBody Map<String, Object> payload) {
+        String email = (String) payload.get("email");
+        authService.generateActivationLink(email);
+        return ResponseUtil.created(null, "Instruksi aktivasi akun telah dikirimkan ke " + email);
+    }
+
+    @GetMapping("/activate/{id}")
+    public ResponseEntity<ResponseDto> activateAccount(@PathVariable String id) {
+        authService.activate(id);
+        return ResponseUtil.success(true, "Aktivasi akun berhasil dilakukan");
     }
 }

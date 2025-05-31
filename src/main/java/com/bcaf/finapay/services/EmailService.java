@@ -88,17 +88,42 @@ public class EmailService {
     }
 
     public void sendCustomerRegistrationEmail(User user) {
-        String subject = "Registrasi Akun Berhasil - FINAPay";
-        String body = String.format(
-                "Halo " + user.getName() + ",\n\n" +
-                        "Selamat! Akun Anda telah berhasil dibuat di FINAPay.\n\n" +
-                        "Berikut adalah detail akun Anda:\n" +
-                        "Nama: " + user.getName() + "\n" +
-                        "Email: " + user.getEmail() + "\n\n" +
-                        "Anda sekarang dapat menggunakan layanan kami. Jika ada pertanyaan, hubungi support kami.\n\n" +
-                        "Terima kasih,\n" +
-                        "Tim FINAPay");
+        String activationLink = generateActivationLink(user.getId().toString());
+        String subject = "Aktivasi Akun FINAPay Anda";
+        String body = "Halo " + user.getName() + ",\n\n" +
+                "Selamat! Akun Anda telah berhasil didaftarkan di FINAPay.\n\n" +
+                "Berikut adalah detail akun Anda:\n" +
+                "Nama  : " + user.getName() + "\n" +
+                "Email : " + user.getEmail() + "\n\n" +
+                "Untuk mengaktifkan akun Anda, silakan klik tautan berikut:\n" +
+                activationLink + "\n\n" +
+                "Jika Anda tidak merasa melakukan pendaftaran, silakan abaikan email ini.\n\n" +
+                "Terima kasih,\n" +
+                "Tim FINAPay";
+
         sendEmail(user.getEmail(), subject, body);
+    }
+
+    public void sendActivationLink(User user) {
+        String activationLink = generateActivationLink(user.getId().toString());
+        String subject = "Aktivasi Akun FINAPay Anda";
+        String body = "Halo " + user.getName() + ",\n\n" +
+                "Berikut adalah detail akun Anda:\n" +
+                "Nama  : " + user.getName() + "\n" +
+                "Email : " + user.getEmail() + "\n\n" +
+                "Untuk mengaktifkan akun Anda, silakan klik tautan berikut:\n" +
+                activationLink + "\n\n" +
+                "Jika Anda tidak merasa melakukan pendaftaran, silakan abaikan email ini.\n\n" +
+                "Terima kasih,\n" +
+                "Tim FINAPay";
+
+        sendEmail(user.getEmail(), subject, body);
+    }
+
+    private String generateActivationLink(String id) {
+
+        String url = baseUrl + "/activate?id=" + id.toString();
+        return url;
     }
 
     public void sendCustomerGoogleRegistrationEmail(User user, String rawPassword) {

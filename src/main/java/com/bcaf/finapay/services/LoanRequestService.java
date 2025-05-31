@@ -346,7 +346,7 @@ public class LoanRequestService {
                                     "Pengajuan Disetujui - FINAPay",
                                     "Pengajuan telah disetujui menunggu pencairan dana");
                         } catch (Exception e) {
-                            throw new IllegalArgumentException("Notifikasi gagal terkirim");
+                            // throw new IllegalArgumentException("Notifikasi gagal terkirim");
                         }
                     }
                     emailService.sendLoanApprovedEmail(LoanRequestDto.fromEntity(loanRequest));
@@ -478,7 +478,7 @@ public class LoanRequestService {
                                             " ke rekening tujuan: " + customerDetails.getNoRek());
 
                         } catch (Exception e) {
-                            throw new IllegalArgumentException("Notifikasi gagal terkirim");
+                            // throw new IllegalArgumentException("Notifikasi gagal terkirim");
                         }
                     }
                     emailService.sendLoanDisbursementEmail(LoanRequestDto.fromEntity(loanRequest),
