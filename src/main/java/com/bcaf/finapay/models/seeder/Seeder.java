@@ -80,7 +80,7 @@ public class Seeder implements CommandLineRunner {
         seedBranches();
         seedPlafond();
         seedEmployeeDetails();
-        // seedCustomerDetails();
+        seedCustomerDetails();
         // seedLoanRequests();
     }
 
@@ -415,10 +415,10 @@ public class Seeder implements CommandLineRunner {
     }
 
     private void seedCustomerDetails() {
-        if (userRepository.existsByEmail("bitcoinid86@gmail.com") &&
+        if (userRepository.existsByEmail("customer1@gmail.com") &&
                 plafondRepository.existsByPlan("BRONZE")) {
 
-            User customer = userRepository.findByEmail("bitcoinid86@gmail.com").orElse(null);
+            User customer = userRepository.findByEmail("customer1@gmail.com").orElse(null);
             Plafond bronzePlafond = plafondRepository.findByPlan("GOLD").orElse(null);
 
             if (customer != null && bronzePlafond != null) {

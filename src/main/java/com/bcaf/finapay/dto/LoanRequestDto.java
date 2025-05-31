@@ -16,6 +16,7 @@ public class LoanRequestDto {
     private Double interest;
     private Double adminFee;
     private String refferal;
+    private String purpose;
     private UserDto customer;
     private UserDto marketing;
     private Boolean marketingApprove;
@@ -35,7 +36,7 @@ public class LoanRequestDto {
     private LoanStatus status;
     private String instalment;
 
-    public LoanRequestDto(UUID id, double amount, int tenor, Double interest, Double adminFee, String refferal,
+    public LoanRequestDto(UUID id, double amount, int tenor, Double interest, Double adminFee, String refferal, String purpose,
             UserDto customer, UserDto marketing,
             Boolean marketingApprove, String marketingNotes, LocalDateTime marketingReviewedAt, UserDto branchManager,
             Boolean branchManagerApprove, String branchManagerNotes, LocalDateTime branchManagerApprovedAt,
@@ -47,6 +48,7 @@ public class LoanRequestDto {
         this.interest = interest;
         this.adminFee = adminFee;
         this.refferal = refferal;
+        this.purpose = purpose;
         this.customer = customer;
         this.marketing = marketing;
         this.marketingApprove = marketingApprove;
@@ -96,6 +98,9 @@ public class LoanRequestDto {
 
     public String getRefferal() {
         return refferal;
+    }
+    public String getPurpose() {
+        return purpose;
     }
 
     public UserDto getCustomer() {
@@ -179,6 +184,7 @@ public class LoanRequestDto {
                 loanRequest.getInterest(),
                 loanRequest.getAdminFee(),
                 loanRequest.getRefferal(),
+                loanRequest.getPurpose(),
                 loanRequest.getCustomer() != null ? UserDto.fromEntity(loanRequest.getCustomer()) : null,
                 loanRequest.getMarketing() != null ? UserDto.fromEntity(loanRequest.getMarketing()) : null,
                 loanRequest.getMarketingApprove(),

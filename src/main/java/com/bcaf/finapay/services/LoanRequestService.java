@@ -103,6 +103,7 @@ public class LoanRequestService {
 
         double userLat = Double.parseDouble(payload.get("latitude").toString());
         double userLon = Double.parseDouble(payload.get("longitude").toString());
+        String purpose = (String) payload.getOrDefault("purpose", "-");
 
         // Set Customer (required)
         CustomerDetails customerDetails = customerDetailsService.getByEmail(email);
@@ -140,6 +141,7 @@ public class LoanRequestService {
         loanRequest.setLatitude(userLat);
         loanRequest.setLongitude(userLon);
         loanRequest.setTenor(tenor);
+        loanRequest.setPurpose(purpose);
         loanRequest.setStatus(LoanStatus.REVIEW);
 
         // Set Marketing (optional)
@@ -429,19 +431,19 @@ public class LoanRequestService {
                             .getByEmail(loanRequest.getCustomer().getEmail());
                     Double plafond = customerDetails.getAvailablePlafond();
                     Double amount = loanRequest.getAmount();
-                    Double interest = loanRequest.getInterest();
-                    Double adminFee = loanRequest.getAdminFee();
+                    // Double interest = loanRequest.getInterest();
+                    // Double adminFee = loanRequest.getAdminFee();
 
                     double availablePlafond = (plafond != null ? plafond : 0.0)
-                            - (amount != null ? amount : 0.0)
-                            - (interest != null ? interest : 0.0)
-                            - (adminFee != null ? adminFee : 0.0);
+                            - (amount != null ? amount : 0.0);
+                    // - (interest != null ? interest : 0.0)
+                    // - (adminFee != null ? adminFee : 0.0);
 
                     if (availablePlafond < 0) {
                         throw new IllegalArgumentException("Plafond tidak mencukupi, pengajuan tidak dapat dicairkan");
                     }
                     // if (customerDetails.getNoRek().isEmpty()) {
-                    //     throw new IllegalArgumentException("Nomor rekening tujuan tidak ditemukan");
+                    // throw new IllegalArgumentException("Nomor rekening tujuan tidak ditemukan");
                     // }
 
                     customerDetails.setAvailablePlafond(availablePlafond);

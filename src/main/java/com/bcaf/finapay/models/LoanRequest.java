@@ -48,6 +48,9 @@ public class LoanRequest {
     @Column(nullable = false)
     private int tenor;
 
+    @Column(nullable = true)
+    private String purpose;
+
     @ManyToOne
     @JoinColumn(name = "branch", referencedColumnName = "city")
     @JsonBackReference
