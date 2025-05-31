@@ -20,31 +20,36 @@ jobs:
           distribution: 'temurin'
 
       - name: Give execute permission to mvnw
-        run: chmod +x ./mvnw
+        run: chmod +x mvnw
 
-      - name: Decode Firebase credentials and save to resources
+      - name: Create Firebase Admin SDK JSON
         run: |
           mkdir -p src/main/resources
-          echo "${{ secrets.FIREBASE_SERVICE_ACCOUNT_B64 }}" | base64 -d > src/main/resources/firebase-service-account.json
+          mkdir -p src/main/resources
+          cat <<EOF > src/main/resources/firebase-service-account.json
+          ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+          EOF
+
 
       - name: Build Spring Boot App (Maven)
         run: ./mvnw clean package -DskipTests
 
-      - name: Copy JAR to GCP VM target folder
+
+      - name: Copy JAR to GCP VM
         uses: appleboy/scp-action@v0.1.4
         with:
-          host: ${{ secrets.VM_HOST }}
-          username: ${{ secrets.VM_USER }}
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          source: "target/*.jar"
-          target: "/home/${{ secrets.VM_USER }}/finapay/target"
+            host: ${{ secrets.VM_HOST }}
+            username: ${{ secrets.VM_USER }}
+            key: ${{ secrets.SSH_PRIVATE_KEY }}
+            source: "target/*.jar"
+            target: "/home/${{ secrets.VM_USER }}/finapay"
 
-      - name: Run start.sh on Ubuntu VM with Env Vars
+
+      - name: Run Spring Boot on Ubuntu VM with Env Vars
         uses: appleboy/ssh-action@v0.1.7
         with:
           host: ${{ secrets.VM_HOST }}
           username: ${{ secrets.VM_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
-
-            /home/${{ secrets.VM_USER }}/start.sh
+            ./start.sh
