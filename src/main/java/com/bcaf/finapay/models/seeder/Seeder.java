@@ -290,7 +290,7 @@ public class Seeder implements CommandLineRunner {
             createUser("Marketing", "rayrizkyfawzy@gmail.com", "marketing123", "MARKETING", "2025111", "REF2025111");
             createUser("Marketing 1", "marketing1@gmail.com", "marketing123", "MARKETING", "2025112", "REF2025112");
             createUser("Marketing 2", "marketing2@gmail.com", "marketing123", "MARKETING", "2025113", "REF2025113");
-            // createUser("Customer", "bitcoinid86@gmail.com", "customer123", "CUSTOMER", null, null);
+            createUser("Customer", "bitcoinid86@gmail.com", "customer123", "CUSTOMER", null, null);
             createUser("Customer 1", "customer1@gmail.com", "customer123", "CUSTOMER", null, null);
             createUser("Branch Manager", "branchmanager@gmail.com", "branchmanager123", "BRANCH_MANAGER", "2025121",
                     null);
@@ -415,10 +415,10 @@ public class Seeder implements CommandLineRunner {
     }
 
     private void seedCustomerDetails() {
-        if (userRepository.existsByEmail("customer1@gmail.com") &&
-                plafondRepository.existsByPlan("BRONZE")) {
+        if (userRepository.existsByEmail("bitcoinid86@gmail.com") &&
+                plafondRepository.existsByPlan("GOLD")) {
 
-            User customer = userRepository.findByEmail("customer1@gmail.com").orElse(null);
+            User customer = userRepository.findByEmail("bitcoinid86@gmail.com").orElse(null);
             Plafond bronzePlafond = plafondRepository.findByPlan("GOLD").orElse(null);
 
             if (customer != null && bronzePlafond != null) {
@@ -440,24 +440,30 @@ public class Seeder implements CommandLineRunner {
             }
         }
         // if (userRepository.existsByEmail("customer1@gmail.com") &&
-        //         plafondRepository.existsByPlan("BRONZE")) {
+        //         plafondRepository.existsByPlan("GOLD")) {
 
         //     User customer = userRepository.findByEmail("customer1@gmail.com").orElse(null);
-        //     Plafond bronzePlafond = plafondRepository.findByPlan("BRONZE").orElse(null);
+        //     Plafond bronzePlafond = plafondRepository.findByPlan("GOLD").orElse(null);
 
         //     if (customer != null && bronzePlafond != null) {
         //         // Cek apakah data customer detail sudah pernah dibuat
         //         boolean exists = customerDetailsRepository.findByUserEmail(customer.getEmail()).isPresent();
+        //         LocalDate ttl = LocalDate.now();
         //         if (!exists) {
         //             CustomerDetails details = new CustomerDetails();
         //             details.setUser(customer);
         //             details.setPlafondPlan(bronzePlafond);
         //             details.setAvailablePlafond(bronzePlafond.getAmount());
-
+        //             details.setStreet("Jl. Raya Sukamahi");
+        //             details.setDistrict("Bekasi");
+        //             details.setProvince("Jawa Barat");
+        //             details.setPostalCode("17530");
+        //             details.setTtl(ttl);
         //             customerDetailsRepository.save(details);
         //         }
         //     }
         // }
+
     }
 
     private void seedEmployeeDetails() {

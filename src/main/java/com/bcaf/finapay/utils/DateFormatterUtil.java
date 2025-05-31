@@ -29,4 +29,11 @@ public class DateFormatterUtil {
         return dateTime.toLocalDate().format(formatter);
     }
 
+    public static String addOneMonthToLongIndonesianDate(String dateStr) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd MMMM yyyy", LOCALE_ID);
+        LocalDate date = LocalDate.parse(dateStr, formatter);
+        LocalDate plusOneMonth = date.plusMonths(1);
+        return plusOneMonth.format(formatter);
+    }
+
 }

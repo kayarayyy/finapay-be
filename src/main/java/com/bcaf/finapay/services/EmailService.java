@@ -2,13 +2,19 @@ package com.bcaf.finapay.services;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.MailException;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 
+import com.bcaf.finapay.dto.CustomerDetailsDto;
+import com.bcaf.finapay.dto.LoanRequestDto;
+import com.bcaf.finapay.dto.UserDto;
+import com.bcaf.finapay.models.LoanRequest;
 import com.bcaf.finapay.models.User;
+import com.bcaf.finapay.utils.DateFormatterUtil;
 
 @Service
 public class EmailService {
@@ -58,7 +64,6 @@ public class EmailService {
         sendEmail(to, subject, body);
     }
 
-
     public void sendRequestResetPassword(String name, String email, String id) {
         String subject = "Reset Password - FINAPay";
         String body = String.format(
@@ -77,7 +82,7 @@ public class EmailService {
     }
 
     private String generateResetLink(String id) {
-        
+
         String url = baseUrl + "/reset-password?id=" + id.toString();
         return url;
     }
@@ -85,29 +90,83 @@ public class EmailService {
     public void sendCustomerRegistrationEmail(User user) {
         String subject = "Registrasi Akun Berhasil - FINAPay";
         String body = String.format(
-            "Halo " + user.getName() + ",\n\n" +
-                    "Selamat! Akun Anda telah berhasil dibuat di FINAPay.\n\n" +
-                    "Berikut adalah detail akun Anda:\n" +
-                    "Nama: " + user.getName() + "\n" +
-                    "Email: " + user.getEmail() + "\n\n" +
-                    "Anda sekarang dapat menggunakan layanan kami. Jika ada pertanyaan, hubungi support kami.\n\n" +
-                    "Terima kasih,\n" +
-                    "Tim FINAPay");
+                "Halo " + user.getName() + ",\n\n" +
+                        "Selamat! Akun Anda telah berhasil dibuat di FINAPay.\n\n" +
+                        "Berikut adalah detail akun Anda:\n" +
+                        "Nama: " + user.getName() + "\n" +
+                        "Email: " + user.getEmail() + "\n\n" +
+                        "Anda sekarang dapat menggunakan layanan kami. Jika ada pertanyaan, hubungi support kami.\n\n" +
+                        "Terima kasih,\n" +
+                        "Tim FINAPay");
         sendEmail(user.getEmail(), subject, body);
     }
+
     public void sendCustomerGoogleRegistrationEmail(User user, String rawPassword) {
         String subject = "Registrasi dengan Google Berhasil - FINAPay";
         String body = String.format(
-            "Halo " + user.getName() + ",\n\n" +
-                    "Selamat! Akun Anda telah berhasil dibuat di FINAPay dengan Google. Abaikan jika anda tidak melakukannya\n\n" +
-                    "Berikut adalah detail akun Anda:\n" +
-                    "Nama: " + user.getName() + "\n" +
-                    "Email: " + user.getEmail() + "\n" +
-                    "Password (Default): " + rawPassword + "\n\n" +
-                    "Anda sekarang dapat menggunakan layanan kami. Jika ada pertanyaan, hubungi support kami.\n\n" +
-                    "Terima kasih,\n" +
-                    "Tim FINAPay");
+                "Halo " + user.getName() + ",\n\n" +
+                        "Selamat! Akun Anda telah berhasil dibuat di FINAPay dengan Google. Abaikan jika anda tidak melakukannya\n\n"
+                        +
+                        "Berikut adalah detail akun Anda:\n" +
+                        "Nama: " + user.getName() + "\n" +
+                        "Email: " + user.getEmail() + "\n" +
+                        "Password (Default): " + rawPassword + "\n\n" +
+                        "Anda sekarang dapat menggunakan layanan kami. Jika ada pertanyaan, hubungi support kami.\n\n" +
+                        "Terima kasih,\n" +
+                        "Tim FINAPay");
         sendEmail(user.getEmail(), subject, body);
+    }
+
+    public void sendLoanApprovedEmail(LoanRequestDto loanRequest) {
+        UserDto customer = loanRequest.getCustomer();
+        if (customer == null || customer.getEmail() == null || customer.getName() == null) {
+            logger.error("Data user tidak lengkap untuk mengirim email persetujuan pengajuan.");
+            throw new IllegalArgumentException("Data user tidak lengkap.");
+        }
+
+        String subject = "Pengajuan Disetujui - FINAPay";
+        String body = String.format(
+                "Halo " + customer.getName() + ",\n\n" +
+                        "Selamat! Pengajuan Anda telah disetujui dan saat ini sedang menunggu proses pencairan dana.\n\n"
+                        +
+                        "Berikut adalah detail pengajuan Anda:\n" +
+                        "Total Dana yang Diterima: " + loanRequest.getAmount() + "\n" +
+                        "Jumlah Cicilan per Bulan: " + loanRequest.getInstalment() + "\n" +
+                        "Dengan Tenor: " + loanRequest.getTenor() + " Bulan\n" +
+                        "Silakan pantau status pencairan dana di aplikasi FINAPay.\n\n" +
+                        "Terima kasih telah menggunakan layanan kami.\n\n" +
+                        "Hormat kami,\n" +
+                        "Tim FINAPay");
+
+        sendEmail(customer.getEmail(), subject, body);
+    }
+
+    public void sendLoanDisbursementEmail(LoanRequestDto loanRequest, CustomerDetailsDto customerDetails) {
+        UserDto customer = loanRequest.getCustomer();
+        String disbursedAt = loanRequest.getBackOfficeDisbursedAt();
+        String jatuhTempoPertama = DateFormatterUtil.addOneMonthToLongIndonesianDate(disbursedAt);
+
+        if (customer == null || customer.getEmail() == null || customer.getName() == null) {
+            logger.error("Data user tidak lengkap untuk mengirim email pencairan dana.");
+            throw new IllegalArgumentException("Data user tidak lengkap.");
+        }
+
+        String subject = "Dana Telah Dicairkan - FINAPay";
+        String body = String.format(
+                "Halo " + customer.getName() + ",\n\n" +
+                        "Kami ingin menginformasikan bahwa dana dari pengajuan Anda telah berhasil dicairkan ke rekening "
+                        + customerDetails.getNoRek() + " .\n\n" +
+                        "Berikut adalah detail pengajuan Anda:\n" +
+                        "Total Dana yang Diterima: " + loanRequest.getAmount() + "\n" +
+                        "Jumlah Cicilan per Bulan: " + loanRequest.getInstalment() + "\n" +
+                        "Dengan Tenor: " + loanRequest.getTenor() + " Bulan\n" +
+                        "Tanggal Jatuh Tempo Pertama: " + jatuhTempoPertama + "\n\n" +
+                        "Silakan cek rekening Anda dan pantau jadwal pembayaran cicilan di aplikasi FINAPay.\n\n" +
+                        "Terima kasih telah menggunakan layanan kami.\n\n" +
+                        "Hormat kami,\n" +
+                        "Tim FINAPay");
+
+        sendEmail(customer.getEmail(), subject, body);
     }
 
 }

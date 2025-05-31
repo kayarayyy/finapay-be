@@ -63,6 +63,9 @@ public class LoanRequestService {
     @Autowired
     private FcmTokenServices fcmTokenServices;
 
+    @Autowired
+    private EmailService emailService;
+
     private final Map<UUID, AtomicInteger> marketingIndexMap = new ConcurrentHashMap<>();
 
     // @Autowired
@@ -109,8 +112,8 @@ public class LoanRequestService {
         CustomerDetails customerDetails = customerDetailsService.getByEmail(email);
         User customer = customerDetails.getUser();
         double availablePlafond = customerDetails.getAvailablePlafond();
-        if (amount < 50000) {
-            throw new IllegalArgumentException("Pengajuan peminjaman minimal Rp50.000.");
+        if (amount < 250000) {
+            throw new IllegalArgumentException("Pengajuan peminjaman minimal Rp250.000.");
         }
         if (amount > availablePlafond) {
             throw new IllegalArgumentException("Sisa plafond anda adalah " + currencyUtil.toRupiah(availablePlafond) +
@@ -338,6 +341,7 @@ public class LoanRequestService {
                             throw new IllegalArgumentException("Notifikasi gagal terkirim");
                         }
                     }
+                    emailService.sendLoanApprovedEmail(LoanRequestDto.fromEntity(loanRequest));
                 } else {
                     loanRequest.setStatus(LoanStatus.REJECTED);
                 }
@@ -469,6 +473,7 @@ public class LoanRequestService {
                             throw new IllegalArgumentException("Notifikasi gagal terkirim");
                         }
                     }
+                    emailService.sendLoanDisbursementEmail(LoanRequestDto.fromEntity(loanRequest), CustomerDetailsDto.fromEntity(customerDetails));
                 } else {
                     loanRequest.setStatus(LoanStatus.REJECTED);
                 }
