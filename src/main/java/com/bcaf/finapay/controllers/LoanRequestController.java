@@ -219,6 +219,15 @@ public class LoanRequestController {
                 "Berhasil " + (disbursement ? "mencairkan" : "membatalkan pencairan") + " dana", updatedLoanRequest));
     }
 
+    @Secured("FEATURE_MANAGE_LOAN_REQUESTS")
+    @PutMapping("/rollback/{id}")
+    public ResponseEntity<ResponseDto> rollbackLoanRequest(@PathVariable String id,
+            @RequestBody Map<String, Object> payload) {
+        LoanRequestDto loanRequest = loanRequestService.rollbackLoanRequest(id, payload);
+        return ResponseEntity.ok(new ResponseDto(200, "success",
+                "Berhasil mengembalikan status pengajuan ke " + loanRequest.getStatus(), loanRequest));
+    }
+
     // @Secured("FEATURE_UPDATE_LOAN_REQUEST_DISBURSEMENT")
     // @PutMapping("/disbursement/{id}")
     // public ResponseEntity<ResponseDto> backOfficeDisbursement(@PathVariable

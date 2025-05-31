@@ -473,7 +473,8 @@ public class LoanRequestService {
                             throw new IllegalArgumentException("Notifikasi gagal terkirim");
                         }
                     }
-                    emailService.sendLoanDisbursementEmail(LoanRequestDto.fromEntity(loanRequest), CustomerDetailsDto.fromEntity(customerDetails));
+                    emailService.sendLoanDisbursementEmail(LoanRequestDto.fromEntity(loanRequest),
+                            CustomerDetailsDto.fromEntity(customerDetails));
                 } else {
                     loanRequest.setStatus(LoanStatus.REJECTED);
                 }
@@ -523,6 +524,93 @@ public class LoanRequestService {
         }
         LoanRequest savedLoanRequest = loanRequestRepository.save(loanRequest);
         return LoanRequestDto.fromEntity(savedLoanRequest);
+    }
+
+    public LoanRequestDto rollbackLoanRequest(String id, Map<String, Object> payload) {
+        Object statusObj = payload.get("status");
+
+        if (statusObj == null || !(statusObj instanceof String statusStr)) {
+            throw new IllegalArgumentException("Status rollback tidak valid atau kosong.");
+        }
+
+        LoanStatus targetStatus;
+        try {
+            targetStatus = LoanStatus.valueOf(statusStr.toUpperCase());
+        } catch (IllegalArgumentException e) {
+            throw new IllegalArgumentException("Status rollback tidak dikenali: " + statusStr);
+        }
+
+        LoanRequest loanRequest = loanRequestRepository.findById(UUID.fromString(id))
+                .orElseThrow(() -> new ResourceNotFoundException("Pengajuan tidak ditemukan"));
+
+        LoanStatus currentStatus = loanRequest.getStatus();
+
+        // 1. Status APPROVED tidak boleh di-rollback
+        if (LoanStatus.APPROVED.equals(currentStatus)) {
+            throw new IllegalArgumentException("Pengajuan dengan status APPROVED tidak dapat di-rollback.");
+        }
+
+        // 2. Tidak boleh rollback ke status setelah status sekarang (maju)
+        if (getStatusOrder(targetStatus) > getStatusOrder(currentStatus)) {
+            throw new IllegalArgumentException("Rollback tidak boleh melangkah maju dari "
+                    + currentStatus + " ke " + targetStatus + ".");
+        }
+
+        // 3. Hapus data sesuai status rollback
+        switch (targetStatus) {
+            case DISBURSEMENT:
+                loanRequest.setBackOfficeApproveDisburse(null);
+                loanRequest.setBackOfficeNotes(null);
+                loanRequest.setBackOfficeDisbursedAt(null);
+                break;
+
+            case APPROVAL:
+                loanRequest.setBackOffice(null);
+                loanRequest.setBackOfficeApproveDisburse(null);
+                loanRequest.setBackOfficeNotes(null);
+                loanRequest.setBackOfficeDisbursedAt(null);
+
+                loanRequest.setBranchManagerApprove(null);
+                loanRequest.setBranchManagerNotes(null);
+                loanRequest.setBranchManagerApprovedAt(null);
+                break;
+
+            case REVIEW:
+                loanRequest.setBranchManager(null);
+                loanRequest.setBranchManagerApprove(null);
+                loanRequest.setBranchManagerNotes(null);
+                loanRequest.setBranchManagerApprovedAt(null);
+
+                loanRequest.setBackOffice(null);
+                loanRequest.setBackOfficeApproveDisburse(null);
+                loanRequest.setBackOfficeNotes(null);
+                loanRequest.setBackOfficeDisbursedAt(null);
+
+                loanRequest.setMarketingApprove(null);
+                loanRequest.setMarketingNotes(null);
+                loanRequest.setMarketingReviewedAt(null);
+                break;
+
+            default:
+                // Status REJECTED dan APPROVED tidak boleh di-rollback ke arah ini,
+                // seharusnya sudah dicegah di validasi sebelumnya
+                break;
+        }
+
+        // 4. Set status baru
+        loanRequest.setStatus(targetStatus);
+
+        LoanRequest updated = loanRequestRepository.save(loanRequest);
+        return LoanRequestDto.fromEntity(updated);
+    }
+
+    private int getStatusOrder(LoanStatus status) {
+        return switch (status) {
+            case REVIEW -> 1;
+            case APPROVAL -> 2;
+            case DISBURSEMENT -> 3;
+            case APPROVED, REJECTED -> 4;
+        };
     }
 
     @Transactional
