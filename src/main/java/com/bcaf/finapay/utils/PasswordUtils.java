@@ -11,7 +11,7 @@ public class PasswordUtils {
 
     public void verifyPasswordMatch(String rawPassword, String encodedPassword) {
         if (!passwordEncoder.matches(rawPassword, encodedPassword)) {
-            throw new IllegalArgumentException("Password lama tidak sesuai!");
+            throw new IllegalArgumentException("Password tidak sesuai!");
         }
     }
 

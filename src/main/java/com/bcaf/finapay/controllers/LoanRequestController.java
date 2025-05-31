@@ -54,31 +54,6 @@ public class LoanRequestController {
                 .body(new ResponseDto(201, "success", "Pengajuan berhasil dibuat menunggu persetujuan", loanRequest));
     }
 
-    // @Secured({ "FEATURE_CREATE_LOAN_REQUEST", "FEATURE_MANAGE_LOAN_REQUESTS" })
-    // @PostMapping(value = "/a", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    // public ResponseEntity<ResponseDto> createLoanRequest(
-    // @RequestHeader(value = "Authorization", required = false) String token,
-    // @RequestPart("amount") double amount,
-    // @RequestPart("tenor") int tenor,
-    // @RequestPart("latitude") double latitude,
-    // @RequestPart("longitude") double longitude,
-    // @RequestPart(value = "refferal", required = false) String refferal,
-    // @RequestPart("ktp_image") MultipartFile ktpImage) {
-
-    // Map<String, Object> payload = new HashMap<>();
-    // payload.put("amount", amount);
-    // payload.put("tenor", tenor);
-    // payload.put("latitude", latitude);
-    // payload.put("longitude", longitude);
-    // payload.put("refferal", refferal);
-    // payload.put("ktp_image", ktpImage);
-
-    // LoanRequestDto loanRequest = loanRequestService.createLoanRequest(payload,
-    // token);
-    // return ResponseEntity.status(HttpStatus.CREATED)
-    // .body(new ResponseDto(201, "success", "Loan request created", loanRequest));
-    // }
-
     @Secured({ "FEATURE_GET_ALL_LOAN_REQUEST", "FEATURE_MANAGE_LOAN_REQUESTS" })
     @GetMapping
     public ResponseEntity<ResponseDto> getAllLoanRequests() {
@@ -227,21 +202,6 @@ public class LoanRequestController {
         return ResponseEntity.ok(new ResponseDto(200, "success",
                 "Berhasil mengembalikan status pengajuan ke " + loanRequest.getStatus(), loanRequest));
     }
-
-    // @Secured("FEATURE_UPDATE_LOAN_REQUEST_DISBURSEMENT")
-    // @PutMapping("/disbursement/{id}")
-    // public ResponseEntity<ResponseDto> backOfficeDisbursement(@PathVariable
-    // String id,
-    // @RequestBody Map<String, Object> payload,
-    // @RequestHeader(value = "Authorization", required = false) String token) {
-    // LoanRequestDto updatedLoanRequest =
-    // loanRequestService.backOfficeDisbursement(id, payload, token);
-    // boolean disbursement =
-    // Boolean.parseBoolean(payload.get("disbursement").toString());
-    // return ResponseEntity.ok(new ResponseDto(200, "success",
-    // "Berhasil " + (disbursement ? "mencairkan" : "menolak") + " pengajuan",
-    // updatedLoanRequest));
-    // }
 
     @Secured("FEATURE_ASSIGN_MARKETING")
     @PostMapping("/assign-marketing")

@@ -189,6 +189,14 @@ public class LoanRequestService {
 
         // Cek apakah status ada atau tidak
         if (status != null) {
+            if (LoanStatus.ONGOING.equals(status)) {
+                List<LoanStatus> excludedStatuses = Arrays.asList(LoanStatus.APPROVED, LoanStatus.REJECTED);
+
+                return loanRequestRepository.findByCustomerEmailAndStatusNotIn(emailCustomer, excludedStatuses)
+                        .stream()
+                        .map(LoanRequestDto::fromEntity)
+                        .collect(Collectors.toList());
+            }
             return loanRequestRepository.findByCustomerEmailAndStatus(emailCustomer, status)
                     .stream()
                     .map(LoanRequestDto::fromEntity)
@@ -610,6 +618,7 @@ public class LoanRequestService {
             case APPROVAL -> 2;
             case DISBURSEMENT -> 3;
             case APPROVED, REJECTED -> 4;
+            case ONGOING -> 5;
         };
     }
 

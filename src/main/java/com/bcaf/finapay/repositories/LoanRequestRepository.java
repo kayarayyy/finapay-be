@@ -42,6 +42,8 @@ public interface LoanRequestRepository extends JpaRepository<LoanRequest, UUID> 
 
     List<LoanRequest> findByBackOfficeEmailAndBackOfficeApproveDisburseIsNull(String email);
 
+    List<LoanRequest> findByCustomerEmailAndStatusNotIn(String email, List<LoanStatus> excludedStatuses);
+
     @Query("SELECT COUNT(lr) FROM LoanRequest lr " +
             "WHERE lr.customer.email = :email " +
             "AND (lr.marketingApprove IS NULL OR lr.marketingApprove = true) " +
