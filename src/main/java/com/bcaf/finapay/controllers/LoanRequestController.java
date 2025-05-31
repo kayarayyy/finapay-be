@@ -267,6 +267,6 @@ public class LoanRequestController {
     @DeleteMapping("/{id}")
     public ResponseEntity<ResponseDto> deleteLoanRequest(@PathVariable String id) {
         loanRequestService.deleteLoanRequest(id);
-        return ResponseEntity.ok(new ResponseDto(200, "success", "Loan request deleted", null));
+        return ResponseEntity.ok(new ResponseDto(200, "success", "Berhasil menghapus pengajuan", null));
     }
 }

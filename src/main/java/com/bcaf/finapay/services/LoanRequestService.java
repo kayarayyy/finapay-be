@@ -741,6 +741,10 @@ public class LoanRequestService {
         LoanRequest loanRequest = loanRequestRepository.findById(UUID.fromString(id))
                 .orElseThrow(() -> new ResourceNotFoundException("Loan request not found"));
 
+        if (LoanStatus.APPROVED.equals(loanRequest.getStatus())) {
+            throw new IllegalArgumentException("Tidak dapat menghapus pengajuan yang sudah realisasi");
+        }
+
         loanRequestRepository.delete(loanRequest);
     }
 }
