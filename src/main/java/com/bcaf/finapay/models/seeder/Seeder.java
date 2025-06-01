@@ -352,7 +352,7 @@ public class Seeder implements CommandLineRunner {
         // Tambahkan Branch Manager & Marketing untuk Jakarta
         Branch jakartaBranch = branchRepository.findByName("Jakarta 1").orElse(null);
         User managerJakarta = userRepository.findByEmail("branchmanager@gmail.com").orElse(null);
-        User marketingJakarta = userRepository.findByEmail("rayrizkyfawzy@gmail.com").orElse(null);
+        User marketingJakarta = userRepository.findByEmail("marketing@gmail.com").orElse(null);
 
         if (jakartaBranch != null) {
             if (managerJakarta != null) {
@@ -441,10 +441,10 @@ public class Seeder implements CommandLineRunner {
 
     private void seedCustomerDetails() {
         if (userRepository.existsByEmail("customer@gmail.com") &&
-                plafondRepository.existsByPlan("GOLD")) {
+                plafondRepository.existsByPlan("BRONZE")) {
 
             User customer = userRepository.findByEmail("customer@gmail.com").orElse(null);
-            Plafond bronzePlafond = plafondRepository.findByPlan("GOLD").orElse(null);
+            Plafond bronzePlafond = plafondRepository.findByPlan("BRONZE").orElse(null);
 
             if (customer != null && bronzePlafond != null) {
                 // Cek apakah data customer detail sudah pernah dibuat
@@ -492,9 +492,9 @@ public class Seeder implements CommandLineRunner {
     }
 
     private void seedEmployeeDetails() {
-        if (userRepository.existsByEmail("rayrizkyfawzy@gmail.com")) {
+        if (userRepository.existsByEmail("marketing@gmail.com")) {
 
-            User marketing = userRepository.findByEmail("rayrizkyfawzy@gmail.com").orElse(null);
+            User marketing = userRepository.findByEmail("marketing@gmail.com").orElse(null);
 
             if (marketing != null) {
                 // Cek apakah data marketing detail sudah pernah dibuat
