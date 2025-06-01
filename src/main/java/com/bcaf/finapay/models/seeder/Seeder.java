@@ -106,6 +106,12 @@ public class Seeder implements CommandLineRunner {
             featureRepository.save(new Feature(null, "MANAGE_PLAFONDS", null));
             featureRepository.save(new Feature(null, "MANAGE_CUSTOMER_DETAILS", null));
 
+            // ACCESS DASHBOARD
+            featureRepository.save(new Feature(null, "DASHBOARD_SUPERADMIN", null));
+            featureRepository.save(new Feature(null, "DASHBOARD_MARKETING", null));
+            featureRepository.save(new Feature(null, "DASHBOARD_BRANCHMANAGER", null));
+            featureRepository.save(new Feature(null, "DASHBOARD_BACKOFFICE", null));
+
             // ACCESS LOAN REQUEST
             featureRepository.save(new Feature(null, "CREATE_LOAN_REQUEST", null));
             featureRepository.save(new Feature(null, "GET_ALL_LOAN_REQUEST_BY_EMAIL", null));
@@ -143,6 +149,7 @@ public class Seeder implements CommandLineRunner {
             Feature manageBranches = featureRepository.findByName("MANAGE_BRANCHES").orElse(null);
             Feature managePlafonds = featureRepository.findByName("MANAGE_PLAFONDS").orElse(null);
             Feature manageCustomerDetails = featureRepository.findByName("MANAGE_CUSTOMER_DETAILS").orElse(null);
+            Feature dashboardSuperadmin = featureRepository.findByName("DASHBOARD_SUPERADMIN").orElse(null);
 
             Feature getEmployeeDetails = featureRepository.findByName("GET_EMPLOYEE_DETAILS")
                     .orElse(null);
@@ -164,6 +171,8 @@ public class Seeder implements CommandLineRunner {
                     .orElse(null);
             Feature updateLoanRequestReview = featureRepository.findByName("UPDATE_LOAN_REQUEST_REVIEW")
                     .orElse(null);
+            Feature dashboardMarketing = featureRepository.findByName("DASHBOARD_MARKETING").orElse(null);
+
 
             Role branchManager = roleRepository.findByName("BRANCH_MANAGER").orElse(null);
             Feature getAllLoanRequestApproval = featureRepository.findByName("GET_ALL_LOAN_REQUEST_APPROVAL")
@@ -172,6 +181,8 @@ public class Seeder implements CommandLineRunner {
                     .orElse(null);
             Feature updateLoanRequestApproval = featureRepository.findByName("UPDATE_LOAN_REQUEST_APPROVAL")
                     .orElse(null);
+            Feature dashboardBranchManager = featureRepository.findByName("DASHBOARD_BRANCHMANAGER").orElse(null);
+
 
             Role backOffice = roleRepository.findByName("BACK_OFFICE").orElse(null);
             Feature getLoanRequestDisbursement = featureRepository.findByName("GET_LOAN_REQUEST_DISBURSEMENT")
@@ -183,6 +194,8 @@ public class Seeder implements CommandLineRunner {
                     .orElse(null);
             Feature updateLoanRequestDisbursement = featureRepository.findByName("UPDATE_LOAN_REQUEST_DISBURSEMENT")
                     .orElse(null);
+            Feature dashboardBackoffice = featureRepository.findByName("DASHBOARD_BACKOFFICE").orElse(null);
+
 
             if (superAdmin != null) {
                 if (manageRoles != null) {
@@ -208,6 +221,9 @@ public class Seeder implements CommandLineRunner {
                 }
                 if (manageCustomerDetails != null) {
                     roleFeatureRepository.save(new RoleFeature(null, superAdmin, manageCustomerDetails));
+                }
+                if (dashboardSuperadmin != null) {
+                    roleFeatureRepository.save(new RoleFeature(null, superAdmin, dashboardSuperadmin));
                 }
             }
             if (customer != null) {
@@ -241,6 +257,9 @@ public class Seeder implements CommandLineRunner {
                 if (createEmployeeDetails != null) {
                     roleFeatureRepository.save(new RoleFeature(null, marketing, createEmployeeDetails));
                 }
+                if (dashboardMarketing != null) {
+                    roleFeatureRepository.save(new RoleFeature(null, marketing, dashboardMarketing));
+                }
             }
 
             if (branchManager != null) {
@@ -258,6 +277,9 @@ public class Seeder implements CommandLineRunner {
                 }
                 if (createEmployeeDetails != null) {
                     roleFeatureRepository.save(new RoleFeature(null, branchManager, createEmployeeDetails));
+                }
+                if (dashboardBranchManager != null) {
+                    roleFeatureRepository.save(new RoleFeature(null, branchManager, dashboardBranchManager));
                 }
             }
 
@@ -280,6 +302,9 @@ public class Seeder implements CommandLineRunner {
                 if (createEmployeeDetails != null) {
                     roleFeatureRepository.save(new RoleFeature(null, backOffice, createEmployeeDetails));
                 }
+                if (dashboardBackoffice != null) {
+                    roleFeatureRepository.save(new RoleFeature(null, backOffice, dashboardBackoffice));
+                }
             }
         }
     }
@@ -287,10 +312,10 @@ public class Seeder implements CommandLineRunner {
     private void seedUsers() {
         if (userRepository.count() == 0) {
             createUser("Superadmin", "superadmin@gmail.com", "superadmin123", "SUPERADMIN", "20242753", null);
-            createUser("Marketing", "rayrizkyfawzy@gmail.com", "marketing123", "MARKETING", "2025111", "REF2025111");
+            createUser("Marketing", "marketing@gmail.com", "marketing123", "MARKETING", "2025111", "REF2025111");
             createUser("Marketing 1", "marketing1@gmail.com", "marketing123", "MARKETING", "2025112", "REF2025112");
             createUser("Marketing 2", "marketing2@gmail.com", "marketing123", "MARKETING", "2025113", "REF2025113");
-            // createUser("Customer", "bitcoinid86@gmail.com", "customer123", "CUSTOMER", null, null);
+            createUser("Customer", "customer@gmail.com", "customer123", "CUSTOMER", null, null);
             createUser("Customer 1", "customer1@gmail.com", "customer123", "CUSTOMER", null, null);
             createUser("Branch Manager", "branchmanager@gmail.com", "branchmanager123", "BRANCH_MANAGER", "2025121",
                     null);
@@ -415,10 +440,10 @@ public class Seeder implements CommandLineRunner {
     }
 
     private void seedCustomerDetails() {
-        if (userRepository.existsByEmail("bitcoinid86@gmail.com") &&
+        if (userRepository.existsByEmail("customer@gmail.com") &&
                 plafondRepository.existsByPlan("GOLD")) {
 
-            User customer = userRepository.findByEmail("bitcoinid86@gmail.com").orElse(null);
+            User customer = userRepository.findByEmail("customer@gmail.com").orElse(null);
             Plafond bronzePlafond = plafondRepository.findByPlan("GOLD").orElse(null);
 
             if (customer != null && bronzePlafond != null) {
