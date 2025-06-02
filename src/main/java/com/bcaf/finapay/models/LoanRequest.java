@@ -52,7 +52,7 @@ public class LoanRequest {
     private String purpose;
 
     @ManyToOne
-    @JoinColumn(name = "branch", referencedColumnName = "city")
+    @JoinColumn(name = "branch", referencedColumnName = "id")
     @JsonBackReference
     private Branch branch;
 
